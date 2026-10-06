@@ -1487,7 +1487,7 @@ function setupCustomObjectSystem() {
   const mouse = new THREE.Vector2();
 
   window.addEventListener('pointerdown', (e) => {
-    if (e.target.closest('#controlPanel') || e.target.closest('.brand-card') || e.target.closest('#viewBar') || e.target.closest('.legend') || e.target.closest('#dropZone')) {
+    if (e.target.closest('#controlPanel') || e.target.closest('#btnTogglePanel') || e.target.closest('#panelBackdrop') || e.target.closest('#viewBar') || e.target.closest('#dropZone')) {
       return;
     }
     if (transformControls.dragging) return;
@@ -1618,7 +1618,7 @@ function handle3DFile(file) {
 // UI wiring
 // ---------------------------------------------------------------------------
 function wireUI() {
-  // Mobile drawer controls
+  // Drawer / Control panel controls
   const controlPanel = document.getElementById('controlPanel');
   const panelBackdrop = document.getElementById('panelBackdrop');
   const btnTogglePanel = document.getElementById('btnTogglePanel');
@@ -1630,7 +1630,7 @@ function wireUI() {
     if (btnTogglePanel) {
       btnTogglePanel.classList.add('active');
       const lbl = btnTogglePanel.querySelector('.btn-toggle-label');
-      if (lbl) lbl.textContent = '✕ ปิดเมนู';
+      if (lbl) lbl.textContent = '✕ ปิดแผง';
     }
   }
 
@@ -1644,24 +1644,50 @@ function wireUI() {
     }
   }
 
-  // Ensure closed by default on page load (mobile-first rule)
+  let lastActionTime = 0;
+  function handleToggleTrigger(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const now = Date.now();
+    if (now - lastActionTime < 250) return;
+    lastActionTime = now;
+    const isOpen = controlPanel && controlPanel.classList.contains('open');
+    if (isOpen) {
+      closePanel();
+    } else {
+      openPanel();
+    }
+  }
+
+  function handleCloseTrigger(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const now = Date.now();
+    if (now - lastActionTime < 250) return;
+    lastActionTime = now;
+    closePanel();
+  }
+
+  // Ensure closed by default on page load across all devices
   closePanel();
 
   if (btnTogglePanel) {
-    btnTogglePanel.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isOpen = controlPanel && controlPanel.classList.contains('open');
-      if (isOpen) closePanel();
-      else openPanel();
-    });
+    btnTogglePanel.addEventListener('click', handleToggleTrigger);
+    btnTogglePanel.addEventListener('touchend', handleToggleTrigger, { passive: false });
   }
 
   if (btnClosePanel) {
-    btnClosePanel.addEventListener('click', closePanel);
+    btnClosePanel.addEventListener('click', handleCloseTrigger);
+    btnClosePanel.addEventListener('touchend', handleCloseTrigger, { passive: false });
   }
 
   if (panelBackdrop) {
-    panelBackdrop.addEventListener('click', closePanel);
+    panelBackdrop.addEventListener('click', handleCloseTrigger);
+    panelBackdrop.addEventListener('touchend', handleCloseTrigger, { passive: false });
   }
 
   window.addEventListener('keydown', (e) => {
@@ -1699,7 +1725,8 @@ function wireUI() {
 
   const toggleZones = document.getElementById('toggleZones');
   if (toggleZones) {
-    zoneLabels.forEach((l) => (l.visible = toggleZones.checked));
+    toggleZones.checked = false; // Closed / OFF by default
+    zoneLabels.forEach((l) => (l.visible = false));
     toggleZones.addEventListener('change', (e) => {
       zoneLabels.forEach((l) => (l.visible = e.target.checked));
     });
@@ -1707,8 +1734,9 @@ function wireUI() {
 
   const toggleExhibits = document.getElementById('toggleExhibits');
   if (toggleExhibits) {
-    exhibitGroup.visible = toggleExhibits.checked;
-    exhibitLabels.forEach((l) => (l.visible = toggleExhibits.checked));
+    toggleExhibits.checked = false; // Closed / OFF by default
+    exhibitGroup.visible = false;
+    exhibitLabels.forEach((l) => (l.visible = false));
     toggleExhibits.addEventListener('change', (e) => {
       exhibitGroup.visible = e.target.checked;
       exhibitLabels.forEach((l) => (l.visible = e.target.checked));
