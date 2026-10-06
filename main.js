@@ -27,6 +27,7 @@ const FY = 0.1;      // platform top height
 const SCULPT_H = 0.5; // sculpture height (50 cm)
 
 const V2 = THREE.Vector2;
+const V3 = THREE.Vector3;
 const rand = (a = 0, b = 1) => a + Math.random() * (b - a);
 
 const ART_SOURCES = {
@@ -1987,36 +1988,50 @@ async function init() {
 
   if (loaderSub) loaderSub.textContent = 'กำลังจัดเตรียมพื้นที่จัดแสดง...';
 
-  buildTextures();
-  buildMaterials();
-  buildHallAndPlatform();
-  buildBackWall();
-  buildEnclosureAndPartitions();
-  buildKitchen();
-  buildLiving();
-  buildGallery();
-  buildLights();
-  buildAnnotations();
-  setMode('golden');
-  setupCustomObjectSystem();
-  wireUI();
+  // Safety timer to prevent loader hanging under any circumstance
+  const safetyTimer = setTimeout(() => {
+    const ldr = document.getElementById('loader');
+    if (ldr && !ldr.classList.contains('done')) ldr.classList.add('done');
+  }, 3500);
 
-  const clock = new THREE.Clock();
-  renderer.setAnimationLoop(() => {
-    const dt = Math.min(clock.getDelta(), 0.05);
-    if (tween) {
-      tween.t += dt;
-      const k = ease(Math.min(1, tween.t / tween.dur));
-      camera.position.lerpVectors(tween.p0, tween.p1, k);
-      controls.target.lerpVectors(tween.t0, tween.t1, k);
-      if (k >= 1) tween = null;
-    }
-    controls.update();
-    composer.render();
-    labelRenderer.render(scene, camera);
-  });
+  try {
+    buildTextures();
+    buildMaterials();
+    buildHallAndPlatform();
+    buildBackWall();
+    buildEnclosureAndPartitions();
+    buildKitchen();
+    buildLiving();
+    buildGallery();
+    buildLights();
+    buildAnnotations();
+    setMode('golden');
+    setupCustomObjectSystem();
+    wireUI();
 
-  requestAnimationFrame(() => document.getElementById('loader').classList.add('done'));
+    const clock = new THREE.Clock();
+    renderer.setAnimationLoop(() => {
+      const dt = Math.min(clock.getDelta(), 0.05);
+      if (tween) {
+        tween.t += dt;
+        const k = ease(Math.min(1, tween.t / tween.dur));
+        camera.position.lerpVectors(tween.p0, tween.p1, k);
+        controls.target.lerpVectors(tween.t0, tween.t1, k);
+        if (k >= 1) tween = null;
+      }
+      controls.update();
+      composer.render();
+      labelRenderer.render(scene, camera);
+    });
+  } catch (err) {
+    console.error('Initialization error:', err);
+  } finally {
+    clearTimeout(safetyTimer);
+    requestAnimationFrame(() => {
+      const ldr = document.getElementById('loader');
+      if (ldr) ldr.classList.add('done');
+    });
+  }
 }
 
 init();
