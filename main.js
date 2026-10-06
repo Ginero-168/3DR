@@ -1687,15 +1687,28 @@ function wireUI() {
       }
     });
   });
-  document.getElementById('toggleDims').addEventListener('change', (e) => {
-    dimGroup.visible = e.target.checked;
-    dimLabels.forEach((l) => (l.visible = e.target.checked));
-  });
-  document.getElementById('toggleZones').addEventListener('change', (e) => {
-    zoneLabels.forEach((l) => (l.visible = e.target.checked));
-  });
+  const toggleDims = document.getElementById('toggleDims');
+  if (toggleDims) {
+    dimGroup.visible = toggleDims.checked;
+    dimLabels.forEach((l) => (l.visible = toggleDims.checked));
+    toggleDims.addEventListener('change', (e) => {
+      dimGroup.visible = e.target.checked;
+      dimLabels.forEach((l) => (l.visible = e.target.checked));
+    });
+  }
+
+  const toggleZones = document.getElementById('toggleZones');
+  if (toggleZones) {
+    zoneLabels.forEach((l) => (l.visible = toggleZones.checked));
+    toggleZones.addEventListener('change', (e) => {
+      zoneLabels.forEach((l) => (l.visible = e.target.checked));
+    });
+  }
+
   const toggleExhibits = document.getElementById('toggleExhibits');
   if (toggleExhibits) {
+    exhibitGroup.visible = toggleExhibits.checked;
+    exhibitLabels.forEach((l) => (l.visible = toggleExhibits.checked));
     toggleExhibits.addEventListener('change', (e) => {
       exhibitGroup.visible = e.target.checked;
       exhibitLabels.forEach((l) => (l.visible = e.target.checked));
