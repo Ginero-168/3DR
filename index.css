@@ -522,7 +522,8 @@ h2 {
   place-items: center;
   border-radius: 50%;
   border: 1px solid rgba(243, 207, 152, 0.5);
-  font: 500 22px var(--font-display);
+  font: 600 19px var(--font-display);
+  letter-spacing: 0.04em;
   color: #f3cf98;
   animation: pulse 1.8s ease-in-out infinite;
 }

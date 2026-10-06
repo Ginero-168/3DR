@@ -415,11 +415,13 @@ function logoTexture(main, sub, color = '#f4dcae') {
     g.fillStyle = color;
     g.textAlign = 'center';
     g.textBaseline = 'middle';
-    g.letterSpacing = '28px';
-    g.font = '600 230px "Cormorant Garamond", serif';
+    const mainFontSize = main.length > 12 ? 175 : 230;
+    const spacing = main.length > 12 ? '16px' : '28px';
+    g.letterSpacing = spacing;
+    g.font = `600 ${mainFontSize}px "Cormorant Garamond", serif`;
     g.fillText(main, w / 2, h * 0.4);
-    g.letterSpacing = '22px';
-    g.font = '400 62px "Outfit", sans-serif';
+    g.letterSpacing = '18px';
+    g.font = '400 58px "Outfit", sans-serif';
     g.fillText(sub, w / 2, h * 0.84);
   });
 }
@@ -920,7 +922,7 @@ function buildEnclosureAndPartitions() {
   booth.add(entSpot, entSpot.target);
   // Backlit Signboard over Left Entrance
   const entSignMat = new THREE.MeshStandardMaterial({
-    map: logoTexture('MAISON TERRA', 'ENTRANCE · ทางเข้า'),
+    map: logoTexture('MARKETING NAIIN', 'ENTRANCE · ทางเข้า'),
     transparent: true,
     color: 0xffffff,
     emissive: 0xffd9a0,
@@ -950,7 +952,7 @@ function buildEnclosureAndPartitions() {
   booth.add(exitSpot, exitSpot.target);
   // Backlit Signboard over Right Exit
   const exitSignMat = new THREE.MeshStandardMaterial({
-    map: logoTexture('MAISON TERRA', 'EXIT · ทางออก'),
+    map: logoTexture('MARKETING NAIIN', 'EXIT · ทางออก'),
     transparent: true,
     color: 0xffffff,
     emissive: 0xffd9a0,
@@ -1031,7 +1033,7 @@ function buildEnclosureAndPartitions() {
 
   // Pavilion Title Badge over Window Header
   const winSignMat = new THREE.MeshStandardMaterial({
-    map: logoTexture('MAISON TERRA', 'ART PAVILION · SHOWCASE'),
+    map: logoTexture('MARKETING NAIIN', 'ART PAVILION · SHOWCASE'),
     transparent: true,
     color: 0xffffff,
     emissive: 0xffd9a0,
