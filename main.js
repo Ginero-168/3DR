@@ -666,12 +666,65 @@ const SCULPTURES = [
   },
 ];
 let sculptIdx = 0;
+let foxyTemplate = null;
+
+function loadFoxyModel(onProgress) {
+  return new Promise((resolve) => {
+    const loader = new GLTFLoader();
+    loader.load(
+      'Foxy.glb',
+      (gltf) => {
+        try {
+          const root = gltf.scene || gltf.scenes[0];
+          root.rotation.y = Math.PI; // Face forward (+Z towards visitors)
+          root.traverse((child) => {
+            if (child.isMesh) {
+              child.castShadow = true;
+              child.receiveShadow = true;
+              if (child.material) {
+                child.material.envMapIntensity = 0.85;
+                child.material.needsUpdate = true;
+              }
+            }
+          });
+          foxyTemplate = normalize(root, SCULPT_H);
+          resolve(foxyTemplate);
+        } catch (e) {
+          console.warn('Error processing Foxy.glb:', e);
+          resolve(null);
+        }
+      },
+      (xhr) => {
+        if (xhr.lengthComputable && onProgress) {
+          const pct = Math.round((xhr.loaded / xhr.total) * 100);
+          onProgress(pct);
+        }
+      },
+      (err) => {
+        console.warn('Could not load Foxy.glb, falling back to procedural sculptures', err);
+        resolve(null);
+      }
+    );
+  });
+}
+
 const SCULPT_SEQ = [
   () => SCULPTURES[0](M.ceramic), () => SCULPTURES[1](), () => SCULPTURES[2](), () => SCULPTURES[3](M.terracotta),
   () => SCULPTURES[4](), () => SCULPTURES[5](M.ceramic), () => SCULPTURES[6](), () => SCULPTURES[7](),
   () => SCULPTURES[8](), () => SCULPTURES[3](M.bronze), () => SCULPTURES[0](M.terracotta), () => SCULPTURES[5](M.basalt),
 ];
 function nextSculpture() {
+  if (foxyTemplate) {
+    const clone = foxyTemplate.clone(true);
+    clone.traverse((o) => {
+      if (o.isMesh) {
+        o.castShadow = true;
+        o.receiveShadow = true;
+      }
+    });
+    sculptIdx++;
+    return clone;
+  }
   const s = normalize(SCULPT_SEQ[sculptIdx % SCULPT_SEQ.length]());
   sculptIdx++;
   return s;
@@ -1007,7 +1060,7 @@ function buildKitchen() {
   mesh(B(0.44, ped1H, 0.44, 0.01), M.travertine, ped1X, FY + ped1H / 2, ped1Z);
   mesh(B(0.40, 0.025, 0.40), M.basalt, ped1X, FY + 0.012, ped1Z);
   place(nextSculpture(), ped1X, FY + ped1H, ped1Z, booth, 0.2);
-  addExhibitBadge('S1 · ประติมากรรม 1 (50 cm)', new V3(ped1X, FY + ped1H + SCULPT_H + 0.15, ped1Z));
+  addExhibitBadge('S1 · ประติมากรรม 1 — Foxy (50 cm)', new V3(ped1X, FY + ped1H + SCULPT_H + 0.15, ped1Z));
 
   // Spotlight overhead focused on S1
   const spot1 = addAccent(new THREE.SpotLight(0xffe2bf, 5.0, 4.5, 0.28, 0.4, 2), 5.0);
@@ -1087,7 +1140,7 @@ function buildLiving() {
   mesh(B(0.46, foyerPedH, 0.46, 0.01), M.travertine, foyerPedX, FY + foyerPedH / 2, foyerPedZ);
   mesh(B(0.42, 0.025, 0.42), M.basalt, foyerPedX, FY + 0.012, foyerPedZ);
   place(nextSculpture(), foyerPedX, FY + foyerPedH, foyerPedZ, booth, 0);
-  addExhibitBadge('S2 · ประติมากรรม 2 (50 cm)', new V3(foyerPedX, FY + foyerPedH + SCULPT_H + 0.15, foyerPedZ));
+  addExhibitBadge('S2 · ประติมากรรม 2 — Foxy (50 cm)', new V3(foyerPedX, FY + foyerPedH + SCULPT_H + 0.15, foyerPedZ));
 
   // Spotlight overhead focused on S2
   const spot2 = addAccent(new THREE.SpotLight(0xffe4c8, 6.0, 5, 0.32, 0.4, 2), 6.0);
@@ -1106,7 +1159,7 @@ function buildLiving() {
   mesh(B(1.2, credH, 0.36, 0.01), M.walnut, credX, FY + credH / 2, credZ);
   mesh(B(1.24, 0.03, 0.38, 0.005), M.travertine, credX, FY + credH + 0.015, credZ);
   place(nextSculpture(), credX, FY + credH + 0.03, credZ, booth, rand(-0.3, 0.3));
-  addExhibitBadge('S6 · ประติมากรรม 6 (50 cm)', new V3(credX, FY + credH + SCULPT_H + 0.15, credZ));
+  addExhibitBadge('S6 · ประติมากรรม 6 — Foxy (50 cm)', new V3(credX, FY + credH + SCULPT_H + 0.15, credZ));
 
   const spot6 = addAccent(new THREE.SpotLight(0xffe2bf, 4.5, 5, 0.28, 0.4, 2), 4.5);
   spot6.position.set(credX, FY + H - 0.2, 0.75);
@@ -1192,11 +1245,11 @@ function buildGallery() {
   mesh(B(0.44, ped3H, 0.44, 0.01), M.travertine, ped3X, FY + ped3H / 2, ped3Z);
   mesh(B(0.40, 0.025, 0.40), M.basalt, ped3X, FY + 0.012, ped3Z);
   place(nextSculpture(), ped3X, FY + ped3H, ped3Z, booth, 0.15);
-  addExhibitBadge('S3 · ประติมากรรม 3 (50 cm)', new V3(ped3X, FY + ped3H + SCULPT_H + 0.15, ped3Z));
+  addExhibitBadge('S3 · ประติมากรรม 3 — Foxy (50 cm)', new V3(ped3X, FY + ped3H + SCULPT_H + 0.15, ped3Z));
   dimTargets.sculpt = { x: ped3X, z: ped3Z, y: FY + ped3H };
 
   // Dedicated Photo Spot Badge
-  addExhibitBadge('📸 มุมถ่ายรูป · Photo Spot (Sofa & S3)', new V3(4.55, FY + 1.45, 0.85));
+  addExhibitBadge('📸 มุมถ่ายรูป · Photo Spot (Sofa & Foxy)', new V3(4.55, FY + 1.45, 0.85));
 
   // Flattering portrait studio spotlight aimed directly at sofa & sculpture S3
   const portraitSpot = addAccent(new THREE.SpotLight(0xffeedd, 6.0, 5.5, 0.45, 0.5, 2), 6.0);
@@ -1233,7 +1286,7 @@ function buildGallery() {
     place(nextSculpture(), nx, nicheY - nicheH / 2 + 0.035, 0.16, booth, rand(-0.25, 0.25));
     const labelCode = idx === 0 ? 'S4' : 'S5';
     const labelNum = idx === 0 ? '4' : '5';
-    addExhibitBadge(`${labelCode} · ประติมากรรม ${labelNum} (50 cm)`, new V3(nx, nicheY + 0.36, 0.22));
+    addExhibitBadge(`${labelCode} · ประติมากรรม ${labelNum} — Foxy (50 cm)`, new V3(nx, nicheY + 0.36, 0.22));
   });
 
   // Corner olive tree against the wall
@@ -1321,7 +1374,7 @@ function buildAnnotations() {
   dimLine(new V3(4.25, FY + 2.55, D + 0.10), new V3(5.75, FY + 2.55, D + 0.10), 'ทางออก 1.50 m (ขวา)', new V3(0, 0.08, 0));
 
   const s = dimTargets.sculpt;
-  if (s) dimLine(new V3(s.x + 0.34, s.y, s.z), new V3(s.x + 0.34, s.y + SCULPT_H, s.z), 'ประติมากรรม 50 cm', new V3(0.05, 0, 0));
+  if (s) dimLine(new V3(s.x + 0.34, s.y, s.z), new V3(s.x + 0.34, s.y + SCULPT_H, s.z), 'ประติมากรรม Foxy 50 cm', new V3(0.05, 0, 0));
 
   [['1', 'West Gallery · เข้าซ้าย', -5.0], ['2', 'Center Slat Hall · หน้าต่าง', 0], ['3', 'East Sanctuary · 📸 มุมถ่ายรูป & ออกขวา', 5.0]].forEach(([k, name, x]) => {
     const div = document.createElement('div');
@@ -1722,12 +1775,20 @@ window.addEventListener('resize', () => {
 // Init
 // ---------------------------------------------------------------------------
 async function init() {
+  const loaderSub = document.querySelector('.loader-sub');
+  if (loaderSub) loaderSub.textContent = 'กำลังโหลดโมเดลประติมากรรม Foxy.glb...';
+
   try {
     await Promise.all([
       document.fonts.load('600 64px "Cormorant Garamond"'),
       document.fonts.load('400 32px "Outfit"'),
+      loadFoxyModel((pct) => {
+        if (loaderSub) loaderSub.textContent = `กำลังโหลดโมเดลประติมากรรม Foxy ${pct}%...`;
+      }),
     ]);
   } catch (e) { /* fall back to system fonts */ }
+
+  if (loaderSub) loaderSub.textContent = 'กำลังจัดเตรียมพื้นที่จัดแสดง...';
 
   buildTextures();
   buildMaterials();
