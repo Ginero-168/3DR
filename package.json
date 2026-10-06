@@ -1,0 +1,20 @@
+{
+  "name": "3dr-booth-mockup",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Interactive 15x3m Warm Wood Exhibition Booth 3D Mockup",
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "mkdir -p dist && cp index.html index.css main.js *.jpg *.obj dist/ 2>/dev/null || true",
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "threejs",
+    "3d",
+    "mockup",
+    "exhibition-booth",
+    "architecture"
+  ],
+  "author": "Ginero-168",
+  "license": "MIT"
+}
