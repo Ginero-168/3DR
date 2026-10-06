@@ -330,127 +330,7 @@ h2 {
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(201, 138, 75, 0.5); }
 .btn-primary:active { transform: translateY(0); }
 
-/* ---------- Legend & Toggle (Closed by default) ---------- */
-.btn-toggle-legend {
-  position: fixed;
-  left: 22px;
-  bottom: 22px;
-  z-index: 35;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  font: 500 12.5px var(--font-ui);
-  color: #f3cf98;
-  background: rgba(28, 20, 14, 0.88);
-  border: 1px solid rgba(243, 214, 170, 0.35);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
-  cursor: pointer;
-  transition: all 0.25s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-.btn-toggle-legend:hover {
-  transform: translateY(-2px);
-  background: rgba(45, 30, 20, 0.95);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
-}
-.btn-toggle-legend.active {
-  background: linear-gradient(135deg, #f3cf98, #d39a5c);
-  color: #22160c;
-  border-color: #f3cf98;
-  box-shadow: 0 6px 20px rgba(243, 207, 152, 0.4);
-}
 
-.legend {
-  position: fixed;
-  left: 22px;
-  bottom: 66px;
-  width: 320px;
-  max-height: calc(100vh - 140px);
-  overflow-y: auto;
-  padding: 16px 18px;
-  z-index: 45;
-  display: none; /* CLOSED BY DEFAULT */
-  opacity: 0;
-  transform: translateY(16px);
-  pointer-events: none;
-  transition: transform 0.3s cubic-bezier(.2, .8, .2, 1), opacity 0.25s ease;
-}
-.legend::-webkit-scrollbar { width: 4px; }
-.legend::-webkit-scrollbar-thumb { background: rgba(243, 207, 152, 0.2); border-radius: 4px; }
-
-.legend.open {
-  display: block !important;
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-  pointer-events: auto !important;
-  animation: rise 0.35s cubic-bezier(.2, .8, .2, 1) both;
-}
-
-.legend-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 235, 200, 0.1);
-}
-.legend-header h2 {
-  margin: 0;
-  font-size: 11.5px;
-  color: #f3cf98;
-}
-.legend-close {
-  width: 24px;
-  height: 24px;
-  display: grid;
-  place-items: center;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 50%;
-  color: var(--text);
-  font-size: 12px;
-  line-height: 1;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-.legend-close:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-.legend-close:active {
-  transform: scale(0.9);
-}
-.zones { list-style: none; margin-bottom: 16px; }
-.zones li { display: flex; gap: 12px; align-items: flex-start; padding: 7px 0; }
-.zones li + li { border-top: 1px solid rgba(255, 235, 200, 0.07); }
-.zones b {
-  width: 26px;
-  height: 26px;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  font: 600 13px var(--font-ui);
-  border-radius: 8px;
-  color: #22160c;
-  background: linear-gradient(135deg, #f3cf98, #c98a4b);
-}
-.zones strong { display: block; font-weight: 500; font-size: 14px; }
-.zones span { font-size: 12px; color: var(--muted); }
-.swatches { display: flex; gap: 8px; }
-.swatches i {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: var(--c);
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  transition: transform 0.25s ease;
-  cursor: help;
-}
-.swatches i:hover { transform: scale(1.2); }
 
 /* ---------- Views bar ---------- */
 .views {
@@ -648,22 +528,7 @@ h2 {
     box-shadow: 0 6px 24px rgba(243, 207, 152, 0.45);
   }
 
-  /* Legend toggle & box on mobile */
-  .btn-toggle-legend {
-    left: 10px;
-    bottom: calc(56px + env(safe-area-inset-bottom, 10px));
-    font-size: 11.5px;
-    padding: 7px 12px;
-    z-index: 35;
-  }
-  .legend {
-    left: 10px;
-    right: 10px;
-    bottom: calc(96px + env(safe-area-inset-bottom, 10px));
-    width: auto;
-    max-width: calc(100vw - 20px);
-    max-height: 65vh;
-  }
+
 
   /* Mobile Drawer Backdrop */
   .panel-backdrop {

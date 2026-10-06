@@ -1664,49 +1664,9 @@ function wireUI() {
     panelBackdrop.addEventListener('click', closePanel);
   }
 
-  // Legend controls (Closed by default)
-  const legendBox = document.getElementById('legendBox');
-  const btnToggleLegend = document.getElementById('btnToggleLegend');
-  const btnCloseLegend = document.getElementById('btnCloseLegend');
-  const toggleLegend = document.getElementById('toggleLegend');
-
-  function setLegendOpen(open) {
-    if (legendBox) {
-      if (open) legendBox.classList.add('open');
-      else legendBox.classList.remove('open');
-    }
-    if (btnToggleLegend) {
-      if (open) btnToggleLegend.classList.add('active');
-      else btnToggleLegend.classList.remove('active');
-    }
-    if (toggleLegend) {
-      toggleLegend.checked = open;
-    }
-  }
-
-  // Ensure closed by default on page load
-  setLegendOpen(false);
-
-  if (btnToggleLegend) {
-    btnToggleLegend.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isOpen = legendBox && legendBox.classList.contains('open');
-      setLegendOpen(!isOpen);
-    });
-  }
-
-  if (btnCloseLegend) {
-    btnCloseLegend.addEventListener('click', () => setLegendOpen(false));
-  }
-
-  if (toggleLegend) {
-    toggleLegend.addEventListener('change', (e) => setLegendOpen(e.target.checked));
-  }
-
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       closePanel();
-      setLegendOpen(false);
     }
   });
 

@@ -71,7 +71,6 @@
       <label class="toggle"><input type="checkbox" id="toggleZones" checked /><span class="track"></span>ป้ายชื่อโซน</label>
       <label class="toggle"><input type="checkbox" id="toggleExhibits" checked /><span class="track"></span>จุดจัดแสดง (S1-S6 / P1-P4)</label>
       <label class="toggle"><input type="checkbox" id="toggleTransparent" /><span class="track"></span>ผนังโปร่งใสทะลุ (See-Through / X-Ray)</label>
-      <label class="toggle"><input type="checkbox" id="toggleLegend" /><span class="track"></span>คำอธิบายผังบูธ (Legend)</label>
       <div id="xRayControls" style="display: none; margin: -2px 0 10px 24px; padding: 6px 10px; background: rgba(255,255,255,0.04); border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); font-size: 11px; color: var(--muted);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
           <span>ระดับความจาง:</span>
@@ -125,37 +124,7 @@
       </div>
     </div>
 
-    <!-- Legend Toggle Button (Bottom-left) -->
-    <button id="btnToggleLegend" class="btn-toggle-legend glass" aria-label="Toggle Legend">
-      <span class="legend-icon">ℹ️</span>
-      <span class="legend-label">คำอธิบาย</span>
-    </button>
 
-    <!-- Legend (Closed by default) -->
-    <section class="legend glass" id="legendBox" aria-label="Zones and materials">
-      <div class="legend-header">
-        <h2>ผังบูธปิด & เส้นทางเดิน</h2>
-        <button id="btnCloseLegend" class="legend-close" aria-label="Close Legend">✕</button>
-      </div>
-      <ul class="zones">
-        <li><b>🚪</b><div><strong>เข้าซ้าย · ออกขวา (กว้าง 1.50 m)</strong><span>เส้นทางเดินชม One-Way เข้าห้อง 1 เดินผ่านห้อง 2 ออกห้อง 3</span></div></li>
-        <li><b>📸</b><div><strong>มุมถ่ายรูป (Sofa & Foxy)</strong><span>โซฟานั่งถ่ายรูป พร้อมประติมากรรม Foxy S3 วางข้างๆ และภาพวาด P4</span></div></li>
-        <li><b>🪟</b><div><strong>หน้าต่างส่องชมภายใน (Peek Window)</strong><span>กระจกยาวกลางผนัง ให้คนข้างนอกชำเลืองมองเห็น S2 และงานศิลปะ</span></div></li>
-        <li><b>🏛️</b><div><strong>ผนังกั้นห้อง Asymmetric</strong><span>สลับผนังหน้า-หลัง ไม่สมมาตร เดิน Flow คดเคี้ยวเป็นธรรมชาติ</span></div></li>
-        <li><b>S</b><div><strong>ประติมากรรม Foxy 6 ชิ้น (50 cm)</strong><span>โมเดล 3D Foxy: S1 West · S2 หน้าต่าง · S6 ตู้ขวา · S3 โซฟา · S4, S5 ซุ้มไฟ</span></div></li>
-        <li><b>P</b><div><strong>รูปภาพ 4 รูป (Framed Art)</strong><span>P1 ผนังอิฐ West · P2, P3 ผนังระแนงกลาง · P4 ฉากหลังโซฟา East</span></div></li>
-      </ul>
-      <h2>Material Palette</h2>
-      <div class="swatches">
-        <i style="--c:#b07a45" title="Oak"></i>
-        <i style="--c:#5a3a24" title="Walnut"></i>
-        <i style="--c:#56603f" title="Olive"></i>
-        <i style="--c:#ece3d3" title="Linen"></i>
-        <i style="--c:#c9a25a" title="Brass"></i>
-        <i style="--c:#a4532d" title="Rust"></i>
-        <i style="--c:#d8c8ad" title="Travertine"></i>
-      </div>
-    </section>
 
     <!-- Camera views -->
     <nav class="views glass" id="viewBar" aria-label="Camera views">
