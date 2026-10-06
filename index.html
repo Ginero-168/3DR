@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Warm Wood Living Room — 3D Booth Mockup 15 × 3 m</title>
+  <meta name="description" content="Interactive 3D mockup of a 15 x 3 m exhibition booth styled as a Warm Wood Living Room showroom with furniture, shelving and 50 cm sculpture displays." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600&family=IBM+Plex+Sans+Thai:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="index.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-inner">
+      <div class="loader-mark">MT</div>
+      <p class="loader-title">Maison Terra</p>
+      <p class="loader-sub">กำลังสร้างบูธ 3D…</p>
+      <div class="loader-bar"><span></span></div>
+    </div>
+  </div>
+
+  <main>
+    <div id="scene" aria-label="3D booth viewer"></div>
+
+    <!-- Brand card -->
+    <header class="brand-card glass">
+      <span class="eyebrow">Exhibition Booth · 3D Mockup</span>
+      <h1>Warm Wood <em>Living Room</em></h1>
+      <div class="spec">
+        <span class="chip">กว้าง 15 × ลึก 3 ม.</span>
+        <span class="chip">สูง 3 ม.</span>
+        <span class="chip">Showroom & Gallery</span>
+      </div>
+    </header>
+
+    <!-- Control panel -->
+    <aside class="panel glass" id="controlPanel">
+      <h2>บรรยากาศแสง</h2>
+      <div class="seg" id="lightModes">
+        <button id="mode-golden" data-mode="golden" class="active">Golden Hour</button>
+        <button id="mode-day" data-mode="day">Daylight</button>
+        <button id="mode-night" data-mode="night">Gallery Night</button>
+      </div>
+
+      <h2>การแสดงผล</h2>
+      <label class="toggle"><input type="checkbox" id="toggleDims" checked /><span class="track"></span>แสดงขนาด (Dimensions)</label>
+      <label class="toggle"><input type="checkbox" id="toggleZones" checked /><span class="track"></span>ป้ายชื่อโซน</label>
+      <label class="toggle"><input type="checkbox" id="toggleExhibits" checked /><span class="track"></span>จุดจัดแสดง (S1-S6 / P1-P4)</label>
+      <label class="toggle"><input type="checkbox" id="toggleTransparent" /><span class="track"></span>ผนังโปร่งใสทะลุ (See-Through / X-Ray)</label>
+      <div id="xRayControls" style="display: none; margin: -2px 0 10px 24px; padding: 6px 10px; background: rgba(255,255,255,0.04); border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); font-size: 11px; color: var(--muted);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <span>ระดับความจาง:</span>
+          <span id="xRayOpacityDisplay" style="color: var(--amber); font-weight: 500;">จางมากพิเศษ (3.5%)</span>
+        </div>
+        <input type="range" id="xRayOpacitySlider" min="1" max="15" value="3.5" step="0.5" style="width: 100%; accent-color: var(--amber); cursor: pointer;" />
+      </div>
+      <label class="toggle"><input type="checkbox" id="toggleRotate" /><span class="track"></span>หมุนอัตโนมัติ</label>
+
+      <h2>โมเดล 3D ของคุณ</h2>
+      <input type="file" id="fileUpload" accept=".glb,.gltf,.obj,.fbx" style="display:none;" />
+      <button class="btn-secondary" id="btnUpload">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v12m0-12l-4 4m4-4l4 4M4 17v2a1 1 0 001 1h14a1 1 0 001-1v-2"/></svg>
+        + นำเข้าไฟล์ 3D (.glb, .fbx, .obj)
+      </button>
+
+      <div id="customModelTools" class="custom-tools" style="display: none;">
+        <div class="tool-row">
+          <label>การปรับตำแหน่ง:</label>
+          <div class="seg seg-mini" id="gizmoModes">
+            <button id="gizmo-translate" data-mode="translate" class="active">เลื่อน</button>
+            <button id="gizmo-rotate" data-mode="rotate">หมุน</button>
+          </div>
+        </div>
+        <div class="tool-row">
+          <label>ความสูง:</label>
+          <span id="heightDisplay" class="val-badge">50 cm</span>
+        </div>
+        <div class="tool-slider">
+          <input type="range" id="scaleSlider" min="10" max="150" value="50" step="1" />
+        </div>
+        <div class="preset-btns">
+          <button class="btn-chip" id="btnSet50cm">ตั้ง 50 ซม.</button>
+          <button class="btn-chip" id="btnPlacePedestal">ย้ายไปแท่นโชว์</button>
+        </div>
+        <button class="btn-danger" id="btnDeleteModel">ลบโมเดลที่เลือก</button>
+      </div>
+
+      <button class="btn-primary" id="btnShot">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        บันทึกภาพ PNG
+      </button>
+    </aside>
+
+    <!-- Drag & Drop overlay -->
+    <div id="dropZone" class="drop-overlay">
+      <div class="drop-box">
+        <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 4v12m0-12l-4 4m4-4l4 4M4 17v2a1 1 0 001 1h14a1 1 0 001-1v-2"/></svg>
+        <p>วางไฟล์โมเดล 3D ที่นี่</p>
+        <span>รองรับ .GLB, .FBX, .OBJ, .GLTF (ปรับสเกล 50 ซม. ได้ทันที)</span>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <section class="legend glass" aria-label="Zones and materials">
+      <h2>ผังบูธปิด & เส้นทางเดิน</h2>
+      <ul class="zones">
+        <li><b>🚪</b><div><strong>เข้าซ้าย · ออกขวา (กว้าง 1.50 m)</strong><span>เส้นทางเดินชม One-Way เข้าห้อง 1 เดินผ่านห้อง 2 ออกห้อง 3</span></div></li>
+        <li><b>📸</b><div><strong>มุมถ่ายรูป (Sofa & S3)</strong><span>โซฟานั่งถ่ายรูป พร้อมประติมากรรม S3 วางข้างๆ และภาพวาด P4</span></div></li>
+        <li><b>🪟</b><div><strong>หน้าต่างส่องชมภายใน (Peek Window)</strong><span>กระจกยาวกลางผนัง ให้คนข้างนอกชำเลืองมองเห็น S2 และงานศิลปะ</span></div></li>
+        <li><b>🏛️</b><div><strong>ผนังกั้นห้อง Asymmetric</strong><span>สลับผนังหน้า-หลัง ไม่สมมาตร เดิน Flow คดเคี้ยวเป็นธรรมชาติ</span></div></li>
+        <li><b>S</b><div><strong>ประติมากรรม 6 ชิ้น (50 cm)</strong><span>S1 ห้อง West · S2 กลางหน้าต่าง · S6 ตู้ขวา · S3 มุมโซฟา · S4, S5 ซุ้มไฟ</span></div></li>
+        <li><b>P</b><div><strong>รูปภาพ 4 รูป (Framed Art)</strong><span>P1 ผนังอิฐ West · P2, P3 ผนังระแนงกลาง · P4 ฉากหลังโซฟา East</span></div></li>
+      </ul>
+      <h2>Material Palette</h2>
+      <div class="swatches">
+        <i style="--c:#b07a45" title="Oak"></i>
+        <i style="--c:#5a3a24" title="Walnut"></i>
+        <i style="--c:#56603f" title="Olive"></i>
+        <i style="--c:#ece3d3" title="Linen"></i>
+        <i style="--c:#c9a25a" title="Brass"></i>
+        <i style="--c:#a4532d" title="Rust"></i>
+        <i style="--c:#d8c8ad" title="Travertine"></i>
+      </div>
+    </section>
+
+    <!-- Camera views -->
+    <nav class="views glass" id="viewBar" aria-label="Camera views">
+      <button id="view-overview" data-view="overview" class="active">ภาพรวม</button>
+      <button id="view-front" data-view="front">ด้านหน้าตรง</button>
+      <button id="view-photospot" data-view="photospot">📸 มุมถ่ายรูป (Sofa)</button>
+      <button id="view-entrance" data-view="entrance">🚪 ทางเข้าซ้าย (1.5m)</button>
+      <button id="view-window" data-view="window">🪟 ส่องผ่านหน้าต่าง</button>
+      <button id="view-exit" data-view="exit">🚪 ทางออกขวา (1.5m)</button>
+      <button id="view-walkthrough" data-view="walkthrough">🚶 ทางเดินในห้อง</button>
+      <button id="view-room1" data-view="room1">ห้อง 1 · West</button>
+      <button id="view-room2" data-view="room2">ห้อง 2 · Center</button>
+      <button id="view-room3" data-view="room3">ห้อง 3 · East</button>
+      <button id="view-sculptures" data-view="sculptures">6 ประติมากรรม</button>
+      <button id="view-paintings" data-view="paintings">4 รูปภาพ</button>
+      <button id="view-top" data-view="top">มุมบน (Floor Plan)</button>
+    </nav>
+
+    <div class="hint">ลาก: หมุน · Scroll: ซูม · คลิกขวา: เลื่อน</div>
+  </main>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
