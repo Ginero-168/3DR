@@ -71,6 +71,7 @@
       <label class="toggle"><input type="checkbox" id="toggleZones" checked /><span class="track"></span>ป้ายชื่อโซน</label>
       <label class="toggle"><input type="checkbox" id="toggleExhibits" checked /><span class="track"></span>จุดจัดแสดง (S1-S6 / P1-P4)</label>
       <label class="toggle"><input type="checkbox" id="toggleTransparent" /><span class="track"></span>ผนังโปร่งใสทะลุ (See-Through / X-Ray)</label>
+      <label class="toggle"><input type="checkbox" id="toggleLegend" /><span class="track"></span>คำอธิบายผังบูธ (Legend)</label>
       <div id="xRayControls" style="display: none; margin: -2px 0 10px 24px; padding: 6px 10px; background: rgba(255,255,255,0.04); border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); font-size: 11px; color: var(--muted);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
           <span>ระดับความจาง:</span>
@@ -124,9 +125,18 @@
       </div>
     </div>
 
-    <!-- Legend -->
-    <section class="legend glass" aria-label="Zones and materials">
-      <h2>ผังบูธปิด & เส้นทางเดิน</h2>
+    <!-- Legend Toggle Button (Bottom-left) -->
+    <button id="btnToggleLegend" class="btn-toggle-legend glass" aria-label="Toggle Legend">
+      <span class="legend-icon">ℹ️</span>
+      <span class="legend-label">คำอธิบาย</span>
+    </button>
+
+    <!-- Legend (Closed by default) -->
+    <section class="legend glass" id="legendBox" aria-label="Zones and materials">
+      <div class="legend-header">
+        <h2>ผังบูธปิด & เส้นทางเดิน</h2>
+        <button id="btnCloseLegend" class="legend-close" aria-label="Close Legend">✕</button>
+      </div>
       <ul class="zones">
         <li><b>🚪</b><div><strong>เข้าซ้าย · ออกขวา (กว้าง 1.50 m)</strong><span>เส้นทางเดินชม One-Way เข้าห้อง 1 เดินผ่านห้อง 2 ออกห้อง 3</span></div></li>
         <li><b>📸</b><div><strong>มุมถ่ายรูป (Sofa & Foxy)</strong><span>โซฟานั่งถ่ายรูป พร้อมประติมากรรม Foxy S3 วางข้างๆ และภาพวาด P4</span></div></li>
