@@ -27,8 +27,15 @@ const FY = 0.1;      // platform top height
 const SCULPT_H = 0.5; // sculpture height (50 cm)
 
 const V2 = THREE.Vector2;
-const V3 = THREE.Vector3;
 const rand = (a = 0, b = 1) => a + Math.random() * (b - a);
+
+const ART_SOURCES = {
+  art1: '834201435_1106636995178112_873089852634520844_n.jpeg',
+  art2: '830834694_1786672265795135_3184531431469431023_n.jpeg',
+  art3: '830513828_1410008468011031_6845268736765103662_n.jpeg',
+  art4: '830236695_1092868896720615_696399951761031174_n.jpeg',
+};
+const artMeshes = [];
 
 // ---------------------------------------------------------------------------
 // Renderer / scene / camera
@@ -175,6 +182,37 @@ function woodTex(base, dark, light) {
   });
 }
 
+function configureTexture(tex) {
+  if (!tex) return tex;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.generateMipmaps = true;
+  tex.minFilter = THREE.LinearMipmapLinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  if (renderer && renderer.capabilities) {
+    tex.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
+  }
+  tex.needsUpdate = true;
+  return tex;
+}
+
+function loadArtTexture(url) {
+  const loader = new THREE.TextureLoader();
+  return new Promise((resolve) => {
+    loader.load(
+      url,
+      (tex) => {
+        configureTexture(tex);
+        resolve(tex);
+      },
+      undefined,
+      (err) => {
+        console.warn('Could not load artwork texture:', url, err);
+        resolve(null);
+      }
+    );
+  });
+}
+
 const TEX = {};
 function buildTextures() {
   // Wide oak plank floor — canvas represents 2 m × 2 m
@@ -300,66 +338,74 @@ function buildTextures() {
     noise(g, w, h, 20000, ['#000000', '#5a4a3e'], [1, 2], [0.05, 0.15]);
   });
 
-  // 4 Fine Art Canvas Textures (Tuscan Earth, Minimalist Wave, Botanical Balance, Horizon Dunes)
-  TEX.art1 = canvasTex(512, 680, (g, w, h) => {
-    g.fillStyle = '#f2e8d9'; g.fillRect(0, 0, w, h);
-    g.fillStyle = '#b56138';
-    g.beginPath(); g.arc(w * 0.45, h * 0.52, w * 0.35, Math.PI, 0); g.lineTo(w * 0.8, h); g.lineTo(w * 0.1, h); g.fill();
-    g.fillStyle = '#db9c68';
-    g.beginPath(); g.arc(w * 0.65, h * 0.3, w * 0.18, 0, Math.PI * 2); g.fill();
-    g.fillStyle = '#5c6440';
-    g.beginPath(); g.arc(w * 0.32, h * 0.72, w * 0.2, 0, Math.PI * 2); g.fill();
-    noise(g, w, h, 8000, ['#8a7558', '#ffffff'], [1, 2]);
-  });
+  // 4 Fine Art Canvas Textures (Fallbacks if image files fail to load)
+  if (!TEX.art1) {
+    TEX.art1 = canvasTex(512, 680, (g, w, h) => {
+      g.fillStyle = '#f2e8d9'; g.fillRect(0, 0, w, h);
+      g.fillStyle = '#b56138';
+      g.beginPath(); g.arc(w * 0.45, h * 0.52, w * 0.35, Math.PI, 0); g.lineTo(w * 0.8, h); g.lineTo(w * 0.1, h); g.fill();
+      g.fillStyle = '#db9c68';
+      g.beginPath(); g.arc(w * 0.65, h * 0.3, w * 0.18, 0, Math.PI * 2); g.fill();
+      g.fillStyle = '#5c6440';
+      g.beginPath(); g.arc(w * 0.32, h * 0.72, w * 0.2, 0, Math.PI * 2); g.fill();
+      noise(g, w, h, 8000, ['#8a7558', '#ffffff'], [1, 2]);
+    });
+  }
 
-  TEX.art2 = canvasTex(512, 680, (g, w, h) => {
-    g.fillStyle = '#ece3d2'; g.fillRect(0, 0, w, h);
-    g.fillStyle = '#4a3b32';
-    g.beginPath();
-    g.moveTo(w * 0.15, h * 0.15);
-    g.bezierCurveTo(w * 0.85, h * 0.2, w * 0.2, h * 0.7, w * 0.85, h * 0.85);
-    g.bezierCurveTo(w * 0.4, h * 0.95, w * 0.05, h * 0.5, w * 0.15, h * 0.15);
-    g.fill();
-    g.fillStyle = '#c98a5b';
-    g.beginPath(); g.arc(w * 0.65, h * 0.45, w * 0.15, 0, Math.PI * 2); g.fill();
-    noise(g, w, h, 8000, ['#6b5a45', '#ffffff'], [1, 2]);
-  });
-
-  TEX.art3 = canvasTex(512, 680, (g, w, h) => {
-    g.fillStyle = '#f2ece0'; g.fillRect(0, 0, w, h);
-    g.fillStyle = '#656e4a';
-    g.beginPath(); g.ellipse(w * 0.45, h * 0.4, w * 0.3, h * 0.22, -0.2, 0, Math.PI * 2); g.fill();
-    g.fillStyle = '#a4532d';
-    g.fillRect(w * 0.2, h * 0.65, w * 0.6, h * 0.18);
-    g.fillStyle = '#dbb27a';
-    g.beginPath(); g.arc(w * 0.5, h * 0.22, w * 0.12, 0, Math.PI * 2); g.fill();
-    noise(g, w, h, 8000, ['#7a6850', '#ffffff'], [1, 2]);
-  });
-
-  TEX.art4 = canvasTex(800, 512, (g, w, h) => {
-    g.fillStyle = '#ede5d5'; g.fillRect(0, 0, w, h);
-    const bands = [
-      ['#cca37b', 0.4, 0.6],
-      ['#5d6849', 0.55, 0.75],
-      ['#a65836', 0.7, 0.9],
-      ['#3b3027', 0.82, 1.0],
-    ];
-    for (const [col, y0, y1] of bands) {
-      g.fillStyle = col;
+  if (!TEX.art2) {
+    TEX.art2 = canvasTex(512, 680, (g, w, h) => {
+      g.fillStyle = '#ece3d2'; g.fillRect(0, 0, w, h);
+      g.fillStyle = '#4a3b32';
       g.beginPath();
-      g.moveTo(0, h * y0);
-      for (let x = 0; x <= w; x += 20) {
-        const ny = h * y0 + Math.sin(x * 0.015) * 18 + Math.cos(x * 0.03) * 10;
-        g.lineTo(x, ny);
-      }
-      g.lineTo(w, h * y1);
-      g.lineTo(0, h * y1);
+      g.moveTo(w * 0.15, h * 0.15);
+      g.bezierCurveTo(w * 0.85, h * 0.2, w * 0.2, h * 0.7, w * 0.85, h * 0.85);
+      g.bezierCurveTo(w * 0.4, h * 0.95, w * 0.05, h * 0.5, w * 0.15, h * 0.15);
       g.fill();
-    }
-    g.fillStyle = '#e8be78';
-    g.beginPath(); g.arc(w * 0.65, h * 0.3, h * 0.18, 0, Math.PI * 2); g.fill();
-    noise(g, w, h, 10000, ['#7a6850', '#ffffff'], [1, 2]);
-  });
+      g.fillStyle = '#c98a5b';
+      g.beginPath(); g.arc(w * 0.65, h * 0.45, w * 0.15, 0, Math.PI * 2); g.fill();
+      noise(g, w, h, 8000, ['#6b5a45', '#ffffff'], [1, 2]);
+    });
+  }
+
+  if (!TEX.art3) {
+    TEX.art3 = canvasTex(512, 680, (g, w, h) => {
+      g.fillStyle = '#f2ece0'; g.fillRect(0, 0, w, h);
+      g.fillStyle = '#656e4a';
+      g.beginPath(); g.ellipse(w * 0.45, h * 0.4, w * 0.3, h * 0.22, -0.2, 0, Math.PI * 2); g.fill();
+      g.fillStyle = '#a4532d';
+      g.fillRect(w * 0.2, h * 0.65, w * 0.6, h * 0.18);
+      g.fillStyle = '#dbb27a';
+      g.beginPath(); g.arc(w * 0.5, h * 0.22, w * 0.12, 0, Math.PI * 2); g.fill();
+      noise(g, w, h, 8000, ['#7a6850', '#ffffff'], [1, 2]);
+    });
+  }
+
+  if (!TEX.art4) {
+    TEX.art4 = canvasTex(800, 512, (g, w, h) => {
+      g.fillStyle = '#ede5d5'; g.fillRect(0, 0, w, h);
+      const bands = [
+        ['#cca37b', 0.4, 0.6],
+        ['#5d6849', 0.55, 0.75],
+        ['#a65836', 0.7, 0.9],
+        ['#3b3027', 0.82, 1.0],
+      ];
+      for (const [col, y0, y1] of bands) {
+        g.fillStyle = col;
+        g.beginPath();
+        g.moveTo(0, h * y0);
+        for (let x = 0; x <= w; x += 20) {
+          const ny = h * y0 + Math.sin(x * 0.015) * 18 + Math.cos(x * 0.03) * 10;
+          g.lineTo(x, ny);
+        }
+        g.lineTo(w, h * y1);
+        g.lineTo(0, h * y1);
+        g.fill();
+      }
+      g.fillStyle = '#e8be78';
+      g.beginPath(); g.arc(w * 0.65, h * 0.3, h * 0.18, 0, Math.PI * 2); g.fill();
+      noise(g, w, h, 10000, ['#7a6850', '#ffffff'], [1, 2]);
+    });
+  }
   TEX.art = TEX.art1;
 }
 
@@ -414,10 +460,10 @@ function buildMaterials() {
   M.led = glow(0xffdfb0, 1.0);
   M.bulb = glow(0xffd699, 1.4);
   M.flame = glow(0xffa64a, 1.5);
-  M.art1 = std(0xffffff, 0.9, 0, { map: TEX.art1 });
-  M.art2 = std(0xffffff, 0.9, 0, { map: TEX.art2 });
-  M.art3 = std(0xffffff, 0.9, 0, { map: TEX.art3 });
-  M.art4 = std(0xffffff, 0.9, 0, { map: TEX.art4 });
+  M.art1 = std(0xffffff, 0.85, 0, { map: TEX.art1 });
+  M.art2 = std(0xffffff, 0.85, 0, { map: TEX.art2 });
+  M.art3 = std(0xffffff, 0.85, 0, { map: TEX.art3 });
+  M.art4 = std(0xffffff, 0.85, 0, { map: TEX.art4 });
   M.art = M.art1;
   M.pillow = {
     rust: std(0xa4532d, 0.95, 0, { map: TEX.fabric }),
@@ -531,7 +577,7 @@ function makeFruitBowl() {
   return g;
 }
 
-function makeFramedPicture(w, h, mat) {
+function makeFramedPicture(w, h, mat, artKey = '', viewPos = null) {
   const g = new THREE.Group();
   const frameD = 0.04, frameBorder = 0.05;
   // Outer frame
@@ -539,7 +585,13 @@ function makeFramedPicture(w, h, mat) {
   // Gold inner reveal
   mesh(B(w + 0.015, h + 0.015, frameD + 0.005), M.brassSatin, 0, 0, 0, g);
   // Canvas
-  mesh(new THREE.PlaneGeometry(w, h), mat, 0, 0, frameD / 2 + 0.004, g, false, true);
+  const canvasMesh = mesh(new THREE.PlaneGeometry(w, h), mat, 0, 0, frameD / 2 + 0.004, g, false, true);
+  if (artKey) {
+    canvasMesh.userData.isArt = true;
+    canvasMesh.userData.artKey = artKey;
+    canvasMesh.userData.viewPos = viewPos;
+    artMeshes.push(canvasMesh);
+  }
   // Frame shadow reveal
   mesh(B(w + frameBorder * 2 + 0.02, h + frameBorder * 2 + 0.02, 0.005), std(0x1a140e, 0.95), 0, 0, -frameD / 2, g, false, false);
 
@@ -1057,9 +1109,9 @@ function buildKitchen() {
   const brick = std(0xffffff, 0.9, 0, { map: texRepeat(TEX.brick, 2, 3), bumpMap: texRepeat(TEX.brickBump, 2, 3), bumpScale: 2 });
   registerWall(mesh(B(4.8, H, 0.03), brick, cx, FY + H / 2, 0.015));
 
-  // --- Painting 1 (P1) on the brick wall ---
-  place(makeFramedPicture(0.95, 1.25, M.art1), -5.80, FY + 1.80, 0.04);
-  addExhibitBadge('P1 · ภาพวาด 1 (0.95×1.25 m)', new V3(-5.80, FY + 2.65, 0.15), true);
+  // --- Painting 1 (P1) on the brick wall (0.95 × 1.27 m) ---
+  place(makeFramedPicture(0.95, 1.27, M.art1, 'art1', { pos: [-5.50, FY + 1.80, 2.25], target: [-5.50, FY + 1.80, 0.04] }), -5.50, FY + 1.80, 0.04);
+  addExhibitBadge('P1 · ภาพวาด 1 (0.95×1.27 m)', new V3(-5.50, FY + 2.70, 0.15), true);
 
   // --- Sculpture 1 (S1) on Travertine Pedestal in Room 1 ---
   const ped1X = -4.20, ped1Z = 1.15, ped1H = 0.90;
@@ -1080,23 +1132,23 @@ function buildKitchen() {
   fill1.position.set(ped1X - 0.25, FY + ped1H + 0.35, ped1Z + 0.65);
   booth.add(fill1);
 
-  // Floating oak shelves on left section (x = -6.4)
+  // Floating oak shelves on left section (x = -6.65, width 1.10)
   const shelfY = [FY + 1.45, FY + 2.15];
   shelfY.forEach((y) => {
-    mesh(B(1.6, 0.04, 0.26), M.oak, -6.40, y, 0.15);
-    mesh(B(1.5, 0.008, 0.015), M.led, -6.40, y - 0.025, 0.26, booth, false, false);
+    mesh(B(1.1, 0.04, 0.26), M.oak, -6.65, y, 0.15);
+    mesh(B(1.0, 0.008, 0.015), M.led, -6.65, y - 0.025, 0.26, booth, false, false);
   });
-  place(makePlant({ potR: 0.07, potH: 0.12, tree: false, crown: [0.12, 0.1, 0.12], leaves: 45, leafSize: 0.04 }), -6.80, shelfY[0] + 0.02, 0.15);
-  place(makeBowl(0.10), -6.40, shelfY[0] + 0.02, 0.15);
-  place(makeBooks(3), -6.65, shelfY[1] + 0.02, 0.15);
-  place(makeBowl(0.08, M.walnut), -6.15, shelfY[1] + 0.02, 0.15);
+  place(makePlant({ potR: 0.07, potH: 0.12, tree: false, crown: [0.12, 0.1, 0.12], leaves: 45, leafSize: 0.04 }), -6.95, shelfY[0] + 0.02, 0.15);
+  place(makeBowl(0.10), -6.45, shelfY[0] + 0.02, 0.15);
+  place(makeBooks(3), -6.80, shelfY[1] + 0.02, 0.15);
+  place(makeBowl(0.08, M.walnut), -6.35, shelfY[1] + 0.02, 0.15);
 
   // Slim wall base cabinet along the back wall
-  const cabW = 1.8, cabX = -4.20;
+  const cabW = 1.6, cabX = -4.10;
   mesh(B(cabW, 0.82, 0.40), M.olive, cabX, FY + 0.41, 0.22);
   mesh(B(cabW + 0.04, 0.04, 0.44), M.marble, cabX, FY + 0.84, 0.22);
-  place(makeBouquet(), cabX + 0.40, FY + 0.87, 0.22);
-  place(makeFruitBowl(), cabX - 0.40, FY + 0.87, 0.22);
+  place(makeBouquet(), cabX + 0.35, FY + 0.87, 0.22);
+  place(makeFruitBowl(), cabX - 0.35, FY + 0.87, 0.22);
 
   // Overhead beam + brass dome pendants
   mesh(B(4.6, 0.10, 0.10), M.oak, cx, FY + H - 0.14, 1.4);
@@ -1139,13 +1191,13 @@ function buildLiving() {
   mesh(B(4.8, 0.01, 0.01), M.led, 0, FY + 0.01, 0.07, booth, false, false);
   mesh(B(4.8, 0.01, 0.01), M.led, 0, FY + H - 0.01, 0.07, booth, false, false);
 
-  // --- Painting 2 (P2) on left slat wall ---
-  place(makeFramedPicture(0.95, 1.25, M.art2), -1.35, FY + 1.80, 0.06);
-  addExhibitBadge('P2 · ภาพวาด 2 (0.95×1.25 m)', new V3(-1.35, FY + 2.65, 0.18), true);
+  // --- Painting 2 (P2) on left slat wall (0.95 × 1.27 m) ---
+  place(makeFramedPicture(0.95, 1.27, M.art2, 'art2', { pos: [-1.35, FY + 1.80, 2.25], target: [-1.35, FY + 1.80, 0.06] }), -1.35, FY + 1.80, 0.06);
+  addExhibitBadge('P2 · ภาพวาด 2 (0.95×1.27 m)', new V3(-1.35, FY + 2.70, 0.18), true);
 
-  // --- Painting 3 (P3) on right slat wall ---
-  place(makeFramedPicture(0.95, 1.25, M.art3), 0.85, FY + 1.80, 0.06);
-  addExhibitBadge('P3 · ภาพวาด 3 (0.95×1.25 m)', new V3(0.85, FY + 2.65, 0.18), true);
+  // --- Painting 3 (P3) on right slat wall (0.95 × 1.27 m) ---
+  place(makeFramedPicture(0.95, 1.27, M.art3, 'art3', { pos: [0.85, FY + 1.80, 2.25], target: [0.85, FY + 1.80, 0.06] }), 0.85, FY + 1.80, 0.06);
+  addExhibitBadge('P3 · ภาพวาด 3 (0.95×1.27 m)', new V3(0.85, FY + 2.70, 0.18), true);
 
   // --- Sculpture 2 (S2) on the Showcase Pedestal behind Peek Window ---
   const foyerPedX = 0, foyerPedZ = 1.65, foyerPedH = 0.95;
@@ -1259,9 +1311,9 @@ function buildGallery() {
   const sofaX = 5.15, sofaZ = 0.70;
   makeSofa(sofaX, sofaZ, 0);
 
-  // Centerpiece Painting P4 (1.40 × 0.90 m) framed on the wall behind the sofa
-  place(makeFramedPicture(1.40, 0.90, M.art4), sofaX, FY + 1.95, 0.04);
-  addExhibitBadge('P4 · ภาพวาด 4 (1.40×0.90 m)', new V3(sofaX, FY + 2.65, 0.16), true);
+  // Centerpiece Painting P4 (1.40 × 1.05 m) framed on the wall behind the sofa
+  place(makeFramedPicture(1.40, 1.05, M.art4, 'art4', { pos: [sofaX, FY + 1.95, 2.45], target: [sofaX, FY + 1.95, 0.04] }), sofaX, FY + 1.95, 0.04);
+  addExhibitBadge('P4 · ภาพวาด 4 (1.40×1.05 m)', new V3(sofaX, FY + 2.75, 0.16), true);
 
   // Companion Sculpture S3 on Travertine Pedestal placed right next to sofa left arm!
   const ped3X = 3.90, ped3Z = 0.70, ped3H = 0.76;
@@ -1455,10 +1507,18 @@ const VIEWS = {
 let tween = null;
 function flyTo(name) {
   const v = VIEWS[name];
+  if (!v) return;
   tween = {
     t: 0, dur: 1.6,
     p0: camera.position.clone(), t0: controls.target.clone(),
     p1: new V3(...v.pos), t1: new V3(...v.target),
+  };
+}
+function flyToCustom(pos, target, dur = 1.6) {
+  tween = {
+    t: 0, dur,
+    p0: camera.position.clone(), t0: controls.target.clone(),
+    p1: new V3(...pos), t1: new V3(...target),
   };
 }
 const ease = (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
@@ -1505,7 +1565,15 @@ function setupCustomObjectSystem() {
       }
       if (root.userData.isCustom) {
         selectCustomObject(root);
+        return;
       }
+    }
+
+    // Interactive art click: zoom directly in front of the artwork
+    const artHits = raycaster.intersectObjects(artMeshes, false);
+    if (artHits.length > 0 && artHits[0].object.userData.viewPos) {
+      const vp = artHits[0].object.userData.viewPos;
+      flyToCustom(vp.pos, vp.target);
     }
   });
 }
@@ -1703,11 +1771,27 @@ function wireUI() {
       setMode(btn.dataset.mode);
     });
   });
+  let paintingViewIdx = 0;
+  const paintingTourViews = [
+    { pos: [0, 1.9, 6.8], target: [0, 1.65, 0.2] },                               // Center Gallery View
+    { pos: [-5.50, FY + 1.80, 2.25], target: [-5.50, FY + 1.80, 0.04] },         // P1 close-up
+    { pos: [-1.35, FY + 1.80, 2.25], target: [-1.35, FY + 1.80, 0.06] },         // P2 close-up
+    { pos: [0.85, FY + 1.80, 2.25], target: [0.85, FY + 1.80, 0.06] },           // P3 close-up
+    { pos: [5.15, FY + 1.95, 2.45], target: [5.15, FY + 1.95, 0.04] },           // P4 close-up
+  ];
+
   document.querySelectorAll('#viewBar button').forEach((btn) => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#viewBar button').forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
-      flyTo(btn.dataset.view);
+      if (btn.dataset.view === 'paintings') {
+        const pv = paintingTourViews[paintingViewIdx % paintingTourViews.length];
+        paintingViewIdx++;
+        flyToCustom(pv.pos, pv.target);
+      } else {
+        paintingViewIdx = 0;
+        flyTo(btn.dataset.view);
+      }
       if (window.innerWidth <= 900) {
         closePanel();
       }
@@ -1877,17 +1961,27 @@ window.addEventListener('resize', () => {
 // ---------------------------------------------------------------------------
 async function init() {
   const loaderSub = document.querySelector('.loader-sub');
-  if (loaderSub) loaderSub.textContent = 'กำลังโหลดโมเดลประติมากรรม Foxy.glb...';
+  if (loaderSub) loaderSub.textContent = 'กำลังโหลดโมเดลประติมากรรมและภาพวาดศิลปะ...';
 
   try {
-    await Promise.all([
+    const [loadedArt1, loadedArt2, loadedArt3, loadedArt4] = await Promise.all([
+      loadArtTexture(ART_SOURCES.art1),
+      loadArtTexture(ART_SOURCES.art2),
+      loadArtTexture(ART_SOURCES.art3),
+      loadArtTexture(ART_SOURCES.art4),
       document.fonts.load('600 64px "Cormorant Garamond"'),
       document.fonts.load('400 32px "Outfit"'),
       loadFoxyModel((pct) => {
         if (loaderSub) loaderSub.textContent = `กำลังโหลดโมเดลประติมากรรม Foxy ${pct}%...`;
       }),
     ]);
-  } catch (e) { /* fall back to system fonts */ }
+
+    if (loadedArt1) TEX.art1 = loadedArt1;
+    if (loadedArt2) TEX.art2 = loadedArt2;
+    if (loadedArt3) TEX.art3 = loadedArt3;
+    if (loadedArt4) TEX.art4 = loadedArt4;
+    TEX.art = TEX.art1;
+  } catch (e) { /* fall back */ }
 
   if (loaderSub) loaderSub.textContent = 'กำลังจัดเตรียมพื้นที่จัดแสดง...';
 
