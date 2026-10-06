@@ -676,13 +676,19 @@ function loadFoxyModel(onProgress) {
       (gltf) => {
         try {
           const root = gltf.scene || gltf.scenes[0];
-          root.rotation.y = Math.PI; // Face forward (+Z towards visitors)
+          // In Foxy.glb, +Z is naturally the front (face, eyes, and envelope flap)
+          root.rotation.y = 0;
           root.traverse((child) => {
             if (child.isMesh) {
               child.castShadow = true;
               child.receiveShadow = true;
               if (child.material) {
-                child.material.envMapIntensity = 0.85;
+                // Enhance vibrancy and responsiveness to lighting
+                child.material.envMapIntensity = 1.35;
+                child.material.roughness = Math.min(child.material.roughness, 0.60);
+                if (child.material.metalness > 0.35) {
+                  child.material.metalness = 0.22; // diffuse reflection responds brightly to spotlights
+                }
                 child.material.needsUpdate = true;
               }
             }
@@ -1059,14 +1065,20 @@ function buildKitchen() {
   const ped1X = -4.20, ped1Z = 1.15, ped1H = 0.90;
   mesh(B(0.44, ped1H, 0.44, 0.01), M.travertine, ped1X, FY + ped1H / 2, ped1Z);
   mesh(B(0.40, 0.025, 0.40), M.basalt, ped1X, FY + 0.012, ped1Z);
-  place(nextSculpture(), ped1X, FY + ped1H, ped1Z, booth, 0.2);
+  // Foxy faces towards the entrance walkway to welcome incoming visitors
+  place(nextSculpture(), ped1X, FY + ped1H, ped1Z, booth, -0.35);
   addExhibitBadge('S1 · ประติมากรรม 1 — Foxy (50 cm)', new V3(ped1X, FY + ped1H + SCULPT_H + 0.15, ped1Z));
 
-  // Spotlight overhead focused on S1
-  const spot1 = addAccent(new THREE.SpotLight(0xffe2bf, 5.0, 4.5, 0.28, 0.4, 2), 5.0);
-  spot1.position.set(ped1X, FY + H - 0.20, ped1Z + 0.5);
+  // High-intensity spotlight from front-top angled onto Foxy S1
+  const spot1 = addAccent(new THREE.SpotLight(0xfff2df, 7.5, 5.0, 0.38, 0.5, 2), 7.5);
+  spot1.position.set(ped1X - 0.15, FY + H - 0.15, ped1Z + 0.75);
   spot1.target.position.set(ped1X, FY + ped1H + 0.25, ped1Z);
   booth.add(spot1, spot1.target);
+
+  // Soft warm fill light directly illuminating Foxy's face and envelope
+  const fill1 = addAccent(new THREE.PointLight(0xffe8ce, 2.5, 2.8, 2), 2.5);
+  fill1.position.set(ped1X - 0.25, FY + ped1H + 0.35, ped1Z + 0.65);
+  booth.add(fill1);
 
   // Floating oak shelves on left section (x = -6.4)
   const shelfY = [FY + 1.45, FY + 2.15];
@@ -1139,14 +1151,20 @@ function buildLiving() {
   const foyerPedX = 0, foyerPedZ = 1.65, foyerPedH = 0.95;
   mesh(B(0.46, foyerPedH, 0.46, 0.01), M.travertine, foyerPedX, FY + foyerPedH / 2, foyerPedZ);
   mesh(B(0.42, 0.025, 0.42), M.basalt, foyerPedX, FY + 0.012, foyerPedZ);
-  place(nextSculpture(), foyerPedX, FY + foyerPedH, foyerPedZ, booth, 0);
+  // Foxy faces straight forward directly through the peek window towards outside visitors!
+  place(nextSculpture(), foyerPedX, FY + foyerPedH, foyerPedZ, booth, 0.0);
   addExhibitBadge('S2 · ประติมากรรม 2 — Foxy (50 cm)', new V3(foyerPedX, FY + foyerPedH + SCULPT_H + 0.15, foyerPedZ));
 
-  // Spotlight overhead focused on S2
-  const spot2 = addAccent(new THREE.SpotLight(0xffe4c8, 6.0, 5, 0.32, 0.4, 2), 6.0);
-  spot2.position.set(0, FY + H - 0.20, foyerPedZ + 0.35);
+  // Front Key Spotlight shining right through window onto Foxy's face
+  const spot2 = addAccent(new THREE.SpotLight(0xfff5e6, 8.5, 5.5, 0.38, 0.5, 2), 8.5);
+  spot2.position.set(0, FY + H - 0.15, foyerPedZ + 0.85);
   spot2.target.position.set(0, FY + foyerPedH + 0.25, foyerPedZ);
   booth.add(spot2, spot2.target);
+
+  // Dedicated fill light on S2 showcase pedestal
+  const fill2 = addAccent(new THREE.PointLight(0xffebd2, 3.0, 3.2, 2), 3.0);
+  fill2.position.set(0, FY + foyerPedH + 0.35, foyerPedZ + 0.70);
+  booth.add(fill2);
 
   // Subtle architectural brass inlay border on the floor defining the gallery walkway
   mesh(B(4.8, 0.003, 0.015), M.brassSatin, 0, FY + 0.002, 0.45, booth, false, false);
@@ -1158,13 +1176,18 @@ function buildLiving() {
   const credX = 1.80, credZ = 0.38, credH = 0.58;
   mesh(B(1.2, credH, 0.36, 0.01), M.walnut, credX, FY + credH / 2, credZ);
   mesh(B(1.24, 0.03, 0.38, 0.005), M.travertine, credX, FY + credH + 0.015, credZ);
-  place(nextSculpture(), credX, FY + credH + 0.03, credZ, booth, rand(-0.3, 0.3));
+  // Foxy faces slightly into the room walkway
+  place(nextSculpture(), credX, FY + credH + 0.03, credZ, booth, -0.15);
   addExhibitBadge('S6 · ประติมากรรม 6 — Foxy (50 cm)', new V3(credX, FY + credH + SCULPT_H + 0.15, credZ));
 
-  const spot6 = addAccent(new THREE.SpotLight(0xffe2bf, 4.5, 5, 0.28, 0.4, 2), 4.5);
-  spot6.position.set(credX, FY + H - 0.2, 0.75);
+  const spot6 = addAccent(new THREE.SpotLight(0xfff2df, 7.0, 5.0, 0.38, 0.5, 2), 7.0);
+  spot6.position.set(credX, FY + H - 0.15, credZ + 0.75);
   spot6.target.position.set(credX, FY + credH + 0.25, credZ);
   booth.add(spot6, spot6.target);
+
+  const fill6 = addAccent(new THREE.PointLight(0xffe2bf, 2.2, 2.5, 2), 2.2);
+  fill6.position.set(credX, FY + credH + 0.32, credZ + 0.50);
+  booth.add(fill6);
 }
 
 function makeArcLamp(x, z, end) {
@@ -1244,12 +1267,24 @@ function buildGallery() {
   const ped3X = 3.90, ped3Z = 0.70, ped3H = 0.76;
   mesh(B(0.44, ped3H, 0.44, 0.01), M.travertine, ped3X, FY + ped3H / 2, ped3Z);
   mesh(B(0.40, 0.025, 0.40), M.basalt, ped3X, FY + 0.012, ped3Z);
-  place(nextSculpture(), ped3X, FY + ped3H, ped3Z, booth, 0.15);
+  // Foxy faces forward towards the photo taker and slightly toward the sofa
+  place(nextSculpture(), ped3X, FY + ped3H, ped3Z, booth, 0.12);
   addExhibitBadge('S3 · ประติมากรรม 3 — Foxy (50 cm)', new V3(ped3X, FY + ped3H + SCULPT_H + 0.15, ped3Z));
   dimTargets.sculpt = { x: ped3X, z: ped3Z, y: FY + ped3H };
 
   // Dedicated Photo Spot Badge
   addExhibitBadge('📸 มุมถ่ายรูป · Photo Spot (Sofa & Foxy)', new V3(4.55, FY + 1.45, 0.85));
+
+  // Dedicated key spotlight aimed directly at Foxy S3 next to sofa
+  const spot3 = addAccent(new THREE.SpotLight(0xfff5e6, 8.5, 5.5, 0.38, 0.5, 2), 8.5);
+  spot3.position.set(ped3X, FY + H - 0.15, ped3Z + 0.85);
+  spot3.target.position.set(ped3X, FY + ped3H + 0.25, ped3Z);
+  booth.add(spot3, spot3.target);
+
+  // Crisp portrait fill light on Foxy S3
+  const fill3 = addAccent(new THREE.PointLight(0xffebd2, 2.8, 2.8, 2), 2.8);
+  fill3.position.set(ped3X, FY + ped3H + 0.35, ped3Z + 0.60);
+  booth.add(fill3);
 
   // Flattering portrait studio spotlight aimed directly at sofa & sculpture S3
   const portraitSpot = addAccent(new THREE.SpotLight(0xffeedd, 6.0, 5.5, 0.45, 0.5, 2), 6.0);
@@ -1278,12 +1313,21 @@ function buildGallery() {
 
     // Cove LED warm backlighting in the niche
     mesh(B(nicheW - 0.04, 0.01, 0.01), M.led, nx, nicheY + nicheH / 2 - 0.02, 0.04, booth, false, false);
-    const nl = addAccent(new THREE.PointLight(0xffdfb0, 1.2, 1.8, 2), 1.2);
-    nl.position.set(nx, nicheY + nicheH / 2 - 0.06, 0.16);
+    
+    // Direct warm showcase downlight onto Foxy inside niche
+    const nl = addAccent(new THREE.PointLight(0xffeed8, 3.8, 2.2, 2), 3.8);
+    nl.position.set(nx, nicheY + nicheH / 2 - 0.08, 0.22);
     booth.add(nl);
 
-    // Sculpture inside niche (50 cm)
-    place(nextSculpture(), nx, nicheY - nicheH / 2 + 0.035, 0.16, booth, rand(-0.25, 0.25));
+    // Front soft spot illuminating Foxy's face from the front of the niche
+    const nicheSpot = addAccent(new THREE.SpotLight(0xfff6e6, 5.5, 3.0, 0.5, 0.5, 2), 5.5);
+    nicheSpot.position.set(nx, nicheY + nicheH / 2 + 0.10, 0.65);
+    nicheSpot.target.position.set(nx, nicheY - nicheH / 2 + 0.25, 0.16);
+    booth.add(nicheSpot, nicheSpot.target);
+
+    // Sculpture inside niche (faces forward out of the niche into the room)
+    const angle = idx === 0 ? 0.15 : -0.15;
+    place(nextSculpture(), nx, nicheY - nicheH / 2 + 0.035, 0.16, booth, angle);
     const labelCode = idx === 0 ? 'S4' : 'S5';
     const labelNum = idx === 0 ? '4' : '5';
     addExhibitBadge(`${labelCode} · ประติมากรรม ${labelNum} — Foxy (50 cm)`, new V3(nx, nicheY + 0.36, 0.22));
