@@ -58,43 +58,7 @@ h2 {
   margin: 4px 0 10px;
 }
 
-/* ---------- Brand card ---------- */
-.brand-card {
-  position: fixed;
-  top: 22px;
-  left: 22px;
-  padding: 18px 22px 18px;
-  max-width: 360px;
-}
-.eyebrow {
-  font-size: 11px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-.brand-card h1 {
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: 36px;
-  line-height: 1.05;
-  margin: 6px 0 12px;
-}
-.brand-card h1 em {
-  font-style: italic;
-  background: linear-gradient(90deg, #f3cf98, #c98a4b);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-.spec { display: flex; gap: 6px; flex-wrap: wrap; }
-.chip {
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(226, 183, 122, 0.3);
-  background: rgba(226, 183, 122, 0.08);
-  color: #f0d7b0;
-}
+
 
 /* ---------- Control panel ---------- */
 .panel {
@@ -471,30 +435,7 @@ h2 {
   .hint { display: none; }
 }
 @media (max-width: 900px) {
-  /* Brand card - compact on mobile */
-  .brand-card {
-    top: 12px;
-    left: 12px;
-    max-width: calc(100% - 130px);
-    padding: 10px 14px;
-    border-radius: 14px;
-  }
-  .brand-card .eyebrow {
-    font-size: 9px;
-    letter-spacing: 0.16em;
-  }
-  .brand-card h1 {
-    font-size: 18px;
-    line-height: 1.15;
-    margin: 3px 0 6px;
-  }
-  .brand-card .spec {
-    gap: 4px;
-  }
-  .brand-card .chip {
-    font-size: 10.5px;
-    padding: 2px 8px;
-  }
+
 
   /* Floating mobile menu toggle button (Visible on mobile) */
   .btn-toggle-panel {
@@ -681,8 +622,4 @@ h2 {
   }
 }
 
-@media (max-width: 440px) {
-  .brand-card .chip:nth-child(n+3) {
-    display: none;
-  }
-}
+
