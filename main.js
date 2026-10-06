@@ -1521,6 +1521,42 @@ function handle3DFile(file) {
 // UI wiring
 // ---------------------------------------------------------------------------
 function wireUI() {
+  // Mobile drawer controls
+  const controlPanel = document.getElementById('controlPanel');
+  const panelBackdrop = document.getElementById('panelBackdrop');
+  const btnTogglePanel = document.getElementById('btnTogglePanel');
+  const btnClosePanel = document.getElementById('btnClosePanel');
+
+  function openPanel() {
+    if (controlPanel) controlPanel.classList.add('open');
+    if (panelBackdrop) panelBackdrop.classList.add('open');
+  }
+
+  function closePanel() {
+    if (controlPanel) controlPanel.classList.remove('open');
+    if (panelBackdrop) panelBackdrop.classList.remove('open');
+  }
+
+  if (btnTogglePanel) {
+    btnTogglePanel.addEventListener('click', () => {
+      const isOpen = controlPanel && controlPanel.classList.contains('open');
+      if (isOpen) closePanel();
+      else openPanel();
+    });
+  }
+
+  if (btnClosePanel) {
+    btnClosePanel.addEventListener('click', closePanel);
+  }
+
+  if (panelBackdrop) {
+    panelBackdrop.addEventListener('click', closePanel);
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closePanel();
+  });
+
   document.querySelectorAll('#lightModes button').forEach((btn) => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#lightModes button').forEach((b) => b.classList.remove('active'));
@@ -1533,6 +1569,9 @@ function wireUI() {
       document.querySelectorAll('#viewBar button').forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
       flyTo(btn.dataset.view);
+      if (window.innerWidth <= 768) {
+        closePanel();
+      }
     });
   });
   document.getElementById('toggleDims').addEventListener('change', (e) => {

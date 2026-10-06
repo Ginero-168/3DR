@@ -24,9 +24,14 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
-#scene { position: fixed; inset: 0; }
-#scene canvas { display: block; }
-.label-layer { position: absolute; inset: 0; pointer-events: none; }
+#scene { position: fixed; inset: 0; touch-action: none; }
+#scene canvas { display: block; touch-action: none; -webkit-user-select: none; user-select: none; }
+.label-layer { position: absolute; inset: 0; pointer-events: none; touch-action: none; }
+
+/* Desktop defaults for mobile drawer elements */
+.btn-toggle-panel { display: none; }
+.panel-backdrop { display: none; }
+.drawer-header { display: none; }
 
 /* ---------- Glass ---------- */
 .glass {
@@ -501,9 +506,201 @@ h2 {
   .legend { display: none; }
   .hint { display: none; }
 }
-@media (max-width: 760px) {
-  .brand-card { max-width: calc(100% - 44px); padding: 14px 16px; }
-  .brand-card h1 { font-size: 26px; }
-  .panel { top: auto; bottom: 90px; right: 12px; width: 230px; padding: 14px; }
-  .views { left: 12px; right: 12px; transform: none; overflow-x: auto; animation: rise 0.9s both; }
+@media (max-width: 768px) {
+  /* Brand card - compact on mobile */
+  .brand-card {
+    top: 12px;
+    left: 12px;
+    max-width: calc(100% - 110px);
+    padding: 10px 14px;
+    border-radius: 14px;
+  }
+  .brand-card .eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.16em;
+  }
+  .brand-card h1 {
+    font-size: 18px;
+    line-height: 1.15;
+    margin: 3px 0 6px;
+  }
+  .brand-card .spec {
+    gap: 4px;
+  }
+  .brand-card .chip {
+    font-size: 10.5px;
+    padding: 2px 8px;
+  }
+
+  /* Floating mobile menu button */
+  .btn-toggle-panel {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 45;
+    padding: 9px 14px;
+    border-radius: 999px;
+    font: 600 12.5px var(--font-ui);
+    color: #f3cf98;
+    background: rgba(28, 20, 14, 0.85);
+    border: 1px solid rgba(243, 214, 170, 0.35);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-toggle-panel:active {
+    transform: scale(0.94);
+    background: rgba(45, 30, 20, 0.95);
+  }
+
+  /* Mobile Drawer Backdrop */
+  .panel-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 3, 2, 0.65);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 55;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .panel-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Control Panel - Bottom Sheet Drawer */
+  .panel {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: 82vh;
+    border-radius: 22px 22px 0 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-right: 0;
+    padding: 12px 18px calc(24px + env(safe-area-inset-bottom, 16px));
+    z-index: 60;
+    transform: translateY(105%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.36s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    box-shadow: 0 -16px 45px rgba(0, 0, 0, 0.75);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    animation: none;
+  }
+  .panel.open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Drawer Header */
+  .drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    padding: 4px 0 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 235, 200, 0.12);
+  }
+  .drawer-pill {
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 38px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(243, 207, 152, 0.4);
+  }
+  .drawer-title {
+    font: 600 14px var(--font-ui);
+    color: #f3cf98;
+    letter-spacing: 0.03em;
+  }
+  .drawer-close {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 50%;
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .drawer-close:active {
+    transform: scale(0.9);
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  /* Camera Views Bar */
+  .views {
+    left: 10px;
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom, 10px));
+    transform: none;
+    max-width: calc(100vw - 20px);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    padding: 5px;
+    gap: 5px;
+    border-radius: 14px;
+    justify-content: flex-start;
+    animation: rise 0.8s both;
+    z-index: 30;
+  }
+  .views button {
+    padding: 7px 11px;
+    font-size: 11.5px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* 3D Labels Scaling */
+  .dim-label {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .exhibit-label {
+    font-size: 9.5px;
+    padding: 2px 7px;
+    gap: 3px;
+  }
+  .zone-label {
+    font-size: 10.5px;
+    padding: 3px 8px 3px 4px;
+  }
+  .zone-label b {
+    width: 18px;
+    height: 18px;
+    font-size: 9.5px;
+  }
+}
+
+@media (max-width: 440px) {
+  .brand-card .chip:nth-child(n+3) {
+    display: none;
+  }
 }
