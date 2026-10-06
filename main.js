@@ -1627,15 +1627,29 @@ function wireUI() {
   function openPanel() {
     if (controlPanel) controlPanel.classList.add('open');
     if (panelBackdrop) panelBackdrop.classList.add('open');
+    if (btnTogglePanel) {
+      btnTogglePanel.classList.add('active');
+      const lbl = btnTogglePanel.querySelector('.btn-toggle-label');
+      if (lbl) lbl.textContent = '✕ ปิดเมนู';
+    }
   }
 
   function closePanel() {
     if (controlPanel) controlPanel.classList.remove('open');
     if (panelBackdrop) panelBackdrop.classList.remove('open');
+    if (btnTogglePanel) {
+      btnTogglePanel.classList.remove('active');
+      const lbl = btnTogglePanel.querySelector('.btn-toggle-label');
+      if (lbl) lbl.textContent = 'แผงควบคุม';
+    }
   }
 
+  // Ensure closed by default on page load (mobile-first rule)
+  closePanel();
+
   if (btnTogglePanel) {
-    btnTogglePanel.addEventListener('click', () => {
+    btnTogglePanel.addEventListener('click', (e) => {
+      e.stopPropagation();
       const isOpen = controlPanel && controlPanel.classList.contains('open');
       if (isOpen) closePanel();
       else openPanel();
@@ -1666,7 +1680,7 @@ function wireUI() {
       document.querySelectorAll('#viewBar button').forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
       flyTo(btn.dataset.view);
-      if (window.innerWidth <= 768) {
+      if (window.innerWidth <= 900) {
         closePanel();
       }
     });
