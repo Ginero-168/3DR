@@ -67,6 +67,57 @@ html, body {
   box-shadow: 0 6px 24px rgba(243, 207, 152, 0.45);
 }
 
+/* Floating version switcher link (Top Left) */
+.version-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 100;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font: 500 13px var(--font-ui);
+  color: #eedcc6;
+  text-decoration: none;
+  background: rgba(28, 20, 14, 0.90);
+  border: 1px solid rgba(243, 214, 170, 0.35);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  user-select: none;
+  touch-action: manipulation;
+}
+.version-badge:hover {
+  background: rgba(45, 32, 22, 0.96);
+  border-color: var(--accent);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 28px rgba(243, 207, 152, 0.25);
+}
+.version-badge:active {
+  transform: scale(0.96);
+}
+.version-badge .v-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #50e3c2;
+  box-shadow: 0 0 10px #50e3c2;
+  flex-shrink: 0;
+}
+.version-badge .v-text {
+  letter-spacing: 0.02em;
+}
+.version-badge .v-text b {
+  color: var(--accent);
+  font-weight: 600;
+  margin-left: 2px;
+}
+
 /* Modal / Drawer Backdrop */
 .panel-backdrop {
   display: block;
@@ -562,6 +613,24 @@ h2 {
     padding: 8px 14px;
     font-size: 12px;
     gap: 6px;
+  }
+
+  /* Floating version badge on mobile */
+  .version-badge {
+    top: 12px;
+    left: 12px;
+    z-index: 100;
+    padding: 8px 13px;
+    font-size: 11.5px;
+    max-width: calc(100vw - 120px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .version-badge .v-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   /* Control Panel - Bottom sheet on mobile */
