@@ -34,18 +34,27 @@
 
     <!-- Floating 3-Way Version Switcher Bar (Top Left) -->
     <nav class="version-bar glass" aria-label="เลือกผังบูธ 3 รูปแบบ">
-      <a href="index.html" class="active" title="ผัง 1: 5 บล็อก × 3 เมตร แบบเปิดโล่ง">
-        <span class="v-dot"></span>
-        <span class="v-name">5 บล็อก × 3m</span>
+      <div class="v-lead">
+        <span class="v-pulse-dot"></span>
+        <span class="v-lead-text">ผังบูธ 3D</span>
+      </div>
+      <a href="index.html" class="v-pill active" title="ผัง 1: 5 บล็อก × 3 เมตร แบบเปิดโล่ง">
+        <span class="v-num">1</span>
+        <span>5 บล็อก (3m)</span>
       </a>
-      <a href="gallery.html" title="ผัง 2: 1 ประตู · 6 ประติมากรรม · ผนังรูป 2 ด้าน">
-        <span class="v-dot"></span>
-        <span class="v-name">1 ประตู · 6 ประติมากรรม</span>
+      <a href="gallery.html" class="v-pill" title="ผัง 2: 1 ประตู · 6 ประติมากรรม · ผนังรูป 2 ด้าน">
+        <span class="v-num">2</span>
+        <span>1 ประตู 6 ประติมากรรม</span>
+        <span class="v-badge-hot">ใหม่</span>
       </a>
-      <a href="5m.html" title="ผัง 3: 3 ห้อง × 5 เมตร เวอร์ชันเดิม">
-        <span class="v-dot"></span>
-        <span class="v-name">3 ห้อง × 5m</span>
+      <a href="5m.html" class="v-pill" title="ผัง 3: 3 ห้อง × 5 เมตร เวอร์ชันเดิม">
+        <span class="v-num">3</span>
+        <span>3 ห้อง (5m)</span>
       </a>
+      <button id="btnOpenLayoutModal" class="v-btn-modal" title="เปิดหน้าต่างเปรียบเทียบภาพและจุดเด่นของทั้ง 3 ผัง">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>เปรียบเทียบผัง</span>
+      </button>
     </nav>
 
     <!-- Mobile Floating Menu Button -->
@@ -69,18 +78,30 @@
       <h2>รูปแบบผังบูธ (3 เวอร์ชัน)</h2>
       <div class="version-list">
         <a href="index.html" class="v-card active">
-          <div class="v-card-title">ผัง 1 · 5 บล็อก × 3m (เปิดโล่ง) ✨</div>
+          <div class="v-card-top">
+            <span class="v-card-badge">ผัง 1 · กำลังเปิด</span>
+            <div class="v-card-title">5 บล็อก × 3m (เปิดโล่ง)</div>
+          </div>
           <div class="v-card-desc">Lounge 5 จุด · เคาน์เตอร์บาร์ · เดย์เบด · โซฟาถ่ายรูป</div>
         </a>
         <a href="gallery.html" class="v-card">
-          <div class="v-card-title">ผัง 2 · 1 ประตู · 6 ประติมากรรม</div>
+          <div class="v-card-top">
+            <span class="v-card-badge hot">ผัง 2 · ใหม่</span>
+            <div class="v-card-title">1 ประตู · 6 ประติมากรรม</div>
+          </div>
           <div class="v-card-desc">แถวประติมากรรม 6 ตัว · ผนังหน้าแขวนรูป 2 ด้าน (10 รูป)</div>
         </a>
         <a href="5m.html" class="v-card">
-          <div class="v-card-title">ผัง 3 · 3 ห้อง × 5m (เวอร์ชันเดิม)</div>
+          <div class="v-card-top">
+            <span class="v-card-badge">ผัง 3</span>
+            <div class="v-card-title">3 ห้อง × 5m (เวอร์ชันเดิม)</div>
+          </div>
           <div class="v-card-desc">หน้ากากอาคาร (เข้าซ้าย · ส่องชมกลาง · ออกขวา)</div>
         </a>
       </div>
+      <button id="btnDrawerOpenModal" class="btn-secondary" style="margin-bottom: 16px; border-color: rgba(243,207,152,0.3); font-size: 12px; gap: 6px;">
+        🖼️ ดูภาพตัวอย่าง & เปรียบเทียบทั้ง 3 ผัง
+      </button>
       <h2>บรรยากาศแสง</h2>
       <div class="seg" id="lightModes">
         <button id="mode-golden" data-mode="golden" class="active">Golden Hour</button>
@@ -164,6 +185,105 @@
 
     <div class="hint">ลาก: หมุน · Scroll: ซูม · คลิกขวา: เลื่อน</div>
   </main>
+
+  <!-- Layout Comparison Modal Dialog -->
+  <div id="layoutModal" class="layout-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="layout-modal-container">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2 id="modalTitle">เลือกรูปแบบผังบูธ 3D (3 Layout Variations)</h2>
+          <p>คลิกเพื่อสลับไปยังแบบจำลอง 3 มิติแต่ละเวอร์ชันได้ทันที พร้อมชมบรรยากาศและฟังก์ชันที่แตกต่างกัน</p>
+        </div>
+        <button id="btnCloseLayoutModal" class="modal-close-btn" aria-label="Close Layout Modal">✕</button>
+      </div>
+
+      <div class="layout-grid">
+        <!-- Card 1: 5 Blocks x 3m Open Plan -->
+        <a href="index.html" class="layout-card active">
+          <div class="layout-card-thumb">
+            <img src="booth_photo_spot_asymmetric_walls.jpg" alt="ผัง 5 บล็อก × 3 เมตร แบบเปิดโล่ง" loading="lazy" />
+            <span class="layout-card-tag">ผัง 1 · กำลังเปิดอยู่นี้</span>
+          </div>
+          <div class="layout-card-content">
+            <div class="layout-card-title">ผัง 1 · 5 บล็อก × 3m (เปิดโล่ง)</div>
+            <p class="layout-card-desc">เน้นเปิดโล่งด้านหน้าตลอด 15 เมตร พร้อมโซนนั่งเล่น Lounge ครบ 5 จุด</p>
+            <ul class="layout-card-features">
+              <li><span>🏛️</span><span>แบ่ง 5 โซนย่อย (3m ละบล็อก) ทางเดินกว้าง 1.9m</span></li>
+              <li><span>🛋️</span><span>เคาน์เตอร์บาร์หินอ่อน, ตู้หนังสือ, เดย์เบด, ไซด์บอร์ด, โซฟา VIP</span></li>
+              <li><span>🖼️</span><span>กำแพงกั้นโชว์รูปศิลปะ P1–P6 และประติมากรรม 50cm 6 จุด</span></li>
+            </ul>
+            <div class="layout-card-action">✓ กำลังเปิดหน้านี้อยู่</div>
+          </div>
+        </a>
+
+        <!-- Card 2: 1 Door 6 Sculptures Double-Sided Art Wall -->
+        <a href="gallery.html" class="layout-card">
+          <div class="layout-card-thumb">
+            <img src="blueprint_1door_6sculptures.png" alt="ผัง 1 ประตู · 6 ประติมากรรม · ผนังรูป 2 ด้าน" loading="lazy" />
+            <span class="layout-card-tag">✨ ผังใหม่ล่าสุด (ตามพิมพ์เขียว)</span>
+          </div>
+          <div class="layout-card-content">
+            <div class="layout-card-title">ผัง 2 · 1 ประตู · 6 ประติมากรรม</div>
+            <p class="layout-card-desc">สร้างตรงตามพิมพ์เขียวสถาปัตยกรรม 1 ประตูทางเข้า และแถวประติมากรรม 6 ตัว</p>
+            <ul class="layout-card-features">
+              <li><span>🚪</span><span>ประตูทางเข้าซ้าย 1 บาน กว้าง 3.00 ม. สูง 2.40 ม.</span></li>
+              <li><span>🦊</span><span>ประติมากรรม 6 ตัวเรียงแถวตรงกันด้านใน (S1–S6)</span></li>
+              <li><span>🖼️</span><span>ผนังหน้าแสดงรูป 2 ด้าน (นอก 5 รูป / ใน 5 รูป รวม 10 รูป)</span></li>
+            </ul>
+            <div class="layout-card-action">สลับไปผัง 2 ➔</div>
+          </div>
+        </a>
+
+        <!-- Card 3: 3 Rooms x 5m Classic Facade -->
+        <a href="5m.html" class="layout-card">
+          <div class="layout-card-thumb">
+            <img src="booth_left_entrance_right_exit.jpg" alt="ผัง 3 ห้อง × 5 เมตร เวอร์ชันดั้งเดิม" loading="lazy" />
+            <span class="layout-card-tag">ผัง 3 · เวอร์ชันดั้งเดิม</span>
+          </div>
+          <div class="layout-card-content">
+            <div class="layout-card-title">ผัง 3 · 3 ห้อง × 5m (เวอร์ชันเดิม)</div>
+            <p class="layout-card-desc">สถาปัตยกรรมหน้ากากอาคารเดิม กั้นผนัง 3 ห้อง ห้องละ 5 เมตร</p>
+            <ul class="layout-card-features">
+              <li><span>🏛️</span><span>แบ่ง 3 ห้อง (Entrance · Central Gallery · VIP Salon)</span></li>
+              <li><span>🚪</span><span>หน้ากากอาคาร (เข้าซ้าย · หน้าต่างส่องชมกลาง · ออกขวา)</span></li>
+              <li><span>〰️</span><span>ผนังโค้งอสมมาตร (Asymmetric Acoustic Curved Walls)</span></li>
+            </ul>
+            <div class="layout-card-action">สลับไปผัง 3 ➔</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const modal = document.getElementById('layoutModal');
+      const btnOpen1 = document.getElementById('btnOpenLayoutModal');
+      const btnOpen2 = document.getElementById('btnDrawerOpenModal');
+      const btnClose = document.getElementById('btnCloseLayoutModal');
+
+      function openModal(e) {
+        if (e) e.preventDefault();
+        if (modal) modal.classList.add('open');
+      }
+      function closeModal(e) {
+        if (e) e.preventDefault();
+        if (modal) modal.classList.remove('open');
+      }
+
+      if (btnOpen1) btnOpen1.addEventListener('click', openModal);
+      if (btnOpen2) btnOpen2.addEventListener('click', openModal);
+      if (btnClose) btnClose.addEventListener('click', closeModal);
+      if (modal) {
+        modal.addEventListener('click', function(e) {
+          if (e.target === modal) closeModal();
+        });
+      }
+      window.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+      });
+    })();
+  </script>
 
   <script type="module" src="main.js"></script>
 </body>
