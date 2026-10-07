@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Warm Wood Living Room — 3D Booth 15 × 3 m (5 Blocks × 3 m Open Plan)</title>
-  <meta name="description" content="Interactive 3D mockup of a 15 x 3 m exhibition booth styled as an open-plan Warm Wood Living Room showcase divided into 5 distinct 3-meter lounge zones with dedicated wall displays and 50 cm sculpture pedestals." />
+  <title>Warm Wood Living Room — 3D Booth 15 × 3 m (1 ประตู · 6 ประติมากรรม · ผนังแสดงภาพ 2 ด้าน)</title>
+  <meta name="description" content="Interactive 3D mockup of 15 x 3 m exhibition booth based on architectural blueprint with 1 entrance door portal, 6 sculptures in a row, and double-sided art exhibition wall." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600&family=IBM+Plex+Sans+Thai:wght@300;400;500&display=swap" rel="stylesheet" />
@@ -24,7 +24,7 @@
     <div class="loader-inner">
       <div class="loader-mark">MKT</div>
       <p class="loader-title">Marketing Naiin</p>
-      <p class="loader-sub">กำลังสร้างบูธ 3D…</p>
+      <p class="loader-sub">กำลังสร้างบูธ 3D (1 ประตู · 6 ประติมากรรม · ผนังรูป 2 ด้าน)…</p>
       <div class="loader-bar"><span></span></div>
     </div>
   </div>
@@ -34,11 +34,11 @@
 
     <!-- Floating 3-Way Version Switcher Bar (Top Left) -->
     <nav class="version-bar glass" aria-label="เลือกผังบูธ 3 รูปแบบ">
-      <a href="index.html" class="active" title="ผัง 1: 5 บล็อก × 3 เมตร แบบเปิดโล่ง">
+      <a href="index.html" title="ผัง 1: 5 บล็อก × 3 เมตร แบบเปิดโล่ง">
         <span class="v-dot"></span>
         <span class="v-name">5 บล็อก × 3m</span>
       </a>
-      <a href="gallery.html" title="ผัง 2: 1 ประตู · 6 ประติมากรรม · ผนังรูป 2 ด้าน">
+      <a href="gallery.html" class="active" title="ผัง 2: 1 ประตู · 6 ประติมากรรม · ผนังรูป 2 ด้าน">
         <span class="v-dot"></span>
         <span class="v-name">1 ประตู · 6 ประติมากรรม</span>
       </a>
@@ -68,12 +68,12 @@
       <!-- Layout Version Switcher in Panel -->
       <h2>รูปแบบผังบูธ (3 เวอร์ชัน)</h2>
       <div class="version-list">
-        <a href="index.html" class="v-card active">
-          <div class="v-card-title">ผัง 1 · 5 บล็อก × 3m (เปิดโล่ง) ✨</div>
+        <a href="index.html" class="v-card">
+          <div class="v-card-title">ผัง 1 · 5 บล็อก × 3m (เปิดโล่ง)</div>
           <div class="v-card-desc">Lounge 5 จุด · เคาน์เตอร์บาร์ · เดย์เบด · โซฟาถ่ายรูป</div>
         </a>
-        <a href="gallery.html" class="v-card">
-          <div class="v-card-title">ผัง 2 · 1 ประตู · 6 ประติมากรรม</div>
+        <a href="gallery.html" class="v-card active">
+          <div class="v-card-title">ผัง 2 · 1 ประตู · 6 ประติมากรรม ✨</div>
           <div class="v-card-desc">แถวประติมากรรม 6 ตัว · ผนังหน้าแขวนรูป 2 ด้าน (10 รูป)</div>
         </a>
         <a href="5m.html" class="v-card">
@@ -81,6 +81,7 @@
           <div class="v-card-desc">หน้ากากอาคาร (เข้าซ้าย · ส่องชมกลาง · ออกขวา)</div>
         </a>
       </div>
+
       <h2>บรรยากาศแสง</h2>
       <div class="seg" id="lightModes">
         <button id="mode-golden" data-mode="golden" class="active">Golden Hour</button>
@@ -89,14 +90,13 @@
       </div>
 
       <h2>การแสดงผล</h2>
-      <label class="toggle"><input type="checkbox" id="toggleDims" checked autocomplete="off" /><span class="track"></span>แสดงขนาด (5 บล็อก × 3 เมตร / กว้าง 15 ม.)</label>
-      <label class="toggle"><input type="checkbox" id="toggleZones" autocomplete="off" /><span class="track"></span>ป้ายชื่อโซน (บล็อก 1 - 5)</label>
-      <label class="toggle"><input type="checkbox" id="toggleExhibits" autocomplete="off" /><span class="track"></span>จุดจัดแสดง (P1-P6 / S1-S6)</label>
+      <label class="toggle"><input type="checkbox" id="toggleDims" checked autocomplete="off" /><span class="track"></span>แสดงขนาด (15 × 3 ม. / ประตู 3 ม. / ผนัง 10.8 ม.)</label>
+      <label class="toggle"><input type="checkbox" id="toggleZones" autocomplete="off" /><span class="track"></span>ป้ายชื่อ (S1-S6 / ภาพนอก 1-5 / ภาพใน 1-5)</label>
       <label class="toggle"><input type="checkbox" id="toggleTransparent" /><span class="track"></span>ผนังโปร่งใสทะลุ (See-Through / X-Ray)</label>
       <div id="xRayControls" style="display: none; margin: -2px 0 10px 24px; padding: 6px 10px; background: rgba(255,255,255,0.04); border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); font-size: 11px; color: var(--muted);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
           <span>ระดับความจาง:</span>
-          <span id="xRayOpacityDisplay" style="color: var(--amber); font-weight: 500;">จางมากพิเศษ (3.5%)</span>
+          <span id="xRayOpacityDisplay" style="color: var(--amber); font-weight: 500;">3.5%</span>
         </div>
         <input type="range" id="xRayOpacitySlider" min="1" max="15" value="3.5" step="0.5" style="width: 100%; accent-color: var(--amber); cursor: pointer;" />
       </div>
@@ -116,17 +116,6 @@
             <button id="gizmo-translate" data-mode="translate" class="active">เลื่อน</button>
             <button id="gizmo-rotate" data-mode="rotate">หมุน</button>
           </div>
-        </div>
-        <div class="tool-row">
-          <label>ความสูง:</label>
-          <span id="heightDisplay" class="val-badge">50 cm</span>
-        </div>
-        <div class="tool-slider">
-          <input type="range" id="scaleSlider" min="10" max="150" value="50" step="1" />
-        </div>
-        <div class="preset-btns">
-          <button class="btn-chip" id="btnSet50cm">ตั้ง 50 ซม.</button>
-          <button class="btn-chip" id="btnPlacePedestal">ย้ายไปแท่นโชว์</button>
         </div>
         <button class="btn-danger" id="btnDeleteModel">ลบโมเดลที่เลือก</button>
       </div>
@@ -149,22 +138,19 @@
     <!-- Camera views -->
     <nav class="views glass" id="viewBar" aria-label="Camera views">
       <button id="view-overview" data-view="overview" class="active">ภาพรวม</button>
-      <button id="view-front" data-view="front">ด้านหน้าเปิดโล่ง</button>
-      <button id="view-block1" data-view="block1">บล็อก 1 · Bar</button>
-      <button id="view-block2" data-view="block2">บล็อก 2 · Library</button>
-      <button id="view-block3" data-view="block3">บล็อก 3 · Showcase</button>
-      <button id="view-block4" data-view="block4">บล็อก 4 · Credenza</button>
-      <button id="view-block5" data-view="block5">บล็อก 5 · Photo</button>
-      <button id="view-photospot" data-view="photospot">📸 มุมถ่ายรูป</button>
-      <button id="view-walkthrough" data-view="walkthrough">🚶 ทางเดินในห้อง</button>
-      <button id="view-paintings" data-view="paintings">🖼️ ภาพวาด & กำแพงกั้น</button>
-      <button id="view-sculptures" data-view="sculptures">🦊 6 ประติมากรรม</button>
-      <button id="view-top" data-view="top">มุมบน (Floor Plan)</button>
+      <button id="view-facade" data-view="facade">ด้านหน้านอก (5 ภาพ)</button>
+      <button id="view-entrance" data-view="entrance">🚪 ประตูทางเข้า</button>
+      <button id="view-sculptures" data-view="sculptures">🦊 แถวประติมากรรม (S1-S6)</button>
+      <button id="view-promenade" data-view="promenade">🚶 ทางเดินในห้อง</button>
+      <button id="view-inside_art" data-view="inside_art">🖼️ ภาพผนังด้านใน (5 ภาพ)</button>
+      <button id="view-s1_entry" data-view="s1_entry">S1 หน้าประตู</button>
+      <button id="view-s3_center" data-view="s3_center">S3 ศูนย์กลาง</button>
+      <button id="view-top" data-view="top">📐 แปลนมุมบน (Floor Plan)</button>
     </nav>
 
     <div class="hint">ลาก: หมุน · Scroll: ซูม · คลิกขวา: เลื่อน</div>
   </main>
 
-  <script type="module" src="main.js"></script>
+  <script type="module" src="main-gallery.js"></script>
 </body>
 </html>

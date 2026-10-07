@@ -118,6 +118,96 @@ html, body {
   margin-left: 2px;
 }
 
+/* Multi-Version Navigation Bar (Top Left) */
+.version-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 100;
+  padding: 5px 6px;
+  border-radius: 999px;
+  background: rgba(28, 20, 14, 0.90);
+  border: 1px solid rgba(243, 214, 170, 0.35);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+}
+.version-bar a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font: 500 12.5px var(--font-ui);
+  color: #eedcc6;
+  text-decoration: none;
+  transition: all 0.22s ease;
+  white-space: nowrap;
+}
+.version-bar a:hover {
+  background: rgba(243, 207, 152, 0.14);
+  color: #fff;
+}
+.version-bar a.active {
+  background: linear-gradient(135deg, #f3cf98, #d39a5c);
+  color: #1e1309;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(243, 207, 152, 0.35);
+}
+.version-bar a .v-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #50e3c2;
+  box-shadow: 0 0 8px #50e3c2;
+  flex-shrink: 0;
+}
+.version-bar a.active .v-dot {
+  background: #1e1309;
+  box-shadow: none;
+}
+
+/* Version List inside Control Panel */
+.version-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.v-card {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.v-card:hover {
+  background: rgba(243, 207, 152, 0.12);
+  border-color: rgba(243, 207, 152, 0.35);
+  transform: translateY(-1px);
+}
+.v-card.active {
+  background: rgba(243, 207, 152, 0.18);
+  border-color: #f3cf98;
+  box-shadow: 0 0 16px rgba(243, 207, 152, 0.15);
+}
+.v-card-title {
+  font: 600 12.5px var(--font-ui);
+  color: #f3cf98;
+  margin-bottom: 2px;
+}
+.v-card-desc {
+  font: 400 11px var(--font-thai);
+  color: var(--muted);
+  line-height: 1.35;
+}
+
 /* Modal / Drawer Backdrop */
 .panel-backdrop {
   display: block;
@@ -631,6 +721,23 @@ h2 {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  /* Multi-version bar on mobile */
+  .version-bar {
+    top: 10px;
+    left: 10px;
+    padding: 3px 4px;
+    gap: 3px;
+    max-width: calc(100vw - 110px);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .version-bar a {
+    padding: 5px 10px;
+    font-size: 11px;
+    gap: 4px;
+    flex-shrink: 0;
   }
 
   /* Control Panel - Bottom sheet on mobile */

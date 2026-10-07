@@ -32,11 +32,21 @@
   <main>
     <div id="scene" aria-label="3D booth viewer"></div>
 
-    <!-- Floating Version Switcher Link (Top Left) -->
-    <a href="index.html" class="version-badge glass" title="สลับไปเวอร์ชัน 5 บล็อก × 3 เมตร">
-      <span class="v-dot"></span>
-      <span class="v-text">เวอร์ชันเดิม (3 ห้อง × 5m) · <b>สลับไปเวอร์ชัน 3m ➔</b></span>
-    </a>
+    <!-- Floating 3-Way Version Switcher Bar (Top Left) -->
+    <nav class="version-bar glass" aria-label="เลือกผังบูธ 3 รูปแบบ">
+      <a href="index.html" title="ผัง 1: 5 บล็อก × 3 เมตร แบบเปิดโล่ง">
+        <span class="v-dot"></span>
+        <span class="v-name">5 บล็อก × 3m</span>
+      </a>
+      <a href="gallery.html" title="ผัง 2: 1 ประตู · 6 ประติมากรรม · ผนังรูป 2 ด้าน">
+        <span class="v-dot"></span>
+        <span class="v-name">1 ประตู · 6 ประติมากรรม</span>
+      </a>
+      <a href="5m.html" class="active" title="ผัง 3: 3 ห้อง × 5 เมตร เวอร์ชันเดิม">
+        <span class="v-dot"></span>
+        <span class="v-name">3 ห้อง × 5m</span>
+      </a>
+    </nav>
 
     <!-- Mobile Floating Menu Button -->
     <button id="btnTogglePanel" class="btn-toggle-panel glass" aria-label="Toggle Control Panel">
@@ -55,10 +65,22 @@
         <button id="btnClosePanel" class="drawer-close" aria-label="Close Settings">✕</button>
       </div>
 
-      <!-- Quick Version Switch in Panel -->
-      <a href="index.html" class="btn-secondary" style="margin-bottom: 14px; text-decoration: none; border-style: solid; border-color: rgba(243, 207, 152, 0.45); background: rgba(243, 207, 152, 0.12); display: flex; align-items: center; justify-content: center; gap: 8px;">
-        🔄 สลับไปเวอร์ชัน 5 บล็อก × 3 เมตร
-      </a>
+      <!-- Layout Version Switcher in Panel -->
+      <h2>รูปแบบผังบูธ (3 เวอร์ชัน)</h2>
+      <div class="version-list">
+        <a href="index.html" class="v-card">
+          <div class="v-card-title">ผัง 1 · 5 บล็อก × 3m (เปิดโล่ง)</div>
+          <div class="v-card-desc">Lounge 5 จุด · เคาน์เตอร์บาร์ · เดย์เบด · โซฟาถ่ายรูป</div>
+        </a>
+        <a href="gallery.html" class="v-card">
+          <div class="v-card-title">ผัง 2 · 1 ประตู · 6 ประติมากรรม</div>
+          <div class="v-card-desc">แถวประติมากรรม 6 ตัว · ผนังหน้าแขวนรูป 2 ด้าน (10 รูป)</div>
+        </a>
+        <a href="5m.html" class="v-card active">
+          <div class="v-card-title">ผัง 3 · 3 ห้อง × 5m (เวอร์ชันเดิม) ✨</div>
+          <div class="v-card-desc">หน้ากากอาคาร (เข้าซ้าย · ส่องชมกลาง · ออกขวา)</div>
+        </a>
+      </div>
 
       <h2>บรรยากาศแสง</h2>
       <div class="seg" id="lightModes">
