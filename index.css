@@ -478,6 +478,12 @@ h2 {
   background: linear-gradient(135deg, #f0e6d6, #d7c5ae);
   color: #2d2015;
 }
+.exhibit-label.photo-badge {
+  background: linear-gradient(135deg, #ffd7a8, #e08c48);
+  color: #221208;
+  border-color: rgba(255, 220, 180, 0.7);
+  box-shadow: 0 4px 16px rgba(224, 140, 72, 0.45);
+}
 .zone-label {
   display: flex;
   align-items: center;

@@ -1,7 +1,13 @@
 /**
  * Warm Wood Living Room — Exhibition Booth 3D Mockup
- * Booth: 15 m wide × 3 m deep floor platform, with a 3 m high backdrop wall.
- * Zones: A Kitchen Bar · B Living Lounge · C Sculpture Gallery (50 cm sculptures)
+ * Booth: 15 m wide × 3 m deep open platform, with 3 m high backdrop wall.
+ * 5 Blocks of 3 meters each (15m total width):
+ * - Block 1 (x: -7.5 to -4.5): Earth & Stone Brick Lounge (P1 Gold Foxy, S1 Sculpture)
+ * - Block 2 (x: -4.5 to -1.5): Oak Slat Lounge (P2 & P3 Abstract Canvases, S2 Sculpture)
+ * - Block 3 (x: -1.5 to +1.5): Marble Pavilion Center Showcase Lounge (P4 Master Graffiti, S3 Center Foxy)
+ * - Block 4 (x: +1.5 to +4.5): Japandi Timber Lounge (P5 Abstract Green Canvas, Classic Art, S4 Sculpture)
+ * - Block 5 (x: +4.5 to +7.5): VIP Photo Lounge (P6 Sun Graffiti, Photo Sofa, S5 Selfie Foxy)
+ * Open-plan concept with open front, continuous walkway, and bespoke wall displays.
  */
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -20,21 +26,31 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 // ---------------------------------------------------------------------------
 // Booth dimensions (metres)
 // ---------------------------------------------------------------------------
-const W = 15;        // backdrop wall width
-const H = 3;         // backdrop wall height
+const W = 15;        // total width: 15 m
+const H = 3;         // backdrop wall height: 3 m
 const D = 3;         // platform depth: 3 m
-const FY = 0.1;      // platform top height
+const FY = 0.1;      // platform top height: 0.1 m
 const SCULPT_H = 0.5; // sculpture height (50 cm)
+
+// 5 Blocks of 3 meters: Centers at [-6.0, -3.0, 0.0, 3.0, 6.0]
+const BLOCK_CENTERS = [-6.0, -3.0, 0.0, 3.0, 6.0];
 
 const V2 = THREE.Vector2;
 const V3 = THREE.Vector3;
 const rand = (a = 0, b = 1) => a + Math.random() * (b - a);
 
+// Authentic Artwork Sources (New images in pic/ + classic oil paintings)
 const ART_SOURCES = {
-  art1: '834201435_1106636995178112_873089852634520844_n.jpeg',
-  art2: '830834694_1786672265795135_3184531431469431023_n.jpeg',
-  art3: '830513828_1410008468011031_6845268736765103662_n.jpeg',
-  art4: '830236695_1092868896720615_696399951761031174_n.jpeg',
+  p01: 'pic/01.jpeg', // Gold Foxy vertical canvas (738x952)
+  p02: 'pic/02.jpeg', // Abstract Yellow & Blue Foxy square (721x705)
+  p03: 'pic/03.jpeg', // Abstract Blue & Red Foxy square (692x681)
+  p04: 'pic/04.jpeg', // Abstract Green Foxy square (707x698)
+  p05: 'pic/05.jpeg', // Wide Blue Foxy Master Graffiti canvas (993x475, ~2:1)
+  p06: 'pic/06.jpeg', // Wide Blue Foxy Sun & Lightning Graffiti canvas (993x495, ~2:1)
+  classic1: '834201435_1106636995178112_873089852634520844_n.jpeg',
+  classic2: '830834694_1786672265795135_3184531431469431023_n.jpeg',
+  classic3: '830513828_1410008468011031_6845268736765103662_n.jpeg',
+  classic4: '830236695_1092868896720615_696399951761031174_n.jpeg',
 };
 const artMeshes = [];
 
@@ -62,10 +78,10 @@ scene.background = new THREE.Color(0x14100c);
 scene.fog = new THREE.Fog(0x14100c, 36, 85);
 
 const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.05, 200);
-camera.position.set(10, 5, 12.5);
+camera.position.set(10.5, 5.2, 12.0);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 1.3, 1.2);
+controls.target.set(0, 1.3, 1.4);
 controls.enableDamping = true;
 controls.dampingFactor = 0.06;
 controls.maxPolarAngle = Math.PI * 0.495;
@@ -118,7 +134,7 @@ function addAccent(light, base) {
 }
 
 // ---------------------------------------------------------------------------
-// Procedural textures (no external image assets needed)
+// Procedural textures (with high fidelity)
 // ---------------------------------------------------------------------------
 function canvasTex(w, h, draw, repeat = [1, 1], srgb = true) {
   const c = document.createElement('canvas');
@@ -175,14 +191,12 @@ function noise(g, w, h, count, colors, size = [1, 2], alpha = [0.03, 0.12]) {
   }
   g.globalAlpha = 1;
 }
-
 function woodTex(base, dark, light) {
   return canvasTex(1024, 256, (g, w, h) => {
     g.fillStyle = base; g.fillRect(0, 0, w, h);
     grain(g, 0, 0, w, h, dark, light, 170);
   });
 }
-
 function configureTexture(tex) {
   if (!tex) return tex;
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -195,7 +209,6 @@ function configureTexture(tex) {
   tex.needsUpdate = true;
   return tex;
 }
-
 function loadArtTexture(url) {
   const loader = new THREE.TextureLoader();
   return new Promise((resolve) => {
@@ -239,7 +252,7 @@ function buildTextures() {
   TEX.walnut = woodTex('#5c3b24', '#2c1a0e', '#8a5f3d');
   TEX.honey = woodTex('#c08a52', '#7a4c27', '#e5bd88');
 
-  // Cream stone brick (colour + bump) — canvas represents 2 m × 1 m
+  // Cream stone brick (colour + bump) for Block 1
   const bw = 1024, bh = 512, rows = 8, rh = bh / rows, gap = 6;
   const layout = [];
   for (let r = 0; r < rows; r++) {
@@ -267,12 +280,12 @@ function buildTextures() {
     noise(g, bw, bh, 14000, ['#ffffff', '#555555'], [1, 4], [0.1, 0.35]);
   }, [1, 1], false);
 
-  // Calacatta-style marble
+  // Calacatta Gold Marble for Block 3
   TEX.marble = canvasTex(1024, 1024, (g, w, h) => {
-    g.fillStyle = '#f3eee6'; g.fillRect(0, 0, w, h);
-    const vein = (lw, alpha, blur) => {
+    g.fillStyle = '#f6f1e8'; g.fillRect(0, 0, w, h);
+    const vein = (lw, alpha, blur, col = 'rgba(140,118,92,') => {
       g.filter = `blur(${blur}px)`;
-      g.strokeStyle = `rgba(128,112,96,${alpha})`;
+      g.strokeStyle = `${col}${alpha})`;
       g.lineWidth = lw;
       g.beginPath();
       let x = Math.random() * w, y = 0;
@@ -280,12 +293,12 @@ function buildTextures() {
       while (y < h) { x += rand(-40, 40); y += rand(20, 60); g.lineTo(x, y); }
       g.stroke();
     };
-    for (let i = 0; i < 7; i++) vein(rand(3, 7), 0.18, 4);
-    for (let i = 0; i < 16; i++) vein(rand(0.6, 1.6), 0.35, 0.6);
+    for (let i = 0; i < 7; i++) vein(rand(4, 9), 0.22, 5, 'rgba(170,140,95,');
+    for (let i = 0; i < 16; i++) vein(rand(0.8, 1.8), 0.38, 0.6, 'rgba(120,105,88,');
     g.filter = 'none';
   });
 
-  // Woven jute rug with border
+  // Woven jute & wool rugs
   TEX.jute = canvasTex(1024, 1024, (g, w, h) => {
     g.fillStyle = '#a98c63'; g.fillRect(0, 0, w, h);
     const s = 8;
@@ -300,8 +313,6 @@ function buildTextures() {
     }
     g.strokeStyle = 'rgba(70,48,26,0.55)'; g.lineWidth = 26;
     g.strokeRect(40, 40, w - 80, h - 80);
-    g.strokeStyle = 'rgba(70,48,26,0.3)'; g.lineWidth = 6;
-    g.strokeRect(80, 80, w - 160, h - 160);
   });
 
   TEX.fabric = canvasTex(512, 512, (g, w, h) => {
@@ -311,14 +322,13 @@ function buildTextures() {
     noise(g, w, h, 4000, ['#b8a587', '#ffffff'], [1, 2]);
   }, [3, 3]);
 
-  TEX.knit = canvasTex(256, 256, (g, w, h) => {
-    g.fillStyle = '#7e3a1f'; g.fillRect(0, 0, w, h);
-    for (let y = 0; y < h; y += 16) {
-      for (let x = 0; x < w; x += 16) {
-        g.fillStyle = shade('#a2532e', rand(0.9, 1.1));
-        g.beginPath(); g.ellipse(x + 4, y + 8, 4, 7, 0.5, 0, Math.PI * 2); g.fill();
-        g.beginPath(); g.ellipse(x + 12, y + 8, 4, 7, -0.5, 0, Math.PI * 2); g.fill();
-      }
+  TEX.boucle = canvasTex(512, 512, (g, w, h) => {
+    g.fillStyle = '#f4ede0'; g.fillRect(0, 0, w, h);
+    for (let i = 0; i < 2200; i++) {
+      g.fillStyle = Math.random() < 0.5 ? 'rgba(210,195,175,0.22)' : 'rgba(255,255,255,0.3)';
+      g.beginPath();
+      g.arc(Math.random() * w, Math.random() * h, rand(1.5, 4.5), 0, Math.PI * 2);
+      g.fill();
     }
   }, [4, 4]);
 
@@ -331,7 +341,6 @@ function buildTextures() {
     noise(g, w, h, 3000, ['#bba98d', '#ffffff'], [1, 2]);
   }, [4, 1]);
 
-  // Exhibition hall floor with soft radial pool of light
   TEX.hall = canvasTex(1024, 1024, (g, w, h) => {
     const grd = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
     grd.addColorStop(0, '#3a3029'); grd.addColorStop(0.35, '#2a221c'); grd.addColorStop(1, '#17110c');
@@ -339,75 +348,41 @@ function buildTextures() {
     noise(g, w, h, 20000, ['#000000', '#5a4a3e'], [1, 2], [0.05, 0.15]);
   });
 
-  // 4 Fine Art Canvas Textures (Fallbacks if image files fail to load)
-  if (!TEX.art1) {
-    TEX.art1 = canvasTex(512, 680, (g, w, h) => {
-      g.fillStyle = '#f2e8d9'; g.fillRect(0, 0, w, h);
-      g.fillStyle = '#b56138';
-      g.beginPath(); g.arc(w * 0.45, h * 0.52, w * 0.35, Math.PI, 0); g.lineTo(w * 0.8, h); g.lineTo(w * 0.1, h); g.fill();
-      g.fillStyle = '#db9c68';
-      g.beginPath(); g.arc(w * 0.65, h * 0.3, w * 0.18, 0, Math.PI * 2); g.fill();
-      g.fillStyle = '#5c6440';
-      g.beginPath(); g.arc(w * 0.32, h * 0.72, w * 0.2, 0, Math.PI * 2); g.fill();
-      noise(g, w, h, 8000, ['#8a7558', '#ffffff'], [1, 2]);
-    });
-  }
-
-  if (!TEX.art2) {
-    TEX.art2 = canvasTex(512, 680, (g, w, h) => {
-      g.fillStyle = '#ece3d2'; g.fillRect(0, 0, w, h);
-      g.fillStyle = '#4a3b32';
-      g.beginPath();
-      g.moveTo(w * 0.15, h * 0.15);
-      g.bezierCurveTo(w * 0.85, h * 0.2, w * 0.2, h * 0.7, w * 0.85, h * 0.85);
-      g.bezierCurveTo(w * 0.4, h * 0.95, w * 0.05, h * 0.5, w * 0.15, h * 0.15);
-      g.fill();
-      g.fillStyle = '#c98a5b';
-      g.beginPath(); g.arc(w * 0.65, h * 0.45, w * 0.15, 0, Math.PI * 2); g.fill();
-      noise(g, w, h, 8000, ['#6b5a45', '#ffffff'], [1, 2]);
-    });
-  }
-
-  if (!TEX.art3) {
-    TEX.art3 = canvasTex(512, 680, (g, w, h) => {
-      g.fillStyle = '#f2ece0'; g.fillRect(0, 0, w, h);
-      g.fillStyle = '#656e4a';
-      g.beginPath(); g.ellipse(w * 0.45, h * 0.4, w * 0.3, h * 0.22, -0.2, 0, Math.PI * 2); g.fill();
-      g.fillStyle = '#a4532d';
-      g.fillRect(w * 0.2, h * 0.65, w * 0.6, h * 0.18);
-      g.fillStyle = '#dbb27a';
-      g.beginPath(); g.arc(w * 0.5, h * 0.22, w * 0.12, 0, Math.PI * 2); g.fill();
-      noise(g, w, h, 8000, ['#7a6850', '#ffffff'], [1, 2]);
-    });
-  }
-
-  if (!TEX.art4) {
-    TEX.art4 = canvasTex(800, 512, (g, w, h) => {
-      g.fillStyle = '#ede5d5'; g.fillRect(0, 0, w, h);
-      const bands = [
-        ['#cca37b', 0.4, 0.6],
-        ['#5d6849', 0.55, 0.75],
-        ['#a65836', 0.7, 0.9],
-        ['#3b3027', 0.82, 1.0],
-      ];
-      for (const [col, y0, y1] of bands) {
-        g.fillStyle = col;
-        g.beginPath();
-        g.moveTo(0, h * y0);
-        for (let x = 0; x <= w; x += 20) {
-          const ny = h * y0 + Math.sin(x * 0.015) * 18 + Math.cos(x * 0.03) * 10;
-          g.lineTo(x, ny);
-        }
-        g.lineTo(w, h * y1);
-        g.lineTo(0, h * y1);
-        g.fill();
-      }
-      g.fillStyle = '#e8be78';
-      g.beginPath(); g.arc(w * 0.65, h * 0.3, h * 0.18, 0, Math.PI * 2); g.fill();
-      noise(g, w, h, 10000, ['#7a6850', '#ffffff'], [1, 2]);
-    });
-  }
-  TEX.art = TEX.art1;
+  // Fallback procedural art canvases if image loading is delayed or offline
+  if (!TEX.p01) TEX.p01 = canvasTex(512, 680, (g, w, h) => {
+    g.fillStyle = '#f4e6c8'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#db9c38'; g.beginPath(); g.arc(w / 2, h * 0.45, w * 0.35, 0, Math.PI * 2); g.fill();
+    noise(g, w, h, 6000, ['#a87020', '#ffffff'], [1, 2]);
+  });
+  if (!TEX.p02) TEX.p02 = canvasTex(512, 512, (g, w, h) => {
+    g.fillStyle = '#e8dcc4'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#2b6cb0'; g.fillRect(w * 0.1, h * 0.1, w * 0.8, h * 0.8);
+    noise(g, w, h, 5000, ['#e0a820', '#103060'], [1, 2]);
+  });
+  if (!TEX.p03) TEX.p03 = canvasTex(512, 512, (g, w, h) => {
+    g.fillStyle = '#e8dcc4'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#1a4b88'; g.fillRect(w * 0.1, h * 0.1, w * 0.8, h * 0.8);
+    noise(g, w, h, 5000, ['#c83020', '#ffffff'], [1, 2]);
+  });
+  if (!TEX.p04) TEX.p04 = canvasTex(512, 512, (g, w, h) => {
+    g.fillStyle = '#e8dcc4'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#3d7a48'; g.fillRect(w * 0.1, h * 0.1, w * 0.8, h * 0.8);
+    noise(g, w, h, 5000, ['#104020', '#e0e890'], [1, 2]);
+  });
+  if (!TEX.p05) TEX.p05 = canvasTex(800, 400, (g, w, h) => {
+    g.fillStyle = '#e6edf4'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#2d84c6'; g.beginPath(); g.ellipse(w / 2, h / 2, w * 0.38, h * 0.36, 0, 0, Math.PI * 2); g.fill();
+    noise(g, w, h, 7000, ['#f09020', '#1a4060'], [1, 2]);
+  });
+  if (!TEX.p06) TEX.p06 = canvasTex(800, 400, (g, w, h) => {
+    g.fillStyle = '#fff4e4'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#247bb8'; g.beginPath(); g.ellipse(w * 0.6, h / 2, w * 0.3, h * 0.35, 0, 0, Math.PI * 2); g.fill();
+    noise(g, w, h, 7000, ['#f5aa30', '#ffffff'], [1, 2]);
+  });
+  if (!TEX.classic1) TEX.classic1 = TEX.p01;
+  if (!TEX.classic2) TEX.classic2 = TEX.p02;
+  if (!TEX.classic3) TEX.classic3 = TEX.p03;
+  if (!TEX.classic4) TEX.classic4 = TEX.p04;
 }
 
 function logoTexture(main, sub, color = '#f4dcae') {
@@ -416,13 +391,13 @@ function logoTexture(main, sub, color = '#f4dcae') {
     g.fillStyle = color;
     g.textAlign = 'center';
     g.textBaseline = 'middle';
-    const mainFontSize = main.length > 12 ? 175 : 230;
-    const spacing = main.length > 12 ? '16px' : '28px';
+    const mainFontSize = main.length > 14 ? 160 : 210;
+    const spacing = main.length > 14 ? '14px' : '24px';
     g.letterSpacing = spacing;
     g.font = `600 ${mainFontSize}px "Cormorant Garamond", serif`;
-    g.fillText(main, w / 2, h * 0.4);
-    g.letterSpacing = '18px';
-    g.font = '400 58px "Outfit", sans-serif';
+    g.fillText(main, w / 2, h * 0.42);
+    g.letterSpacing = '16px';
+    g.font = '400 54px "Outfit", sans-serif';
     g.fillText(sub, w / 2, h * 0.84);
   });
 }
@@ -438,16 +413,16 @@ function buildMaterials() {
   M.walnut = std(0xffffff, 0.45, 0, { map: TEX.walnut });
   M.plaster = std(0xffffff, 0.92, 0, { map: TEX.plaster });
   M.limewash = std(0xd9c0a0, 0.95, 0, { map: texRepeat(TEX.plaster, 2, 2) });
+  M.olivePlaster = std(0xa6ad92, 0.92, 0, { map: texRepeat(TEX.plaster, 2, 2) });
   M.olive = std(0x56603f, 0.55);
-  M.oliveDoor = std(0x5f6a46, 0.5);
   M.marble = std(0xffffff, 0.25, 0, { map: TEX.marble });
   M.brass = std(0xc9a25a, 0.28, 1);
   M.brassSatin = std(0xb8904c, 0.45, 1);
   M.blackMetal = std(0x1c1a18, 0.45, 0.6);
-  M.leather = std(0x8e5532, 0.48);
+  M.leather = std(0x9e623b, 0.48);
   M.leatherDark = std(0x6b3c22, 0.5);
   M.linen = std(0xffffff, 0.95, 0, { map: TEX.fabric });
-  M.knit = std(0xffffff, 0.95, 0, { map: TEX.knit });
+  M.boucle = std(0xffffff, 0.98, 0, { map: TEX.boucle });
   M.jute = std(0xffffff, 0.98, 0, { map: TEX.jute });
   M.ceramic = std(0xefe9df, 0.35, 0, { side: THREE.DoubleSide });
   M.terracotta = std(0xb5653b, 0.8, 0, { side: THREE.DoubleSide });
@@ -463,11 +438,19 @@ function buildMaterials() {
   M.led = glow(0xffdfb0, 1.0);
   M.bulb = glow(0xffd699, 1.4);
   M.flame = glow(0xffa64a, 1.5);
-  M.art1 = std(0xffffff, 0.85, 0, { map: TEX.art1 });
-  M.art2 = std(0xffffff, 0.85, 0, { map: TEX.art2 });
-  M.art3 = std(0xffffff, 0.85, 0, { map: TEX.art3 });
-  M.art4 = std(0xffffff, 0.85, 0, { map: TEX.art4 });
-  M.art = M.art1;
+
+  // Artwork Materials for the 6 new pictures + classic art
+  M.p01 = std(0xffffff, 0.85, 0, { map: TEX.p01 });
+  M.p02 = std(0xffffff, 0.85, 0, { map: TEX.p02 });
+  M.p03 = std(0xffffff, 0.85, 0, { map: TEX.p03 });
+  M.p04 = std(0xffffff, 0.85, 0, { map: TEX.p04 });
+  M.p05 = std(0xffffff, 0.85, 0, { map: TEX.p05 });
+  M.p06 = std(0xffffff, 0.85, 0, { map: TEX.p06 });
+  M.classic1 = std(0xffffff, 0.85, 0, { map: TEX.classic1 });
+  M.classic2 = std(0xffffff, 0.85, 0, { map: TEX.classic2 });
+  M.classic3 = std(0xffffff, 0.85, 0, { map: TEX.classic3 });
+  M.classic4 = std(0xffffff, 0.85, 0, { map: TEX.classic4 });
+
   M.pillow = {
     rust: std(0xa4532d, 0.95, 0, { map: TEX.fabric }),
     olive: std(0x6a7248, 0.95, 0, { map: TEX.fabric }),
@@ -478,7 +461,7 @@ function buildMaterials() {
 }
 
 // ---------------------------------------------------------------------------
-// Props
+// Props & Props Makers
 // ---------------------------------------------------------------------------
 function lathe(points, mat, seg = 48) {
   return new THREE.Mesh(new THREE.LatheGeometry(points.map(([x, y]) => new V2(x, y)), seg), mat);
@@ -518,20 +501,20 @@ function makeBouquet() {
   const g = new THREE.Group();
   const vase = lathe([[0, 0], [0.06, 0], [0.1, 0.08], [0.11, 0.15], [0.07, 0.24], [0.05, 0.28], [0.06, 0.3]], M.ceramic);
   vase.castShadow = true; g.add(vase);
-  const leaves = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 8, 6), M.leaf, 90);
-  const flowers = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), std(0xf6f1e6, 0.8), 26);
+  const leaves = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 8, 6), M.leaf, 80);
+  const flowers = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), std(0xf6f1e6, 0.8), 24);
   const d = new THREE.Object3D(), c = new THREE.Color();
-  for (let i = 0; i < 90; i++) {
-    const a = rand(0, Math.PI * 2), r = rand(0.02, 0.24), y = 0.3 + rand(0, 0.32) - r * 0.3;
+  for (let i = 0; i < 80; i++) {
+    const a = rand(0, Math.PI * 2), r = rand(0.02, 0.22), y = 0.3 + rand(0, 0.30) - r * 0.3;
     d.position.set(Math.cos(a) * r, y, Math.sin(a) * r);
     d.rotation.set(rand(0, 3), rand(0, 3), rand(0, 3));
     const s = rand(0.03, 0.05); d.scale.set(s, s * 0.18, s * 0.45); d.updateMatrix();
     leaves.setMatrixAt(i, d.matrix);
     c.setHSL(rand(0.22, 0.28), rand(0.25, 0.4), rand(0.25, 0.38)); leaves.setColorAt(i, c);
   }
-  for (let i = 0; i < 26; i++) {
-    const a = rand(0, Math.PI * 2), r = rand(0.03, 0.2);
-    d.position.set(Math.cos(a) * r, 0.42 + rand(0, 0.22), Math.sin(a) * r);
+  for (let i = 0; i < 24; i++) {
+    const a = rand(0, Math.PI * 2), r = rand(0.03, 0.18);
+    d.position.set(Math.cos(a) * r, 0.42 + rand(0, 0.20), Math.sin(a) * r);
     d.rotation.set(0, 0, 0); d.scale.setScalar(rand(0.016, 0.026)); d.updateMatrix();
     flowers.setMatrixAt(i, d.matrix);
   }
@@ -553,14 +536,6 @@ function makeBooks(n = 3) {
   return g;
 }
 
-function makeCandle(h = 0.1) {
-  const g = new THREE.Group();
-  mesh(new THREE.CylinderGeometry(0.035, 0.035, h, 20), M.candle, 0, h / 2, 0, g);
-  const f = mesh(new THREE.SphereGeometry(0.012, 10, 8), M.flame, 0, h + 0.016, 0, g, false, false);
-  f.scale.y = 1.8;
-  return g;
-}
-
 function makeBowl(r = 0.14, mat = M.walnut) {
   const g = new THREE.Group();
   const bowl = lathe([[0, 0], [r * 0.5, 0], [r * 0.85, r * 0.25], [r, r * 0.45]], mat, 40);
@@ -570,52 +545,51 @@ function makeBowl(r = 0.14, mat = M.walnut) {
 }
 
 function makeFruitBowl() {
-  const g = makeBowl(0.18, M.ceramic);
+  const g = makeBowl(0.16, M.ceramic);
   const lemon = std(0xe8c24a, 0.55);
-  for (let i = 0; i < 6; i++) {
-    const a = (i / 6) * Math.PI * 2;
-    const l = mesh(new THREE.SphereGeometry(0.038, 16, 12), lemon, Math.cos(a) * 0.08, 0.06 + (i % 2) * 0.02, Math.sin(a) * 0.08, g);
+  for (let i = 0; i < 5; i++) {
+    const a = (i / 5) * Math.PI * 2;
+    const l = mesh(new THREE.SphereGeometry(0.036, 16, 12), lemon, Math.cos(a) * 0.07, 0.05 + (i % 2) * 0.02, Math.sin(a) * 0.07, g);
     l.scale.set(1, 0.85, 1.25);
   }
   return g;
 }
 
-function makeFramedPicture(w, h, mat, artKey = '', viewPos = null) {
+function makeFramedPicture(w, h, mat, artKey = '', viewPos = null, title = '') {
   const g = new THREE.Group();
-  const frameD = 0.04, frameBorder = 0.05;
-  // Outer frame
+  const frameD = 0.04, frameBorder = 0.045;
+  // Outer walnut frame
   mesh(B(w + frameBorder * 2, h + frameBorder * 2, frameD), M.walnut, 0, 0, 0, g);
-  // Gold inner reveal
+  // Satin brass inner reveal
   mesh(B(w + 0.015, h + 0.015, frameD + 0.005), M.brassSatin, 0, 0, 0, g);
-  // Canvas
+  // Canvas plane
   const canvasMesh = mesh(new THREE.PlaneGeometry(w, h), mat, 0, 0, frameD / 2 + 0.004, g, false, true);
   if (artKey) {
     canvasMesh.userData.isArt = true;
     canvasMesh.userData.artKey = artKey;
     canvasMesh.userData.viewPos = viewPos;
+    canvasMesh.userData.title = title;
     artMeshes.push(canvasMesh);
   }
-  // Frame shadow reveal
-  mesh(B(w + frameBorder * 2 + 0.02, h + frameBorder * 2 + 0.02, 0.005), std(0x1a140e, 0.95), 0, 0, -frameD / 2, g, false, false);
 
-  // Picture light fixture
+  // Museum Picture Light Fixture
   const lightBar = new THREE.Group();
-  lightBar.position.set(0, h / 2 + frameBorder + 0.1, frameD + 0.08);
-  mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.12, 8), M.brass, -w * 0.25, -0.05, -0.05, lightBar).rotation.x = Math.PI / 3;
-  mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.12, 8), M.brass, w * 0.25, -0.05, -0.05, lightBar).rotation.x = Math.PI / 3;
-  mesh(new THREE.CylinderGeometry(0.01, 0.01, Math.min(w * 0.65, 0.55), 16), M.brass, 0, 0, 0, lightBar).rotation.z = Math.PI / 2;
-  mesh(new THREE.CylinderGeometry(0.006, 0.006, Math.min(w * 0.6, 0.5), 16), M.led, 0, -0.008, 0, lightBar, false, false).rotation.z = Math.PI / 2;
+  lightBar.position.set(0, h / 2 + frameBorder + 0.09, frameD + 0.08);
+  mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.11, 8), M.brass, -w * 0.25, -0.04, -0.04, lightBar).rotation.x = Math.PI / 3;
+  mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.11, 8), M.brass, w * 0.25, -0.04, -0.04, lightBar).rotation.x = Math.PI / 3;
+  mesh(new THREE.CylinderGeometry(0.009, 0.009, Math.min(w * 0.75, 0.65), 16), M.brass, 0, 0, 0, lightBar).rotation.z = Math.PI / 2;
+  mesh(new THREE.CylinderGeometry(0.005, 0.005, Math.min(w * 0.70, 0.60), 16), M.led, 0, -0.007, 0, lightBar, false, false).rotation.z = Math.PI / 2;
   g.add(lightBar);
 
   const pl = addAccent(new THREE.PointLight(0xffe8cc, 0.95, 2.2, 2), 0.95);
-  pl.position.set(0, h / 2 + 0.08, frameD + 0.1);
+  pl.position.set(0, h / 2 + 0.08, frameD + 0.12);
   g.add(pl);
 
   return g;
 }
 
 // ---------------------------------------------------------------------------
-// Sculptures — every one normalised to exactly 50 cm tall
+// Sculptures — Foxy 50 cm
 // ---------------------------------------------------------------------------
 function normalize(inner, targetH = SCULPT_H) {
   inner.updateMatrixWorld(true);
@@ -631,92 +605,17 @@ function normalize(inner, targetH = SCULPT_H) {
   wrap.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   return wrap;
 }
-function plinthBase(g, r = 0.08, h = 0.04, mat = M.travertine) {
-  mesh(new THREE.CylinderGeometry(r, r * 1.05, h, 32), mat, 0, h / 2, 0, g);
-  return h;
-}
+
 const SCULPTURES = [
-  // 1. Curved amphora vase
+  // Fallbacks if GLB fails
   (mat = M.ceramic) => {
     const g = new THREE.Group();
     g.add(lathe([[0, 0], [0.07, 0], [0.09, 0.03], [0.125, 0.12], [0.135, 0.2], [0.1, 0.3], [0.05, 0.38], [0.044, 0.44], [0.062, 0.5]], mat, 64));
     return g;
   },
-  // 2. Bronze torus knot on stone base
   () => {
     const g = new THREE.Group();
-    const h = plinthBase(g);
-    mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.07, 8), M.bronze, 0, h + 0.035, 0, g);
-    mesh(new THREE.TorusKnotGeometry(0.11, 0.032, 200, 24, 2, 3), M.bronze, 0, h + 0.07 + 0.15, 0, g);
-    return g;
-  },
-  // 3. Stacked pebbles
-  () => {
-    const g = new THREE.Group();
-    const mats = [M.basalt, M.travertine, M.ceramic, M.basalt];
-    let y = 0;
-    [0.13, 0.105, 0.085, 0.06].forEach((r, i) => {
-      y += r * 0.52;
-      const p = mesh(new THREE.SphereGeometry(r, 40, 24), mats[i], rand(-0.012, 0.012), y, rand(-0.012, 0.012), g);
-      p.scale.y = 0.52;
-      y += r * 0.52;
-    });
-    return g;
-  },
-  // 4. Standing ring
-  (mat = M.terracotta) => {
-    const g = new THREE.Group();
-    mesh(B(0.16, 0.05, 0.1, 0.008), M.travertine, 0, 0.025, 0, g);
-    mesh(new THREE.TorusGeometry(0.18, 0.034, 32, 100), mat, 0, 0.05 + 0.18, 0, g);
-    return g;
-  },
-  // 5. Twisted column
-  () => {
-    const g = new THREE.Group();
-    const h = plinthBase(g, 0.09, 0.04, M.travertine);
-    const geo = new THREE.BoxGeometry(0.11, 0.5, 0.11, 1, 60, 1);
-    const p = geo.attributes.position;
-    for (let i = 0; i < p.count; i++) {
-      const y = p.getY(i), a = (y + 0.25) * Math.PI * 1.3;
-      const x = p.getX(i), z = p.getZ(i);
-      p.setXYZ(i, x * Math.cos(a) - z * Math.sin(a), y, x * Math.sin(a) + z * Math.cos(a));
-    }
-    geo.computeVertexNormals();
-    mesh(geo, M.basalt, 0, h + 0.25, 0, g);
-    return g;
-  },
-  // 6. Abstract bust
-  (mat = M.ceramic) => {
-    const g = new THREE.Group();
-    mesh(B(0.14, 0.05, 0.14, 0.008), M.walnut, 0, 0.025, 0, g);
-    const b = lathe([[0, 0], [0.075, 0], [0.075, 0.015], [0.04, 0.05], [0.034, 0.12], [0.068, 0.18], [0.088, 0.26], [0.084, 0.33], [0.06, 0.39], [0.001, 0.425]], mat, 64);
-    b.position.y = 0.05; b.scale.set(0.8, 1, 1);
-    g.add(b);
-    return g;
-  },
-  // 7. Travertine arch
-  () => {
-    const g = new THREE.Group();
-    mesh(B(0.46, 0.04, 0.14, 0.008), M.basalt, 0, 0.02, 0, g);
-    mesh(new THREE.TorusGeometry(0.16, 0.05, 24, 64, Math.PI), M.travertine, 0, 0.04, 0, g);
-    return g;
-  },
-  // 8. Terracotta teardrop
-  () => {
-    const g = new THREE.Group();
-    g.add(lathe([[0, 0], [0.05, 0.004], [0.11, 0.06], [0.13, 0.14], [0.112, 0.24], [0.07, 0.33], [0.03, 0.42], [0.001, 0.47]], M.terracotta, 64));
-    return g;
-  },
-  // 9. Totem
-  () => {
-    const g = new THREE.Group();
-    let y = 0;
-    const add = (geo, mat, h) => { mesh(geo, mat, 0, y + h / 2, 0, g); y += h; };
-    add(new THREE.CylinderGeometry(0.09, 0.09, 0.03, 40), M.basalt, 0.03);
-    add(new THREE.SphereGeometry(0.075, 32, 20), M.travertine, 0.15);
-    add(new THREE.CylinderGeometry(0.06, 0.06, 0.015, 40), M.brass, 0.015);
-    add(new THREE.SphereGeometry(0.06, 32, 20), M.basalt, 0.12);
-    add(new THREE.ConeGeometry(0.055, 0.14, 40), M.terracotta, 0.14);
+    mesh(new THREE.TorusKnotGeometry(0.11, 0.032, 200, 24, 2, 3), M.bronze, 0, 0.25, 0, g);
     return g;
   },
 ];
@@ -731,18 +630,16 @@ function loadFoxyModel(onProgress) {
       (gltf) => {
         try {
           const root = gltf.scene || gltf.scenes[0];
-          // In Foxy.glb, +Z is naturally the front (face, eyes, and envelope flap)
           root.rotation.y = 0;
           root.traverse((child) => {
             if (child.isMesh) {
               child.castShadow = true;
               child.receiveShadow = true;
               if (child.material) {
-                // Enhance vibrancy and responsiveness to lighting
                 child.material.envMapIntensity = 1.35;
                 child.material.roughness = Math.min(child.material.roughness, 0.60);
                 if (child.material.metalness > 0.35) {
-                  child.material.metalness = 0.22; // diffuse reflection responds brightly to spotlights
+                  child.material.metalness = 0.22;
                 }
                 child.material.needsUpdate = true;
               }
@@ -762,18 +659,13 @@ function loadFoxyModel(onProgress) {
         }
       },
       (err) => {
-        console.warn('Could not load Foxy.glb, falling back to procedural sculptures', err);
+        console.warn('Could not load Foxy.glb, falling back to procedural', err);
         resolve(null);
       }
     );
   });
 }
 
-const SCULPT_SEQ = [
-  () => SCULPTURES[0](M.ceramic), () => SCULPTURES[1](), () => SCULPTURES[2](), () => SCULPTURES[3](M.terracotta),
-  () => SCULPTURES[4](), () => SCULPTURES[5](M.ceramic), () => SCULPTURES[6](), () => SCULPTURES[7](),
-  () => SCULPTURES[8](), () => SCULPTURES[3](M.bronze), () => SCULPTURES[0](M.terracotta), () => SCULPTURES[5](M.basalt),
-];
 function nextSculpture() {
   if (foxyTemplate) {
     const clone = foxyTemplate.clone(true);
@@ -786,10 +678,11 @@ function nextSculpture() {
     sculptIdx++;
     return clone;
   }
-  const s = normalize(SCULPT_SEQ[sculptIdx % SCULPT_SEQ.length]());
+  const s = normalize(SCULPTURES[sculptIdx % SCULPTURES.length]());
   sculptIdx++;
   return s;
 }
+
 function place(obj, x, y, z, parent = booth, ry = 0) {
   obj.position.set(x, y, z);
   obj.rotation.y = ry;
@@ -797,25 +690,6 @@ function place(obj, x, y, z, parent = booth, ry = 0) {
   return obj;
 }
 
-// ---------------------------------------------------------------------------
-// Booth structure
-// ---------------------------------------------------------------------------
-function buildHallAndPlatform() {
-  const hall = mesh(new THREE.CircleGeometry(48, 64).rotateX(-Math.PI / 2), M.hall, 0, 0, 2, scene, false, true);
-  hall.position.y = 0;
-
-  // Platform
-  const plat = mesh(B(W, FY, D), M.floor, 0, FY / 2, D / 2);
-  plat.castShadow = false;
-  // Front & side trims in walnut + LED kick line
-  mesh(B(W + 0.04, FY, 0.03), M.walnut, 0, FY / 2, D + 0.015);
-  mesh(B(0.03, FY, D), M.walnut, -W / 2 - 0.015, FY / 2, D / 2);
-  mesh(B(0.03, FY, D), M.walnut, W / 2 + 0.015, FY / 2, D / 2);
-  mesh(B(W, 0.012, 0.012), M.led, 0, 0.02, D + 0.035, booth, false, false);
-}
-
-// ---------------------------------------------------------------------------
-// Wall Registry & See-Through / X-Ray Mode
 // ---------------------------------------------------------------------------
 // Wall Registry & See-Through / X-Ray Mode
 // ---------------------------------------------------------------------------
@@ -825,17 +699,16 @@ const xRayMaterial = new THREE.MeshStandardMaterial({
   roughness: 0.05,
   metalness: 0.0,
   transparent: true,
-  opacity: 0.035, // 3.5% opacity — ULTRA FAINT & SHEER
+  opacity: 0.035,
   depthWrite: false,
   side: THREE.DoubleSide,
 });
-
 const xRayTrimMaterial = new THREE.MeshStandardMaterial({
   color: 0x768f9f,
   roughness: 0.1,
   metalness: 0.05,
   transparent: true,
-  opacity: 0.065, // 6.5% opacity for subtle architectural framing
+  opacity: 0.065,
   depthWrite: false,
   side: THREE.DoubleSide,
 });
@@ -863,7 +736,6 @@ function setWallsTransparent(val, customOpacity = null) {
   wallRegistry.forEach(({ mesh: m, origMat, origVisible, type }) => {
     if (val) {
       if (type === 'slat' || type === 'roof' || type === 'sign') {
-        // Hiding dense slats, roof rafters, and signs gives a 100% clean, clear view!
         m.visible = false;
       } else if (type === 'trim') {
         m.material = xRayTrimMaterial;
@@ -885,216 +757,92 @@ function setWallsTransparent(val, customOpacity = null) {
   });
 }
 
-function buildBackWall() {
-  // 15 m × 3 m backdrop wall
-  registerWall(mesh(B(W, H, 0.15), M.plaster, 0, FY + H / 2, -0.075), 'wall');
-  registerWall(mesh(B(W + 0.04, 0.04, 0.19), M.walnut, 0, FY + H + 0.02, -0.075), 'trim');
+// ---------------------------------------------------------------------------
+// Booth Structure (Platform & Hall)
+// ---------------------------------------------------------------------------
+function buildHallAndPlatform() {
+  const hall = mesh(new THREE.CircleGeometry(48, 64).rotateX(-Math.PI / 2), M.hall, 0, 0, 2, scene, false, true);
+  hall.position.y = 0;
+
+  // 15 m × 3 m floor platform
+  const plat = mesh(B(W, FY, D), M.floor, 0, FY / 2, D / 2);
+  plat.castShadow = false;
+
+  // Front & side trims in walnut + LED kick line
+  mesh(B(W + 0.04, FY, 0.03), M.walnut, 0, FY / 2, D + 0.015);
+  mesh(B(0.03, FY, D), M.walnut, -W / 2 - 0.015, FY / 2, D / 2);
+  mesh(B(0.03, FY, D), M.walnut, W / 2 + 0.015, FY / 2, D / 2);
+  mesh(B(W, 0.012, 0.012), M.led, 0, 0.02, D + 0.035, booth, false, false);
+
+  // Subtle satin brass inlays on floor separating the 5 blocks (at x = -4.5, -1.5, 1.5, 4.5)
+  [-4.5, -1.5, 1.5, 4.5].forEach((bx) => {
+    mesh(B(0.012, 0.002, D), M.brassSatin, bx, FY + 0.001, D / 2, booth, false, false);
+  });
 }
 
-function buildEnclosureAndPartitions() {
-  // --- Side Walls (Left & Right 3m walls) ---
+// ---------------------------------------------------------------------------
+// Open-Plan Architecture & Ceiling Rafters ("ทำแบบเปิดโล่ง")
+// ---------------------------------------------------------------------------
+function buildOpenCeilingAndPortals() {
+  // 1. Open Front Portals (Slender architectural oak posts defining the 5 open 3m bays)
+  [-7.5, -4.5, -1.5, 1.5, 4.5, 7.5].forEach((px) => {
+    const post = registerWall(mesh(B(0.07, H, 0.07), M.walnut, px, FY + H / 2, D - 0.035), 'trim');
+    mesh(B(0.08, 0.06, 0.08), M.brassSatin, px, FY + 0.03, D - 0.035);
+  });
+
+  // Continuous walnut front header lintel beam spanning the 15m open facade at ceiling
+  registerWall(mesh(B(W + 0.10, 0.14, 0.12), M.walnut, 0, FY + H - 0.07, D - 0.035), 'trim');
+
+  // Downlights under front lintel pointing onto each of the 5 entrance bays
+  BLOCK_CENTERS.forEach((cx) => {
+    mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.015, 16), M.brass, cx, FY + H - 0.145, D - 0.035);
+    mesh(new THREE.CircleGeometry(0.02, 16).rotateX(Math.PI / 2), M.bulb, cx, FY + H - 0.155, D - 0.035, booth, false, false);
+    const sp = addAccent(new THREE.SpotLight(0xffecd4, 2.8, 4.8, 0.5, 0.5, 2), 2.8);
+    sp.position.set(cx, FY + H - 0.16, D - 0.035);
+    sp.target.position.set(cx, FY, D - 0.5);
+    booth.add(sp, sp.target);
+  });
+
+  // 2. Open Ceiling Louvers / Timber Rafters (Front-to-back across 15m)
+  const rafterCount = 21;
+  const startX = -7.2;
+  const dx = (7.2 - startX) / (rafterCount - 1);
+  for (let i = 0; i < rafterCount; i++) {
+    const rx = startX + i * dx;
+    registerWall(mesh(B(0.045, 0.10, D), M.oak, rx, FY + H - 0.05, D / 2), 'roof');
+  }
+
+  // 3. Side Walls (Left & Right 3m end walls)
   registerWall(mesh(B(0.10, H, D), M.plaster, -W / 2 - 0.05, FY + H / 2, D / 2), 'wall');
   registerWall(mesh(B(0.10, H, D), M.plaster, W / 2 + 0.05, FY + H / 2, D / 2), 'wall');
   registerWall(mesh(B(0.12, 0.04, D + 0.04), M.walnut, -W / 2 - 0.05, FY + H + 0.02, D / 2), 'trim');
   registerWall(mesh(B(0.12, 0.04, D + 0.04), M.walnut, W / 2 + 0.05, FY + H + 0.02, D / 2), 'trim');
 
-  // --- Front Facade ---
-  const zf = D - 0.04; // Front wall position (~2.96m)
-  const doorW = 1.50;  // Entrance/Exit width = 1.50 m
-  const doorH = 2.45;  // Entrance/Exit height = 2.45 m
-  const headerH = H - doorH; // 0.55 m
+  // 4. Open-Air Dividers Between Blocks (z: 0 to 1.1m only, leaving 1.9m open walkway along front!)
+  [-4.5, -1.5, 1.5, 4.5].forEach((dx) => {
+    // Slender open wood slat screen fin from back wall to z = 1.1m
+    const finW = 0.06, finD = 1.10;
+    registerWall(mesh(B(finW, H, 0.06), M.walnut, dx, FY + H / 2, finD - 0.03), 'trim'); // end jamb
+    mesh(B(0.015, H - 0.2, 0.005), M.brassSatin, dx, FY + H / 2, finD + 0.005);
 
-  // ==========================================
-  // 1. LEFT ENTRANCE (ทางเข้าอยู่ซ้าย: x = -5.00)
-  // ==========================================
-  const entX = -5.00;
-  // Header wall above Left Entrance door
-  registerWall(mesh(B(doorW, headerH, 0.08), M.plaster, entX, FY + doorH + headerH / 2, zf), 'wall');
-  // Walnut surround frame for Left Entrance
-  registerWall(mesh(B(0.08, doorH, 0.16), M.walnut, entX - doorW / 2 - 0.04, FY + doorH / 2, zf), 'trim'); // left jamb
-  registerWall(mesh(B(0.08, doorH, 0.16), M.walnut, entX + doorW / 2 + 0.04, FY + doorH / 2, zf), 'trim'); // right jamb
-  registerWall(mesh(B(doorW + 0.20, 0.08, 0.18), M.walnut, entX, FY + doorH + 0.04, zf), 'trim');          // lintel
-  // Satin brass entrance welcome floor threshold
-  mesh(B(doorW, 0.008, 0.30), M.brassSatin, entX, FY + 0.004, zf);
-  // Downlight spotlight for Entrance
-  const entSpot = addAccent(new THREE.SpotLight(0xffe8cc, 3.5, 4.5, 0.45, 0.6, 2), 3.5);
-  entSpot.position.set(entX, FY + doorH + 0.02, zf);
-  entSpot.target.position.set(entX, FY, zf);
-  booth.add(entSpot, entSpot.target);
-  // Backlit Signboard over Left Entrance
-  const entSignMat = new THREE.MeshStandardMaterial({
-    map: logoTexture('MARKETING NAIIN', 'ENTRANCE · ทางเข้า'),
-    transparent: true,
-    color: 0xffffff,
-    emissive: 0xffd9a0,
-    roughness: 0.5,
+    // Decorative vertical slats within the 1.1m divider
+    for (let sz = 0.18; sz <= finD - 0.12; sz += 0.22) {
+      registerWall(mesh(B(0.025, H - 0.20, 0.045), M.oakV, dx, FY + H / 2, sz), 'slat');
+    }
+    // Vertical warm LED strip along divider fin end
+    mesh(B(0.008, H - 0.40, 0.008), M.led, dx, FY + H / 2, finD + 0.008, booth, false, false);
   });
-  entSignMat.emissiveMap = entSignMat.map;
-  entSignMat.emissiveIntensity = 0.9;
-  glowMats.push({ mat: entSignMat, base: 0.9 });
-  registerWall(mesh(new THREE.PlaneGeometry(1.40, 0.24), entSignMat, entX, FY + doorH + 0.30, zf + 0.045, booth, false, false), 'sign');
-
-  // ==========================================
-  // 2. RIGHT EXIT (ทางออกอยู่ขวา: x = +5.00)
-  // ==========================================
-  const exitX = 5.00;
-  // Header wall above Right Exit door
-  registerWall(mesh(B(doorW, headerH, 0.08), M.plaster, exitX, FY + doorH + headerH / 2, zf), 'wall');
-  // Walnut surround frame for Right Exit
-  registerWall(mesh(B(0.08, doorH, 0.16), M.walnut, exitX - doorW / 2 - 0.04, FY + doorH / 2, zf), 'trim'); // left jamb
-  registerWall(mesh(B(0.08, doorH, 0.16), M.walnut, exitX + doorW / 2 + 0.04, FY + doorH / 2, zf), 'trim'); // right jamb
-  registerWall(mesh(B(doorW + 0.20, 0.08, 0.18), M.walnut, exitX, FY + doorH + 0.04, zf), 'trim');          // lintel
-  // Satin brass exit floor threshold
-  mesh(B(doorW, 0.008, 0.30), M.brassSatin, exitX, FY + 0.004, zf);
-  // Downlight spotlight for Exit
-  const exitSpot = addAccent(new THREE.SpotLight(0xffe8cc, 3.5, 4.5, 0.45, 0.6, 2), 3.5);
-  exitSpot.position.set(exitX, FY + doorH + 0.02, zf);
-  exitSpot.target.position.set(exitX, FY, zf);
-  booth.add(exitSpot, exitSpot.target);
-  // Backlit Signboard over Right Exit
-  const exitSignMat = new THREE.MeshStandardMaterial({
-    map: logoTexture('MARKETING NAIIN', 'EXIT · ทางออก'),
-    transparent: true,
-    color: 0xffffff,
-    emissive: 0xffd9a0,
-    roughness: 0.5,
-  });
-  exitSignMat.emissiveMap = exitSignMat.map;
-  exitSignMat.emissiveIntensity = 0.9;
-  glowMats.push({ mat: exitSignMat, base: 0.9 });
-  registerWall(mesh(new THREE.PlaneGeometry(1.40, 0.24), exitSignMat, exitX, FY + doorH + 0.30, zf + 0.045, booth, false, false), 'sign');
-
-  // ==========================================
-  // 3. OUTER FACADE WALLS (Leftmost & Rightmost)
-  // ==========================================
-  // Left outer wall panel: x from -7.50 to -5.75 (width 1.75 m, center -6.625)
-  registerWall(mesh(B(1.75, H, 0.08), M.plaster, -6.625, FY + H / 2, zf), 'wall');
-  const slatGeo = new THREE.BoxGeometry(0.045, H - 0.35, 0.025);
-  for (let sx = -7.30; sx <= -5.95; sx += 0.22) {
-    registerWall(mesh(slatGeo, M.oakV, sx, FY + H / 2, zf + 0.042), 'slat');
-  }
-
-  // Right outer wall panel: x from +5.75 to +7.50 (width 1.75 m, center +6.625)
-  registerWall(mesh(B(1.75, H, 0.08), M.plaster, 6.625, FY + H / 2, zf), 'wall');
-  for (let sx = 5.95; sx <= 7.30; sx += 0.22) {
-    registerWall(mesh(slatGeo, M.oakV, sx, FY + H / 2, zf + 0.042), 'slat');
-  }
-
-  // ==========================================
-  // 4. CENTER FACADE & PEEK WINDOW (หน้าต่างส่องเห็นภายใน)
-  // ==========================================
-  // Span between Entrance and Exit: x from -4.25 to +4.25 (total 8.50 m)
-  // Flanking sub-wall panels:
-  // - Left center panel: x from -4.25 to -1.60 (width 2.65 m, center -2.925)
-  registerWall(mesh(B(2.65, H, 0.08), M.plaster, -2.925, FY + H / 2, zf), 'wall');
-  for (let sx = -4.05; sx <= -1.85; sx += 0.22) {
-    registerWall(mesh(slatGeo, M.oakV, sx, FY + H / 2, zf + 0.042), 'slat');
-  }
-
-  // - Right center panel: x from +1.60 to +4.25 (width 2.65 m, center +2.925)
-  registerWall(mesh(B(2.65, H, 0.08), M.plaster, 2.925, FY + H / 2, zf), 'wall');
-  for (let sx = 1.85; sx <= 4.05; sx += 0.22) {
-    registerWall(mesh(slatGeo, M.oakV, sx, FY + H / 2, zf + 0.042), 'slat');
-  }
-
-  // Window Section: x from -1.60 to +1.60 (width 3.20 m)
-  const winW = 3.20;
-  const winSillH = 0.85;
-  const winTopY = 2.35;
-  const winH = winTopY - winSillH; // 1.50 m
-  const winHeadH = H - winTopY;   // 0.65 m
-
-  // Sill wall below window
-  registerWall(mesh(B(winW, winSillH, 0.08), M.plaster, 0, FY + winSillH / 2, zf), 'wall');
-  // Header wall above window
-  registerWall(mesh(B(winW, winHeadH, 0.08), M.plaster, 0, FY + winTopY + winHeadH / 2, zf), 'wall');
-
-  // Window Casing (Solid Walnut Frame + Center Mullion)
-  registerWall(mesh(B(winW + 0.10, 0.05, 0.18), M.walnut, 0, FY + winSillH + 0.025, zf), 'trim'); // sill ledge
-  registerWall(mesh(B(winW + 0.10, 0.05, 0.18), M.walnut, 0, FY + winTopY - 0.025, zf), 'trim');  // top casing
-  registerWall(mesh(B(0.05, winH, 0.18), M.walnut, -winW / 2 + 0.025, FY + winSillH + winH / 2, zf), 'trim'); // left jamb
-  registerWall(mesh(B(0.05, winH, 0.18), M.walnut, winW / 2 - 0.025, FY + winSillH + winH / 2, zf), 'trim');  // right jamb
-  // Center vertical mullion dividing the glass into 2 showcase panes
-  registerWall(mesh(B(0.05, winH - 0.05, 0.16), M.walnut, 0, FY + winSillH + winH / 2, zf), 'trim');
-  mesh(B(0.02, winH - 0.05, 0.005), M.brassSatin, 0, FY + winSillH + winH / 2, zf + 0.085); // brass reveal
-
-  // Clear Architectural Glass Pane (หน้าต่างกระจกใสบานส่องชม)
-  const peekGlassMat = new THREE.MeshStandardMaterial({
-    color: 0xe8f2fc,
-    roughness: 0.04,
-    metalness: 0.08,
-    transparent: true,
-    opacity: 0.14,
-    depthWrite: false,
-    side: THREE.DoubleSide,
-  });
-  mesh(new THREE.PlaneGeometry(winW - 0.08, winH - 0.08), peekGlassMat, 0, FY + winSillH + winH / 2, zf + 0.01, booth, false, false);
-  // Interior warm LED strip wash along window sill ledge
-  mesh(B(winW - 0.10, 0.01, 0.01), M.led, 0, FY + winSillH + 0.05, zf - 0.05, booth, false, false);
-
-  // Pavilion Title Badge over Window Header
-  const winSignMat = new THREE.MeshStandardMaterial({
-    map: logoTexture('MARKETING NAIIN', 'ART PAVILION · SHOWCASE'),
-    transparent: true,
-    color: 0xffffff,
-    emissive: 0xffd9a0,
-    roughness: 0.5,
-  });
-  winSignMat.emissiveMap = winSignMat.map;
-  winSignMat.emissiveIntensity = 0.9;
-  glowMats.push({ mat: winSignMat, base: 0.9 });
-  registerWall(mesh(new THREE.PlaneGeometry(1.60, 0.22), winSignMat, 0, FY + winTopY + 0.32, zf + 0.045, booth, false, false), 'sign');
-
-  // ==========================================
-  // 5. ASYMMETRICAL & STAGGERED PARTITION WALLS (สลับซ้าย-ขวา หน้า-หลัง)
-  // ==========================================
-  // --- Partition Wall 1 (at x = -2.60, separating Room 1 & Room 2): STAGGERED TO BACK (บน/หลัง) ---
-  // Solid wall extends from BACK wall (z: 0 to 1.75 m)
-  const pwX1 = -2.60;
-  registerWall(mesh(B(0.08, H, 1.75), M.plaster, pwX1, FY + H / 2, 0.875), 'wall');
-  // Walnut trim jamb and satin brass reveal at opening edge (z = 1.75)
-  registerWall(mesh(B(0.12, H, 0.06), M.walnut, pwX1, FY + H / 2, 1.75), 'trim');
-  mesh(B(0.02, H - 0.20, 0.005), M.brassSatin, pwX1, FY + H / 2, 1.78);
-  // Vertical decorative oak slats on partition face facing Room 2
-  const partSlatGeo = new THREE.BoxGeometry(0.025, H - 0.30, 0.045);
-  for (let sz = 0.30; sz <= 1.50; sz += 0.25) {
-    registerWall(mesh(partSlatGeo, M.oakV, pwX1 + 0.042, FY + H / 2, sz), 'slat');
-  }
-  // Front Walkway Opening (z: 1.75 to 2.96 m, width 1.21 m) with walnut lintel overhead
-  registerWall(mesh(B(0.08, 0.50, 1.21), M.plaster, pwX1, FY + 2.75, 2.355), 'wall');
-  registerWall(mesh(B(0.12, 0.06, 1.21), M.walnut, pwX1, FY + 2.47, 2.355), 'trim');
-
-  // --- Partition Wall 2 (at x = +2.40, separating Room 2 & Room 3): STAGGERED TO FRONT (ล่าง/หน้า) ---
-  // Solid wall extends from FRONT facade inward (z: 1.20 to 2.96 m)
-  const pwX2 = 2.40;
-  registerWall(mesh(B(0.08, H, 1.76), M.plaster, pwX2, FY + H / 2, 2.08), 'wall');
-  // Walnut trim jamb and satin brass reveal at opening edge (z = 1.20)
-  registerWall(mesh(B(0.12, H, 0.06), M.walnut, pwX2, FY + H / 2, 1.20), 'trim');
-  mesh(B(0.02, H - 0.20, 0.005), M.brassSatin, pwX2, FY + H / 2, 1.17);
-  // Vertical decorative oak slats on partition face facing Room 2
-  for (let sz = 1.45; sz <= 2.65; sz += 0.25) {
-    registerWall(mesh(partSlatGeo, M.oakV, pwX2 - 0.042, FY + H / 2, sz), 'slat');
-  }
-  // Back Walkway Opening (z: 0 to 1.20 m, width 1.20 m) with walnut lintel overhead
-  registerWall(mesh(B(0.08, 0.50, 1.20), M.plaster, pwX2, FY + 2.75, 0.60), 'wall');
-  registerWall(mesh(B(0.12, 0.06, 1.20), M.walnut, pwX2, FY + 2.47, 0.60), 'trim');
-
-  // Ceiling Rafters & Perimeter Fascia
-  [-7.44, -5.0, -2.5, 0, 2.5, 5.0, 7.44].forEach((x) => {
-    registerWall(mesh(B(0.08, 0.12, D), M.oak, x, FY + H - 0.06, D / 2), 'roof');
-  });
-  registerWall(mesh(B(W, 0.16, 0.10), M.walnut, 0, FY + H - 0.08, D / 2), 'roof');
 }
 
 // ---------------------------------------------------------------------------
-// Exhibits badges & annotations
+// Badges & Annotations
 // ---------------------------------------------------------------------------
 const exhibitGroup = new THREE.Group();
 const exhibitLabels = [];
 
-function addExhibitBadge(text, pos, isPainting = false) {
+function addExhibitBadge(text, pos, type = 'sculpture') {
   const div = document.createElement('div');
-  div.className = 'exhibit-label' + (isPainting ? ' art-badge' : '');
+  div.className = 'exhibit-label' + (type === 'art' ? ' art-badge' : type === 'photo' ? ' photo-badge' : '');
   div.textContent = text;
   const lab = new CSS2DObject(div);
   lab.position.copy(pos);
@@ -1104,151 +852,534 @@ function addExhibitBadge(text, pos, isPainting = false) {
 }
 
 // ---------------------------------------------------------------------------
-// Room 1 — West Gallery (Earth & Brick Art Chamber: x −7.5 … −2.5)
+// BLOCK 1 (x: -7.5 … -4.5, Center -6.0)
+// Theme: Earth & Stone Brick Lounge
+// Art: P1 (pic/01.jpeg Gold Foxy), S1 Foxy Sculpture (50cm)
+// Seating: Pair of Cream Bouclé Armchairs, Round Travertine Coffee Table
 // ---------------------------------------------------------------------------
-function buildKitchen() {
-  const cx = -5.0;
-  // Stone brick cladding on back wall
-  const brick = std(0xffffff, 0.9, 0, { map: texRepeat(TEX.brick, 2, 3), bumpMap: texRepeat(TEX.brickBump, 2, 3), bumpScale: 2 });
-  registerWall(mesh(B(4.8, H, 0.03), brick, cx, FY + H / 2, 0.015));
+function buildBlock1() {
+  const cx = -6.0;
 
-  // --- Painting 1 (P1) on the brick wall (0.95 × 1.27 m) ---
-  place(makeFramedPicture(0.95, 1.27, M.art1, 'art1', { pos: [-5.50, FY + 1.80, 2.25], target: [-5.50, FY + 1.80, 0.04] }), -5.50, FY + 1.80, 0.04);
-  addExhibitBadge('P1 · ภาพวาด 1 (0.95×1.27 m)', new V3(-5.50, FY + 2.70, 0.15), true);
+  // 1. Distinct Wall Display: Stone Brick Feature Wall
+  const brick = std(0xffffff, 0.9, 0, { map: texRepeat(TEX.brick, 1.5, 3), bumpMap: texRepeat(TEX.brickBump, 1.5, 3), bumpScale: 2 });
+  registerWall(mesh(B(3.0, H, 0.04), brick, cx, FY + H / 2, 0.02), 'wall');
+  registerWall(mesh(B(3.02, 0.04, 0.08), M.walnut, cx, FY + H + 0.02, 0.04), 'trim');
 
-  // --- Sculpture 1 (S1) on Travertine Pedestal in Room 1 ---
-  const ped1X = -4.20, ped1Z = 1.15, ped1H = 0.90;
+  // Top & bottom warm wall washer lights
+  mesh(B(2.9, 0.01, 0.01), M.led, cx, FY + 0.01, 0.06, booth, false, false);
+  mesh(B(2.9, 0.01, 0.01), M.led, cx, FY + H - 0.02, 0.06, booth, false, false);
+
+  // 2. Art Display: P1 (pic/01.jpeg Gold Foxy, 0.98 × 1.28 m)
+  const art1X = -5.70, art1Y = FY + 1.82;
+  place(
+    makeFramedPicture(0.98, 1.28, M.p01, 'p01', { pos: [art1X, art1Y, 2.2], target: [art1X, art1Y, 0.05] }, 'P1 · Gold Foxy (01.jpeg)'),
+    art1X, art1Y, 0.05
+  );
+  addExhibitBadge('P1 · ภาพวาด 1 (01.jpeg Gold Foxy)', new V3(art1X, art1Y + 0.85, 0.16), 'art');
+
+  // Floating oak shelves on left section (x = -6.85)
+  [FY + 1.40, FY + 2.10].forEach((y) => {
+    mesh(B(0.95, 0.035, 0.24), M.oak, -6.85, y, 0.14);
+    mesh(B(0.90, 0.006, 0.012), M.led, -6.85, y - 0.02, 0.24, booth, false, false);
+  });
+  place(makePlant({ potR: 0.06, potH: 0.11, tree: false, crown: [0.11, 0.09, 0.11], leaves: 40, leafSize: 0.04 }), -7.10, FY + 1.40 + 0.02, 0.14);
+  place(makeBooks(3), -6.65, FY + 1.40 + 0.02, 0.14);
+  place(makeBowl(0.08, M.walnut), -6.85, FY + 2.10 + 0.02, 0.14);
+
+  // 3. Sculpture S1 on Travertine Pedestal
+  const ped1X = -6.80, ped1Z = 1.10, ped1H = 0.90;
   mesh(B(0.44, ped1H, 0.44, 0.01), M.travertine, ped1X, FY + ped1H / 2, ped1Z);
   mesh(B(0.40, 0.025, 0.40), M.basalt, ped1X, FY + 0.012, ped1Z);
-  // Foxy faces towards the entrance walkway to welcome incoming visitors
-  place(nextSculpture(), ped1X, FY + ped1H, ped1Z, booth, -0.35);
-  addExhibitBadge('S1 · ประติมากรรม 1 — Foxy (50 cm)', new V3(ped1X, FY + ped1H + SCULPT_H + 0.15, ped1Z));
+  place(nextSculpture(), ped1X, FY + ped1H, ped1Z, booth, -0.25);
+  addExhibitBadge('S1 · ประติมากรรม Foxy (50 cm)', new V3(ped1X, FY + ped1H + SCULPT_H + 0.15, ped1Z));
 
-  // High-intensity spotlight from front-top angled onto Foxy S1
   const spot1 = addAccent(new THREE.SpotLight(0xfff2df, 7.5, 5.0, 0.38, 0.5, 2), 7.5);
-  spot1.position.set(ped1X - 0.15, FY + H - 0.15, ped1Z + 0.75);
+  spot1.position.set(ped1X, FY + H - 0.15, ped1Z + 0.75);
   spot1.target.position.set(ped1X, FY + ped1H + 0.25, ped1Z);
   booth.add(spot1, spot1.target);
 
-  // Soft warm fill light directly illuminating Foxy's face and envelope
-  const fill1 = addAccent(new THREE.PointLight(0xffe8ce, 2.5, 2.8, 2), 2.5);
-  fill1.position.set(ped1X - 0.25, FY + ped1H + 0.35, ped1Z + 0.65);
-  booth.add(fill1);
+  // 4. Seating Vignette: Pair of Cream Bouclé Armchairs & Travertine Table
+  // Area Rug (Woven Wool, 2.3 × 1.8 m)
+  mesh(B(2.30, 0.005, 1.80, 0.04), M.boucle, cx, FY + 0.003, 1.75, booth, false, true);
 
-  // Floating oak shelves on left section (x = -6.65, width 1.10)
-  const shelfY = [FY + 1.45, FY + 2.15];
-  shelfY.forEach((y) => {
-    mesh(B(1.1, 0.04, 0.26), M.oak, -6.65, y, 0.15);
-    mesh(B(1.0, 0.008, 0.015), M.led, -6.65, y - 0.025, 0.26, booth, false, false);
-  });
-  place(makePlant({ potR: 0.07, potH: 0.12, tree: false, crown: [0.12, 0.1, 0.12], leaves: 45, leafSize: 0.04 }), -6.95, shelfY[0] + 0.02, 0.15);
-  place(makeBowl(0.10), -6.45, shelfY[0] + 0.02, 0.15);
-  place(makeBooks(3), -6.80, shelfY[1] + 0.02, 0.15);
-  place(makeBowl(0.08, M.walnut), -6.35, shelfY[1] + 0.02, 0.15);
+  // Left Armchair (angled right)
+  makeArmchair(-6.60, 1.70, 0.35, M.boucle);
+  // Right Armchair (angled left)
+  makeArmchair(-5.40, 1.70, -0.35, M.boucle);
 
-  // Slim wall base cabinet along the back wall
-  const cabW = 1.6, cabX = -4.10;
-  mesh(B(cabW, 0.82, 0.40), M.olive, cabX, FY + 0.41, 0.22);
-  mesh(B(cabW + 0.04, 0.04, 0.44), M.marble, cabX, FY + 0.84, 0.22);
-  place(makeBouquet(), cabX + 0.35, FY + 0.87, 0.22);
-  place(makeFruitBowl(), cabX - 0.35, FY + 0.87, 0.22);
+  // Round Travertine Low Coffee Table (diameter 0.70m, height 0.38m)
+  const tabX = cx, tabZ = 1.70;
+  mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.035, 32), M.travertine, tabX, FY + 0.36, tabZ);
+  mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.34, 24), M.walnut, tabX, FY + 0.17, tabZ);
+  mesh(new THREE.CylinderGeometry(0.26, 0.26, 0.01, 24), M.brassSatin, tabX, FY + 0.01, tabZ);
+  place(makeBowl(0.09, M.brassSatin), tabX, FY + 0.38, tabZ);
 
-  // Overhead beam + brass dome pendants
-  mesh(B(4.6, 0.10, 0.10), M.oak, cx, FY + H - 0.14, 1.4);
-  [-5.8, -4.2].forEach((x) => makePendant(x, 1.4, FY + 2.05));
-
-  // Corner olive tree against wall
-  place(makePlant({ potR: 0.22, potH: 0.48, potMat: M.terracotta, trunkH: 1.3, crown: [0.46, 0.44, 0.46], leaves: 220 }), -7.1, FY, 0.70);
-}
-
-function makePendant(x, z, bottomY) {
-  const top = FY + H - 0.2;
-  mesh(new THREE.CylinderGeometry(0.004, 0.004, top - bottomY - 0.2, 6), M.blackMetal, x, (top + bottomY + 0.2) / 2, z);
-  mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.06, 16), M.brass, x, bottomY + 0.22, z);
-  mesh(new THREE.SphereGeometry(0.22, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2), M.brass, x, bottomY, z).material.side = THREE.DoubleSide;
-  mesh(new THREE.SphereGeometry(0.04, 16, 12), M.bulb, x, bottomY + 0.03, z, booth, false, false);
-  const l = addAccent(new THREE.PointLight(0xffc27a, 1.6, 3.5, 2), 1.6);
-  l.position.set(x, bottomY - 0.05, z);
-  booth.add(l);
+  // Slim Brass Floor Lamp
+  makeFloorLamp(-7.15, 2.15);
 }
 
 // ---------------------------------------------------------------------------
-// Room 2 — Central Slat Hall & Entrance Foyer (x −2.5 … 2.5)
+// BLOCK 2 (x: -4.5 … -1.5, Center -3.0)
+// Theme: Oak Slat Acoustic Lounge
+// Art: P2 (pic/02.jpeg Abstract Yellow/Blue) & P3 (pic/03.jpeg Abstract Blue/Red)
+// Seating: Modern Walnut Low Sofa in Oatmeal Linen, Circular Jute Rug
 // ---------------------------------------------------------------------------
-function buildLiving() {
-  // Dark backing + oak slat feature wall (4.8 m)
-  registerWall(mesh(B(4.8, H, 0.02), std(0x24180f, 0.8), 0, FY + H / 2, 0.01));
-  const slatGeo = new THREE.BoxGeometry(0.045, H, 0.035);
-  const count = 58;
-  const slats = new THREE.InstancedMesh(slatGeo, M.oakV, count);
-  const d = new THREE.Object3D();
-  for (let i = 0; i < count; i++) {
-    d.position.set(-2.28 + i * 0.08, FY + H / 2, 0.04);
-    d.updateMatrix();
-    slats.setMatrixAt(i, d.matrix);
+function buildBlock2() {
+  const cx = -3.0;
+
+  // 1. Distinct Wall Display: Vertical Oak Slat Feature Wall
+  registerWall(mesh(B(3.0, H, 0.02), std(0x22170f, 0.8), cx, FY + H / 2, 0.01), 'wall');
+  const slatGeo = new THREE.BoxGeometry(0.042, H, 0.032);
+  const slatCount = 35;
+  const startX = cx - 1.40;
+  const slatStep = 2.80 / (slatCount - 1);
+  for (let i = 0; i < slatCount; i++) {
+    registerWall(mesh(slatGeo, M.oakV, startX + i * slatStep, FY + H / 2, 0.038), 'slat');
   }
-  slats.castShadow = slats.receiveShadow = true;
-  booth.add(slats);
+  registerWall(mesh(B(3.02, 0.04, 0.08), M.walnut, cx, FY + H + 0.02, 0.04), 'trim');
+  mesh(B(2.9, 0.01, 0.01), M.led, cx, FY + 0.01, 0.065, booth, false, false);
+  mesh(B(2.9, 0.01, 0.01), M.led, cx, FY + H - 0.02, 0.065, booth, false, false);
 
-  // Floor wash + top cove LEDs (crisp, subtle)
-  mesh(B(4.8, 0.01, 0.01), M.led, 0, FY + 0.01, 0.07, booth, false, false);
-  mesh(B(4.8, 0.01, 0.01), M.led, 0, FY + H - 0.01, 0.07, booth, false, false);
+  // 2. Art Display: P2 (pic/02.jpeg, 0.90 × 0.90 m) and P3 (pic/03.jpeg, 0.90 × 0.90 m)
+  const p2X = -3.70, p2Y = FY + 1.82;
+  place(
+    makeFramedPicture(0.90, 0.90, M.p02, 'p02', { pos: [p2X, p2Y, 2.1], target: [p2X, p2Y, 0.06] }, 'P2 · Abstract Yellow/Blue (02.jpeg)'),
+    p2X, p2Y, 0.06
+  );
+  addExhibitBadge('P2 · ภาพวาด 2 (02.jpeg)', new V3(p2X, p2Y + 0.65, 0.16), 'art');
 
-  // --- Painting 2 (P2) on left slat wall (0.95 × 1.27 m) ---
-  place(makeFramedPicture(0.95, 1.27, M.art2, 'art2', { pos: [-1.35, FY + 1.80, 2.25], target: [-1.35, FY + 1.80, 0.06] }), -1.35, FY + 1.80, 0.06);
-  addExhibitBadge('P2 · ภาพวาด 2 (0.95×1.27 m)', new V3(-1.35, FY + 2.70, 0.18), true);
+  const p3X = -2.30, p3Y = FY + 1.82;
+  place(
+    makeFramedPicture(0.90, 0.90, M.p03, 'p03', { pos: [p3X, p3Y, 2.1], target: [p3X, p3Y, 0.06] }, 'P3 · Abstract Blue/Red (03.jpeg)'),
+    p3X, p3Y, 0.06
+  );
+  addExhibitBadge('P3 · ภาพวาด 3 (03.jpeg)', new V3(p3X, p3Y + 0.65, 0.16), 'art');
 
-  // --- Painting 3 (P3) on right slat wall (0.95 × 1.27 m) ---
-  place(makeFramedPicture(0.95, 1.27, M.art3, 'art3', { pos: [0.85, FY + 1.80, 2.25], target: [0.85, FY + 1.80, 0.06] }), 0.85, FY + 1.80, 0.06);
-  addExhibitBadge('P3 · ภาพวาด 3 (0.95×1.27 m)', new V3(0.85, FY + 2.70, 0.18), true);
+  // 3. Seating Vignette: Modern Walnut Low Sofa & Organic Coffee Table
+  // Circular Jute Rug (diameter 2.10 m)
+  mesh(new THREE.CircleGeometry(1.05, 40).rotateX(-Math.PI / 2), M.jute, cx, FY + 0.003, 1.65, booth, false, true);
 
-  // --- Sculpture 2 (S2) on the Showcase Pedestal behind Peek Window ---
-  const foyerPedX = 0, foyerPedZ = 1.65, foyerPedH = 0.95;
-  mesh(B(0.46, foyerPedH, 0.46, 0.01), M.travertine, foyerPedX, FY + foyerPedH / 2, foyerPedZ);
-  mesh(B(0.42, 0.025, 0.42), M.basalt, foyerPedX, FY + 0.012, foyerPedZ);
-  // Foxy faces straight forward directly through the peek window towards outside visitors!
-  place(nextSculpture(), foyerPedX, FY + foyerPedH, foyerPedZ, booth, 0.0);
-  addExhibitBadge('S2 · ประติมากรรม 2 — Foxy (50 cm)', new V3(foyerPedX, FY + foyerPedH + SCULPT_H + 0.15, foyerPedZ));
+  // 2-Seater Walnut Lounge Sofa
+  makeLoungeSofa(cx, 1.15, 0, 1.90, M.linen);
 
-  // Front Key Spotlight shining right through window onto Foxy's face
-  const spot2 = addAccent(new THREE.SpotLight(0xfff5e6, 8.5, 5.5, 0.38, 0.5, 2), 8.5);
-  spot2.position.set(0, FY + H - 0.15, foyerPedZ + 0.85);
-  spot2.target.position.set(0, FY + foyerPedH + 0.25, foyerPedZ);
-  booth.add(spot2, spot2.target);
+  // Low Dark Walnut Organic Coffee Table
+  const ctX = cx, ctZ = 1.85;
+  mesh(B(0.95, 0.04, 0.48, 0.03), M.walnut, ctX, FY + 0.28, ctZ);
+  mesh(new THREE.CylinderGeometry(0.02, 0.015, 0.26, 12), M.blackMetal, ctX - 0.38, FY + 0.13, ctZ - 0.16);
+  mesh(new THREE.CylinderGeometry(0.02, 0.015, 0.26, 12), M.blackMetal, ctX + 0.38, FY + 0.13, ctZ - 0.16);
+  mesh(new THREE.CylinderGeometry(0.02, 0.015, 0.26, 12), M.blackMetal, ctX, FY + 0.13, ctZ + 0.16);
+  place(makeFruitBowl(), ctX, FY + 0.30, ctZ);
 
-  // Dedicated fill light on S2 showcase pedestal
-  const fill2 = addAccent(new THREE.PointLight(0xffebd2, 3.0, 3.2, 2), 3.0);
-  fill2.position.set(0, FY + foyerPedH + 0.35, foyerPedZ + 0.70);
-  booth.add(fill2);
+  // Low Divider Credenza between Block 2 & 1 (holding Sculpture S2)
+  const credX = -4.40, credZ = 0.85, credH = 0.58;
+  mesh(B(0.36, credH, 0.90, 0.01), M.walnut, credX, FY + credH / 2, credZ);
+  mesh(B(0.38, 0.025, 0.92, 0.005), M.travertine, credX, FY + credH + 0.012, credZ);
+  place(nextSculpture(), credX, FY + credH + 0.025, credZ, booth, 0.30);
+  addExhibitBadge('S2 · ประติมากรรม Foxy (50 cm)', new V3(credX, FY + credH + SCULPT_H + 0.15, credZ));
+}
 
-  // Subtle architectural brass inlay border on the floor defining the gallery walkway
-  mesh(B(4.8, 0.003, 0.015), M.brassSatin, 0, FY + 0.002, 0.45, booth, false, false);
+// ---------------------------------------------------------------------------
+// BLOCK 3 (x: -1.5 … +1.5, Center 0.0 - Central Showcase Lounge)
+// Theme: Calacatta Gold Marble Pavilion & Centerpiece Foxy Sculpture
+// Art: P4 (pic/05.jpeg Wide Blue Foxy Master Graffiti, 1.80 × 0.86 m)
+// Sculpture: S3 (Master Foxy 50 cm on Grand Travertine Plinth)
+// Seating: Curved Modular Daybed / Bench in Saddle Camel Leather
+// ---------------------------------------------------------------------------
+function buildBlock3() {
+  const cx = 0.0;
 
-  // Minimalist brass arc lamp hugging the left wall boundary
-  makeArcLamp(-2.15, 0.38, new V3(-1.40, FY + 1.95, 0.55));
+  // 1. Distinct Wall Display: Calacatta Gold Marble Slab with Fluted Walnut Frame
+  registerWall(mesh(B(3.0, H, 0.02), M.plaster, cx, FY + H / 2, 0.01), 'wall');
+  // Marble central feature slab (2.5m × 2.6m)
+  registerWall(mesh(B(2.50, 2.60, 0.035), M.marble, cx, FY + 1.40, 0.028), 'wall');
+  // Fluted walnut side pilasters
+  registerWall(mesh(B(0.20, 2.60, 0.05), M.walnut, -1.35, FY + 1.40, 0.035), 'trim');
+  registerWall(mesh(B(0.20, 2.60, 0.05), M.walnut, 1.35, FY + 1.40, 0.035), 'trim');
+  // Backlit halo cove around marble slab
+  mesh(B(2.56, 0.01, 0.01), M.led, cx, FY + 2.70, 0.04, booth, false, false);
+  mesh(B(2.56, 0.01, 0.01), M.led, cx, FY + 0.10, 0.04, booth, false, false);
 
-  // --- Sculpture S6 on slim wall credenza (between slat wall & partition) ---
-  const credX = 1.80, credZ = 0.38, credH = 0.58;
-  mesh(B(1.2, credH, 0.36, 0.01), M.walnut, credX, FY + credH / 2, credZ);
-  mesh(B(1.24, 0.03, 0.38, 0.005), M.travertine, credX, FY + credH + 0.015, credZ);
-  // Foxy faces slightly into the room walkway
-  place(nextSculpture(), credX, FY + credH + 0.03, credZ, booth, -0.15);
-  addExhibitBadge('S6 · ประติมากรรม 6 — Foxy (50 cm)', new V3(credX, FY + credH + SCULPT_H + 0.15, credZ));
+  // Exhibition Title Badge overhead: "MARKETING NAIIN · FOXY EXHIBITION"
+  const signMat = new THREE.MeshStandardMaterial({
+    map: logoTexture('MARKETING NAIIN', 'FOXY EXHIBITION · ART PAVILION'),
+    transparent: true,
+    color: 0xffffff,
+    emissive: 0xffd9a0,
+    roughness: 0.5,
+  });
+  signMat.emissiveMap = signMat.map;
+  signMat.emissiveIntensity = 0.95;
+  glowMats.push({ mat: signMat, base: 0.95 });
+  registerWall(mesh(new THREE.PlaneGeometry(2.10, 0.26), signMat, cx, FY + 2.82, 0.045, booth, false, false), 'sign');
 
-  const spot6 = addAccent(new THREE.SpotLight(0xfff2df, 7.0, 5.0, 0.38, 0.5, 2), 7.0);
-  spot6.position.set(credX, FY + H - 0.15, credZ + 0.75);
-  spot6.target.position.set(credX, FY + credH + 0.25, credZ);
-  booth.add(spot6, spot6.target);
+  // 2. Art Display: P4 (pic/05.jpeg Wide Blue Foxy Master Graffiti, 1.80 × 0.86 m)
+  const p4Y = FY + 1.95;
+  place(
+    makeFramedPicture(1.80, 0.86, M.p05, 'p05', { pos: [0, p4Y, 2.3], target: [0, p4Y, 0.06] }, 'P4 · Wide Master Graffiti (05.jpeg)'),
+    0, p4Y, 0.06
+  );
+  addExhibitBadge('P4 · ผลงานมาสเตอร์กราฟฟิตี้ (05.jpeg)', new V3(0, p4Y + 0.65, 0.16), 'art');
 
-  const fill6 = addAccent(new THREE.PointLight(0xffe2bf, 2.2, 2.5, 2), 2.2);
-  fill6.position.set(credX, FY + credH + 0.32, credZ + 0.50);
-  booth.add(fill6);
+  // 3. Centerpiece Sculpture S3 on Grand Travertine & Basalt Plinth
+  const ped3Z = 1.45, ped3H = 0.95;
+  mesh(B(0.50, ped3H, 0.50, 0.015), M.travertine, cx, FY + ped3H / 2, ped3Z);
+  mesh(B(0.44, 0.03, 0.44), M.basalt, cx, FY + 0.015, ped3Z);
+  mesh(B(0.48, 0.015, 0.48), M.brassSatin, cx, FY + ped3H + 0.008, ped3Z);
+  place(nextSculpture(), cx, FY + ped3H + 0.016, ped3Z, booth, 0.0);
+  addExhibitBadge('S3 · ประติมากรรมมาสเตอร์ Foxy (50 cm)', new V3(cx, FY + ped3H + SCULPT_H + 0.18, ped3Z));
+
+  // Front Key Spotlight directly illuminating Master Foxy S3
+  const spot3 = addAccent(new THREE.SpotLight(0xfff6e8, 9.0, 5.5, 0.36, 0.5, 2), 9.0);
+  spot3.position.set(0, FY + H - 0.15, ped3Z + 0.95);
+  spot3.target.position.set(0, FY + ped3H + 0.25, ped3Z);
+  booth.add(spot3, spot3.target);
+
+  const fill3 = addAccent(new THREE.PointLight(0xffecd2, 3.2, 3.0, 2), 3.2);
+  fill3.position.set(0, FY + ped3H + 0.35, ped3Z + 0.70);
+  booth.add(fill3);
+
+  // 4. Seating Vignette: Curved Modular Daybed / Bench in Saddle Leather
+  // Oval Designer Rug (2.40 × 1.60 m)
+  mesh(B(2.40, 0.005, 1.60, 0.06), M.linen, cx, FY + 0.003, 2.05, booth, false, true);
+
+  // Curved Low-Profile Leather Bench (framing the pedestal)
+  makeLeatherDaybed(cx, 2.30, 0);
+
+  // Round Fluted Walnut Side Table
+  mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.36, 32), M.walnut, -0.95, FY + 0.18, 1.95);
+  mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.02, 32), M.marble, -0.95, FY + 0.37, 1.95);
+  place(makeBowl(0.08, M.brassSatin), -0.95, FY + 0.38, 1.95);
+}
+
+// ---------------------------------------------------------------------------
+// BLOCK 4 (x: +1.5 … +4.5, Center +3.0)
+// Theme: Japandi Olive Limewash & Recessed Walnut Niche Lounge
+// Art: P5 (pic/04.jpeg Abstract Green Canvas) + Classic Metallic Foxy Oil Painting
+// Sculpture: S4 Foxy (50 cm) on Travertine Plinth
+// Seating: Pair of Scandinavian Oak Armchairs & Travertine Disc Table
+// ---------------------------------------------------------------------------
+function buildBlock4() {
+  const cx = 3.0;
+
+  // 1. Distinct Wall Display: Olive-Cream Limewash with Recessed Display Niche
+  registerWall(mesh(B(3.0, H, 0.02), M.olivePlaster, cx, FY + H / 2, 0.01), 'wall');
+  registerWall(mesh(B(3.02, 0.04, 0.08), M.walnut, cx, FY + H + 0.02, 0.04), 'trim');
+
+  // Recessed illuminated display niche in solid walnut
+  const nicheW = 1.10, nicheH = 1.50, nicheD = 0.24;
+  const nicheX = 2.35, nicheY = FY + 1.70;
+  mesh(B(nicheW, 0.03, nicheD), M.oak, nicheX, nicheY - nicheH / 2, nicheD / 2);
+  mesh(B(nicheW, 0.03, nicheD), M.oak, nicheX, nicheY + nicheH / 2, nicheD / 2);
+  mesh(B(0.03, nicheH, nicheD), M.oak, nicheX - nicheW / 2, nicheY, nicheD / 2);
+  mesh(B(0.03, nicheH, nicheD), M.oak, nicheX + nicheW / 2, nicheY, nicheD / 2);
+  mesh(B(nicheW - 0.04, 0.01, 0.01), M.led, nicheX, nicheY + nicheH / 2 - 0.02, 0.04, booth, false, false);
+
+  // 2. Art Display: P5 (pic/04.jpeg Green Canvas, 0.90 × 0.90 m)
+  place(
+    makeFramedPicture(0.85, 0.85, M.p04, 'p04', { pos: [nicheX, nicheY, 2.1], target: [nicheX, nicheY, 0.06] }, 'P5 · Abstract Green (04.jpeg)'),
+    nicheX, nicheY + 0.10, 0.06
+  );
+  addExhibitBadge('P5 · ภาพวาด 5 (04.jpeg Green)', new V3(nicheX, nicheY + 0.70, 0.16), 'art');
+
+  // Classic Oil Painting (Burning Steel Foxy) mounted at x = +3.65
+  const classicX = 3.65, classicY = FY + 1.82;
+  place(
+    makeFramedPicture(0.82, 1.15, M.classic1, 'classic1', { pos: [classicX, classicY, 2.1], target: [classicX, classicY, 0.05] }, 'Classic Oil · Burning Foxy'),
+    classicX, classicY, 0.05
+  );
+  addExhibitBadge('ภาพสีน้ำมันคลาสสิก (Foxy Steel)', new V3(classicX, classicY + 0.78, 0.16), 'art');
+
+  // 3. Sculpture S4 on Niche Plinth
+  const ped4X = nicheX, ped4Z = 0.55, ped4H = 0.65;
+  mesh(B(0.38, ped4H, 0.38, 0.01), M.travertine, ped4X, FY + ped4H / 2, ped4Z);
+  place(nextSculpture(), ped4X, FY + ped4H, ped4Z, booth, 0.15);
+  addExhibitBadge('S4 · ประติมากรรม Foxy (50 cm)', new V3(ped4X, FY + ped4H + SCULPT_H + 0.15, ped4Z));
+
+  // 4. Seating Vignette: Scandinavian Oak Armchairs & Travertine Disc Table
+  // Textured Neutral Rug (2.3 × 1.8 m)
+  mesh(B(2.30, 0.005, 1.80, 0.04), M.fabric, cx, FY + 0.003, 1.75, booth, false, true);
+
+  // Left Oak Armchair
+  makeOakArmchair(cx - 0.60, 1.70, 0.35);
+  // Right Oak Armchair
+  makeOakArmchair(cx + 0.60, 1.70, -0.35);
+
+  // Travertine Disc Coffee Table with Brass Tripod Legs
+  const t4X = cx, t4Z = 1.70;
+  mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.03, 32), M.travertine, t4X, FY + 0.38, t4Z);
+  mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.36, 12), M.brass, t4X - 0.18, FY + 0.18, t4Z - 0.10);
+  mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.36, 12), M.brass, t4X + 0.18, FY + 0.18, t4Z - 0.10);
+  mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.36, 12), M.brass, t4X, FY + 0.18, t4Z + 0.20);
+  place(makeBouquet(), t4X, FY + 0.40, t4Z);
+
+  // Designer Arc Floor Lamp
+  makeArcLamp(4.25, 0.45, new V3(3.40, FY + 2.05, 1.55));
+}
+
+// ---------------------------------------------------------------------------
+// BLOCK 5 (x: +4.5 … +7.5, Center +6.0 - VIP Photo Lounge)
+// Theme: Warm Walnut Wainscoting & Limewash Photo Studio Wall
+// Art: P6 (pic/06.jpeg Sun & Lightning Master Graffiti, 1.80 × 0.90 m)
+// Sculpture: S5 Selfie Foxy (50 cm on Travertine Pedestal beside Sofa)
+// Seating: Iconic Curved Designer Sofa in Warm Bouclé with Velvet Cushions
+// ---------------------------------------------------------------------------
+function buildBlock5() {
+  const cx = 6.0;
+
+  // 1. Distinct Wall Display: Lower Walnut Wainscoting + Upper Warm Limewash
+  // Upper Limewash Wall
+  registerWall(mesh(B(3.0, H - 1.10, 0.02), M.limewash, cx, FY + 1.10 + (H - 1.10) / 2, 0.01), 'wall');
+  // Lower Walnut Fluted Wainscoting (height 1.10 m)
+  registerWall(mesh(B(3.0, 1.10, 0.04), M.walnut, cx, FY + 0.55, 0.02), 'wall');
+  registerWall(mesh(B(3.02, 0.04, 0.08), M.walnut, cx, FY + 1.10 + 0.02, 0.04), 'trim'); // dado rail
+  registerWall(mesh(B(3.02, 0.04, 0.08), M.walnut, cx, FY + H + 0.02, 0.04), 'trim');     // top cornice
+  mesh(B(2.9, 0.01, 0.01), M.led, cx, FY + 1.12, 0.045, booth, false, false);
+
+  // Photo Spot Badge on the wall
+  const photoBadgeMat = new THREE.MeshStandardMaterial({
+    map: logoTexture('MARKETING NAIIN', '📸 SIGNATURE PHOTO LOUNGE'),
+    transparent: true,
+    color: 0xffffff,
+    emissive: 0xffd9a0,
+    roughness: 0.5,
+  });
+  photoBadgeMat.emissiveMap = photoBadgeMat.map;
+  photoBadgeMat.emissiveIntensity = 0.9;
+  glowMats.push({ mat: photoBadgeMat, base: 0.9 });
+  registerWall(mesh(new THREE.PlaneGeometry(1.60, 0.22), photoBadgeMat, cx, FY + H - 0.20, 0.045, booth, false, false), 'sign');
+
+  // 2. Art Display: P6 (pic/06.jpeg Wide Graffiti Masterpiece, 1.80 × 0.90 m)
+  const p6Y = FY + 2.05;
+  place(
+    makeFramedPicture(1.80, 0.90, M.p06, 'p06', { pos: [cx, p6Y, 2.3], target: [cx, p6Y, 0.05] }, 'P6 · Wide Sun Graffiti (06.jpeg)'),
+    cx, p6Y, 0.05
+  );
+  addExhibitBadge('P6 · ผลงานกราฟฟิตี้ (06.jpeg Sun/Lightning)', new V3(cx, p6Y + 0.65, 0.16), 'art');
+
+  // Classic Oil Painting (Flame Foxy) on the right
+  place(
+    makeFramedPicture(0.78, 1.10, M.classic2, 'classic2', { pos: [7.10, FY + 1.80, 2.0], target: [7.10, FY + 1.80, 0.05] }, 'Classic Oil · Flame Foxy'),
+    7.10, FY + 1.80, 0.05
+  );
+
+  // 3. 📸 PHOTO SPOT: Iconic Curved Bouclé Designer Sofa
+  const sofaX = 6.00, sofaZ = 1.15;
+  makeCurvedSofa(sofaX, sofaZ, 0);
+
+  // Companion Sculpture S5 (Selfie Foxy) placed right next to sofa left arm!
+  const ped5X = 4.85, ped5Z = 1.05, ped5H = 0.76;
+  mesh(B(0.44, ped5H, 0.44, 0.01), M.travertine, ped5X, FY + ped5H / 2, ped5Z);
+  mesh(B(0.40, 0.025, 0.40), M.basalt, ped5X, FY + 0.012, ped5Z);
+  place(nextSculpture(), ped5X, FY + ped5H, ped5Z, booth, 0.18);
+  addExhibitBadge('S5 · ประติมากรรม Foxy (50 cm)', new V3(ped5X, FY + ped5H + SCULPT_H + 0.15, ped5Z));
+
+  // Dedicated Photo Spot Badge
+  addExhibitBadge('📸 มุมถ่ายรูป · Photo Spot (Sofa & Foxy)', new V3(5.50, FY + 1.55, 1.15), 'photo');
+
+  // Studio Key Spotlight aimed directly at Foxy S5 & Sofa
+  const spot5 = addAccent(new THREE.SpotLight(0xfff5e6, 8.5, 5.5, 0.40, 0.5, 2), 8.5);
+  spot5.position.set(ped5X, FY + H - 0.15, ped5Z + 0.95);
+  spot5.target.position.set(ped5X, FY + ped5H + 0.25, ped5Z);
+  booth.add(spot5, spot5.target);
+
+  const fill5 = addAccent(new THREE.PointLight(0xffebd2, 2.8, 2.8, 2), 2.8);
+  fill5.position.set(ped5X, FY + ped5H + 0.35, ped5Z + 0.65);
+  booth.add(fill5);
+
+  // Flattering studio portrait spotlight directly lighting visitors on the sofa
+  const portraitSpot = addAccent(new THREE.SpotLight(0xffeedd, 6.5, 5.5, 0.48, 0.5, 2), 6.5);
+  portraitSpot.position.set(5.50, FY + H - 0.15, 2.25);
+  portraitSpot.target.position.set(5.50, FY + 0.65, sofaZ);
+  booth.add(portraitSpot, portraitSpot.target);
+
+  // Designer Round Travertine & Brass Side Table next to sofa right arm
+  const tab5X = 7.15, tab5Z = 1.15;
+  mesh(new THREE.CylinderGeometry(0.20, 0.20, 0.03, 24), M.travertine, tab5X, FY + 0.48, tab5Z);
+  mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.46, 12), M.brass, tab5X, FY + 0.24, tab5Z);
+  mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.02, 24), M.travertine, tab5X, FY + 0.01, tab5Z);
+  place(makeBowl(0.08, M.walnut), tab5X, FY + 0.50, tab5Z);
+
+  // Sculpture S6 on right plinth
+  const ped6X = 7.15, ped6Z = 0.55, ped6H = 0.90;
+  mesh(B(0.38, ped6H, 0.38, 0.01), M.basalt, ped6X, FY + ped6H / 2, ped6Z);
+  place(nextSculpture(), ped6X, FY + ped6H, ped6Z, booth, -0.25);
+  addExhibitBadge('S6 · ประติมากรรม Foxy (50 cm)', new V3(ped6X, FY + ped6H + SCULPT_H + 0.15, ped6Z));
+
+  // Corner Lush Olive Tree in Terracotta Pot
+  place(makePlant({ potR: 0.22, potH: 0.46, potMat: M.terracotta, trunkH: 1.25, crown: [0.48, 0.42, 0.48], leaves: 240 }), 7.20, FY, 2.20);
+}
+
+// ---------------------------------------------------------------------------
+// Furniture Builders for the 5 Lounge Vignettes
+// ---------------------------------------------------------------------------
+function makeArmchair(x, z, rotY = 0, seatMat = M.boucle) {
+  const grp = new THREE.Group();
+  grp.position.set(x, FY, z);
+  grp.rotation.y = rotY;
+
+  // 4 angled tapered walnut legs with brass tips
+  const legGeo = new THREE.CylinderGeometry(0.016, 0.011, 0.16, 12);
+  const ferruleGeo = new THREE.CylinderGeometry(0.018, 0.013, 0.035, 12);
+  [[-0.26, -0.24], [0.26, -0.24], [-0.26, 0.24], [0.26, 0.24]].forEach(([lx, lz]) => {
+    mesh(legGeo, M.walnut, lx, 0.08, lz, grp);
+    mesh(ferruleGeo, M.brass, lx, 0.02, lz, grp);
+  });
+
+  // Seat Base Cushion
+  mesh(B(0.68, 0.18, 0.66, 0.06), seatMat, 0, 0.25, 0.02, grp);
+  // Curved Wraparound Backrest
+  const back = mesh(B(0.68, 0.46, 0.16, 0.06), seatMat, 0, 0.48, -0.24, grp);
+  back.rotation.x = -0.06;
+  // Side Armrests
+  mesh(B(0.12, 0.28, 0.58, 0.05), seatMat, -0.34, 0.38, 0.02, grp);
+  mesh(B(0.12, 0.28, 0.58, 0.05), seatMat, 0.34, 0.38, 0.02, grp);
+  // Accent Pillow
+  const p = mesh(B(0.28, 0.28, 0.09, 0.03), M.pillow.rust, 0, 0.38, -0.16, grp);
+  p.rotation.set(-0.1, rand(-0.15, 0.15), 0);
+
+  booth.add(grp);
+  return grp;
+}
+
+function makeOakArmchair(x, z, rotY = 0) {
+  const grp = new THREE.Group();
+  grp.position.set(x, FY, z);
+  grp.rotation.y = rotY;
+
+  // Scandinavian solid oak exposed frame
+  mesh(B(0.04, 0.55, 0.68), M.oak, -0.32, 0.27, 0, grp);
+  mesh(B(0.04, 0.55, 0.68), M.oak, 0.32, 0.27, 0, grp);
+  mesh(B(0.64, 0.03, 0.05), M.oak, 0, 0.54, -0.32, grp); // top rail
+
+  // Textured cushions
+  mesh(B(0.58, 0.16, 0.60, 0.05), M.linen, 0, 0.22, 0.02, grp);
+  const back = mesh(B(0.58, 0.42, 0.14, 0.05), M.linen, 0, 0.44, -0.22, grp);
+  back.rotation.x = -0.10;
+
+  const p = mesh(B(0.28, 0.28, 0.08, 0.03), M.pillow.olive, 0, 0.36, -0.15, grp);
+  p.rotation.set(-0.12, 0.10, 0);
+
+  booth.add(grp);
+  return grp;
+}
+
+function makeLoungeSofa(x, z, rotY = 0, w = 1.90, seatMat = M.linen) {
+  const grp = new THREE.Group();
+  grp.position.set(x, FY, z);
+  grp.rotation.y = rotY;
+
+  // Walnut legs
+  const legGeo = new THREE.CylinderGeometry(0.018, 0.012, 0.14, 12);
+  const ferruleGeo = new THREE.CylinderGeometry(0.020, 0.014, 0.035, 12);
+  const hw = w / 2 - 0.12;
+  [[-hw, -0.26], [hw, -0.26], [-hw, 0.26], [hw, 0.26]].forEach(([lx, lz]) => {
+    mesh(legGeo, M.walnut, lx, 0.07, lz, grp);
+    mesh(ferruleGeo, M.brass, lx, 0.02, lz, grp);
+  });
+
+  // Solid Walnut Base Platform
+  mesh(B(w, 0.05, 0.74, 0.02), M.walnut, 0, 0.165, 0, grp);
+  // Main Seat Cushion
+  mesh(B(w - 0.04, 0.24, 0.70, 0.06), seatMat, 0, 0.31, 0.01, grp);
+  // Backrest Cushion
+  const back = mesh(B(w - 0.04, 0.42, 0.20, 0.06), seatMat, 0, 0.56, -0.24, grp);
+  back.rotation.x = -0.06;
+  // Armrests
+  mesh(B(0.14, 0.26, 0.68, 0.05), seatMat, -w / 2 + 0.07, 0.41, 0.01, grp);
+  mesh(B(0.14, 0.26, 0.68, 0.05), seatMat, w / 2 - 0.07, 0.41, 0.01, grp);
+
+  // Cushions
+  const p1 = mesh(B(0.34, 0.34, 0.11, 0.04), M.pillow.rust, -w * 0.28, 0.46, -0.14, grp);
+  p1.rotation.set(-0.15, 0.25, 0.10);
+  const p2 = mesh(B(0.32, 0.32, 0.11, 0.04), M.pillow.olive, w * 0.28, 0.46, -0.14, grp);
+  p2.rotation.set(-0.15, -0.22, -0.08);
+
+  booth.add(grp);
+  return grp;
+}
+
+function makeCurvedSofa(x, z, rotY = 0) {
+  const grp = new THREE.Group();
+  grp.position.set(x, FY, z);
+  grp.rotation.y = rotY;
+
+  const w = 2.15;
+  const legGeo = new THREE.CylinderGeometry(0.018, 0.012, 0.14, 12);
+  const ferruleGeo = new THREE.CylinderGeometry(0.020, 0.014, 0.035, 12);
+  [[-0.95, -0.26], [0.95, -0.26], [-0.95, 0.26], [0.95, 0.26]].forEach(([lx, lz]) => {
+    mesh(legGeo, M.walnut, lx, 0.07, lz, grp);
+    mesh(ferruleGeo, M.brass, lx, 0.02, lz, grp);
+  });
+
+  // Base platform
+  mesh(B(w, 0.05, 0.74, 0.02), M.walnut, 0, 0.165, 0, grp);
+  // Seat cushion (Warm Bouclé)
+  mesh(B(w - 0.04, 0.25, 0.70, 0.07), M.boucle, 0, 0.315, 0.01, grp);
+  // Curved Backrest cushion
+  const back = mesh(B(w - 0.04, 0.44, 0.22, 0.07), M.boucle, 0, 0.58, -0.24, grp);
+  back.rotation.x = -0.06;
+  // Armrests
+  mesh(B(0.14, 0.28, 0.68, 0.06), M.boucle, -w / 2 + 0.07, 0.42, 0.01, grp);
+  mesh(B(0.14, 0.28, 0.68, 0.06), M.boucle, w / 2 - 0.07, 0.42, 0.01, grp);
+
+  // Accent cushions
+  const p1 = mesh(B(0.34, 0.34, 0.11, 0.04), M.pillow.rust, -0.55, 0.48, -0.13, grp);
+  p1.rotation.set(-0.15, 0.25, 0.10);
+  const p2 = mesh(B(0.32, 0.32, 0.11, 0.04), M.pillow.olive, 0.55, 0.48, -0.13, grp);
+  p2.rotation.set(-0.15, -0.22, -0.08);
+
+  booth.add(grp);
+  return grp;
+}
+
+function makeLeatherDaybed(x, z, rotY = 0) {
+  const grp = new THREE.Group();
+  grp.position.set(x, FY, z);
+  grp.rotation.y = rotY;
+
+  const w = 1.90, d = 0.78;
+  // Tapered walnut legs
+  [[-0.82, -0.30], [0.82, -0.30], [-0.82, 0.30], [0.82, 0.30]].forEach(([lx, lz]) => {
+    mesh(new THREE.CylinderGeometry(0.018, 0.012, 0.16, 12), M.walnut, lx, 0.08, lz, grp);
+    mesh(new THREE.CylinderGeometry(0.020, 0.014, 0.035, 12), M.brass, lx, 0.02, lz, grp);
+  });
+
+  // Walnut subframe
+  mesh(B(w, 0.04, d, 0.015), M.walnut, 0, 0.18, 0, grp);
+  // Tufted Saddle Leather mattress cushion
+  mesh(B(w - 0.04, 0.18, d - 0.04, 0.05), M.leather, 0, 0.29, 0, grp);
+  // Cylindrical Leather Bolster Pillows (Left & Right)
+  const b1 = mesh(new THREE.CylinderGeometry(0.09, 0.09, d - 0.08, 24).rotateX(Math.PI / 2), M.leatherDark, -w / 2 + 0.18, 0.44, 0, grp);
+  const b2 = mesh(new THREE.CylinderGeometry(0.09, 0.09, d - 0.08, 24).rotateX(Math.PI / 2), M.leatherDark, w / 2 - 0.18, 0.44, 0, grp);
+
+  booth.add(grp);
+  return grp;
+}
+
+function makeFloorLamp(x, z) {
+  const grp = new THREE.Group();
+  grp.position.set(x, FY, z);
+
+  // Weighted Travertine Base
+  mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.04, 24), M.travertine, 0, 0.02, 0, grp);
+  // Slender Brass Rod
+  mesh(new THREE.CylinderGeometry(0.008, 0.008, 1.45, 12), M.brass, 0, 0.76, 0, grp);
+  // Fabric Cone Shade
+  mesh(new THREE.ConeGeometry(0.18, 0.24, 24, 1, true), M.shade, 0, 1.45, 0, grp);
+  mesh(new THREE.SphereGeometry(0.03, 12, 10), M.bulb, 0, 1.40, 0, grp, false, false);
+
+  const l = addAccent(new THREE.PointLight(0xffdfb8, 1.5, 3.2, 2), 1.5);
+  l.position.set(0, 1.35, 0);
+  grp.add(l);
+
+  booth.add(grp);
+  return grp;
 }
 
 function makeArcLamp(x, z, end) {
   mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.04, 40), M.marble, x, FY + 0.02, z);
   const start = new V3(x, FY + 0.04, z);
-  const mid = new V3(x + 0.1, FY + 2.35, z + 0.25);
+  const mid = new V3(x - 0.2, FY + 2.35, z + 0.35);
   const curve = new THREE.QuadraticBezierCurve3(start, mid, new V3(end.x, end.y + 0.12, end.z));
   mesh(new THREE.TubeGeometry(curve, 64, 0.012, 10), M.brass, 0, 0, 0);
   const shade = mesh(new THREE.SphereGeometry(0.2, 36, 18, 0, Math.PI * 2, 0, Math.PI / 2), M.brass, end.x, end.y, end.z);
@@ -1260,165 +1391,32 @@ function makeArcLamp(x, z, end) {
 }
 
 // ---------------------------------------------------------------------------
-// Room 3 — East Sculpture Sanctuary & Photo Lounge (x 2.4 … 7.5)
-// ---------------------------------------------------------------------------
-const dimTargets = {};
-
-function makeSofa(x, z, rotY = 0) {
-  const grp = new THREE.Group();
-  grp.position.set(x, FY, z);
-  grp.rotation.y = rotY;
-
-  // 4 angled conical walnut legs with satin brass ferrules
-  const legGeo = new THREE.CylinderGeometry(0.018, 0.012, 0.14, 12);
-  const ferruleGeo = new THREE.CylinderGeometry(0.020, 0.014, 0.035, 12);
-  [[-0.72, -0.26], [0.72, -0.26], [-0.72, 0.26], [0.72, 0.26]].forEach(([lx, lz]) => {
-    mesh(legGeo, M.walnut, lx, 0.07, lz, grp);
-    mesh(ferruleGeo, M.brass, lx, 0.02, lz, grp);
-  });
-
-  // Base platform (Solid Walnut)
-  mesh(B(1.68, 0.05, 0.74, 0.02), M.walnut, 0, 0.165, 0, grp);
-
-  // Main Seat cushion (Warm Oat Textured Bouclé / Linen)
-  mesh(B(1.64, 0.25, 0.70, 0.07), M.linen, 0, 0.315, 0.01, grp);
-
-  // Curved Backrest cushion
-  const back = mesh(B(1.64, 0.44, 0.22, 0.07), M.linen, 0, 0.58, -0.24, grp);
-  back.rotation.x = -0.06;
-
-  // Ergonomic soft rounded armrests (Left & Right)
-  mesh(B(0.14, 0.28, 0.68, 0.06), M.linen, -0.82, 0.42, 0.01, grp);
-  mesh(B(0.14, 0.28, 0.68, 0.06), M.linen, 0.82, 0.42, 0.01, grp);
-
-  // Decorative designer accent cushions
-  const p1 = mesh(B(0.34, 0.34, 0.11, 0.04), M.rust, -0.50, 0.48, -0.13, grp);
-  p1.rotation.set(-0.15, 0.25, 0.10);
-  const p2 = mesh(B(0.32, 0.32, 0.11, 0.04), M.olive, 0.50, 0.48, -0.13, grp);
-  p2.rotation.set(-0.15, -0.22, -0.08);
-
-  booth.add(grp);
-  return grp;
-}
-
-function buildGallery() {
-  const cx = 5.0, uw = 4.8, dpt = 0.38;
-  // Limewash back panel with warm texture
-  registerWall(mesh(B(uw, H - 0.1, 0.02), M.limewash, cx, FY + (H - 0.1) / 2, 0.01), 'wall');
-  // Oak perimeter casing
-  mesh(B(uw + 0.04, 0.05, dpt + 0.02), M.oak, cx, FY + H - 0.05, dpt / 2);
-
-  // ==========================================
-  // 📸 PHOTO SPOT (มุมถ่ายรูป: โซฟาดีไซเนอร์ + ประติมากรรมข้างๆ)
-  // ==========================================
-  const sofaX = 5.15, sofaZ = 0.70;
-  makeSofa(sofaX, sofaZ, 0);
-
-  // Centerpiece Painting P4 (1.40 × 1.05 m) framed on the wall behind the sofa
-  place(makeFramedPicture(1.40, 1.05, M.art4, 'art4', { pos: [sofaX, FY + 1.95, 2.45], target: [sofaX, FY + 1.95, 0.04] }), sofaX, FY + 1.95, 0.04);
-  addExhibitBadge('P4 · ภาพวาด 4 (1.40×1.05 m)', new V3(sofaX, FY + 2.75, 0.16), true);
-
-  // Companion Sculpture S3 on Travertine Pedestal placed right next to sofa left arm!
-  const ped3X = 3.90, ped3Z = 0.70, ped3H = 0.76;
-  mesh(B(0.44, ped3H, 0.44, 0.01), M.travertine, ped3X, FY + ped3H / 2, ped3Z);
-  mesh(B(0.40, 0.025, 0.40), M.basalt, ped3X, FY + 0.012, ped3Z);
-  // Foxy faces forward towards the photo taker and slightly toward the sofa
-  place(nextSculpture(), ped3X, FY + ped3H, ped3Z, booth, 0.12);
-  addExhibitBadge('S3 · ประติมากรรม 3 — Foxy (50 cm)', new V3(ped3X, FY + ped3H + SCULPT_H + 0.15, ped3Z));
-  dimTargets.sculpt = { x: ped3X, z: ped3Z, y: FY + ped3H };
-
-  // Dedicated Photo Spot Badge
-  addExhibitBadge('📸 มุมถ่ายรูป · Photo Spot (Sofa & Foxy)', new V3(4.55, FY + 1.45, 0.85));
-
-  // Dedicated key spotlight aimed directly at Foxy S3 next to sofa
-  const spot3 = addAccent(new THREE.SpotLight(0xfff5e6, 8.5, 5.5, 0.38, 0.5, 2), 8.5);
-  spot3.position.set(ped3X, FY + H - 0.15, ped3Z + 0.85);
-  spot3.target.position.set(ped3X, FY + ped3H + 0.25, ped3Z);
-  booth.add(spot3, spot3.target);
-
-  // Crisp portrait fill light on Foxy S3
-  const fill3 = addAccent(new THREE.PointLight(0xffebd2, 2.8, 2.8, 2), 2.8);
-  fill3.position.set(ped3X, FY + ped3H + 0.35, ped3Z + 0.60);
-  booth.add(fill3);
-
-  // Flattering portrait studio spotlight aimed directly at sofa & sculpture S3
-  const portraitSpot = addAccent(new THREE.SpotLight(0xffeedd, 6.0, 5.5, 0.45, 0.5, 2), 6.0);
-  portraitSpot.position.set(4.55, FY + H - 0.15, 2.10);
-  portraitSpot.target.position.set(4.55, FY + 0.65, sofaZ);
-  booth.add(portraitSpot, portraitSpot.target);
-
-  // Designer round travertine & brass side table next to sofa right arm
-  const tableX = 6.35, tableZ = 0.68;
-  mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.03, 24), M.travertine, tableX, FY + 0.48, tableZ);
-  mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.46, 12), M.brass, tableX, FY + 0.24, tableZ);
-  mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.02, 24), M.travertine, tableX, FY + 0.01, tableZ);
-  place(makeBowl(0.08, M.walnut), tableX, FY + 0.50, tableZ);
-
-  // --- Wall Niches for S4 and S5 ---
-  const nicheW = 0.65, nicheH = 0.95, nicheD = 0.32;
-  const nicheY = FY + 1.55;
-  const nicheXs = [2.85, 6.90];
-
-  nicheXs.forEach((nx, idx) => {
-    // Niche casing
-    mesh(B(nicheW, 0.035, nicheD), M.oak, nx, nicheY - nicheH / 2, nicheD / 2);
-    mesh(B(nicheW, 0.035, nicheD), M.oak, nx, nicheY + nicheH / 2, nicheD / 2);
-    mesh(B(0.035, nicheH, nicheD), M.oak, nx - nicheW / 2, nicheY, nicheD / 2);
-    mesh(B(0.035, nicheH, nicheD), M.oak, nx + nicheW / 2, nicheY, nicheD / 2);
-
-    // Cove LED warm backlighting in the niche
-    mesh(B(nicheW - 0.04, 0.01, 0.01), M.led, nx, nicheY + nicheH / 2 - 0.02, 0.04, booth, false, false);
-    
-    // Direct warm showcase downlight onto Foxy inside niche
-    const nl = addAccent(new THREE.PointLight(0xffeed8, 3.8, 2.2, 2), 3.8);
-    nl.position.set(nx, nicheY + nicheH / 2 - 0.08, 0.22);
-    booth.add(nl);
-
-    // Front soft spot illuminating Foxy's face from the front of the niche
-    const nicheSpot = addAccent(new THREE.SpotLight(0xfff6e6, 5.5, 3.0, 0.5, 0.5, 2), 5.5);
-    nicheSpot.position.set(nx, nicheY + nicheH / 2 + 0.10, 0.65);
-    nicheSpot.target.position.set(nx, nicheY - nicheH / 2 + 0.25, 0.16);
-    booth.add(nicheSpot, nicheSpot.target);
-
-    // Sculpture inside niche (faces forward out of the niche into the room)
-    const angle = idx === 0 ? 0.15 : -0.15;
-    place(nextSculpture(), nx, nicheY - nicheH / 2 + 0.035, 0.16, booth, angle);
-    const labelCode = idx === 0 ? 'S4' : 'S5';
-    const labelNum = idx === 0 ? '4' : '5';
-    addExhibitBadge(`${labelCode} · ประติมากรรม ${labelNum} — Foxy (50 cm)`, new V3(nx, nicheY + 0.36, 0.22));
-  });
-
-  // Corner olive tree against the wall
-  place(makePlant({ potR: 0.22, potH: 0.46, potMat: M.basalt, trunkH: 1.25, crown: [0.48, 0.42, 0.48], leaves: 240 }), 7.15, FY, 0.70);
-}
-
-// ---------------------------------------------------------------------------
-// Lighting
+// Lighting & Environments
 // ---------------------------------------------------------------------------
 let hemi, sun, fill;
 function buildLights() {
   hemi = new THREE.HemisphereLight(0xffd9b0, 0x3b2a1c, 0.55);
   scene.add(hemi);
 
-  sun = new THREE.DirectionalLight(0xffb070, 2.6);
-  sun.position.set(-9, 8, 11);
+  sun = new THREE.DirectionalLight(0xffb070, 2.5);
+  sun.position.set(-8, 9, 11);
   sun.target.position.set(0, 1, 1.5);
   sun.castShadow = true;
   sun.shadow.mapSize.set(4096, 4096);
   const s = sun.shadow.camera;
-  s.left = -10; s.right = 10; s.top = 8; s.bottom = -6; s.near = 1; s.far = 40;
+  s.left = -11; s.right = 11; s.top = 8; s.bottom = -6; s.near = 1; s.far = 40;
   sun.shadow.bias = -0.0004;
   sun.shadow.normalBias = 0.02;
   sun.shadow.radius = 4;
   scene.add(sun, sun.target);
 
-  fill = new THREE.DirectionalLight(0xffe6c8, 0.5);
+  fill = new THREE.DirectionalLight(0xffe6c8, 0.55);
   fill.position.set(10, 6, 8);
   scene.add(fill);
 }
 
 const MODES = {
-  golden: { exposure: 0.98, sunColor: 0xffb070, sun: 2.3, sunPos: [-9, 8, 11], hemiSky: 0xffd9b0, hemiGround: 0x3b2a1c, hemi: 0.52, fill: 0.42, accent: 0.75, glow: 0.65, env: 0.48, bg: 0x14100c },
+  golden: { exposure: 0.98, sunColor: 0xffb070, sun: 2.3, sunPos: [-8, 9, 11], hemiSky: 0xffd9b0, hemiGround: 0x3b2a1c, hemi: 0.52, fill: 0.42, accent: 0.75, glow: 0.65, env: 0.48, bg: 0x14100c },
   day: { exposure: 1.0, sunColor: 0xfff4e6, sun: 2.7, sunPos: [5, 14, 10], hemiSky: 0xffffff, hemiGround: 0x8a7a68, hemi: 0.92, fill: 0.62, accent: 0.45, glow: 0.48, env: 0.82, bg: 0x221d18 },
   night: { exposure: 0.95, sunColor: 0x8fa6ff, sun: 0.2, sunPos: [6, 12, 9], hemiSky: 0x6b5a4a, hemiGround: 0x120c08, hemi: 0.14, fill: 0.08, accent: 1.2, glow: 0.85, env: 0.14, bg: 0x090705 },
 };
@@ -1440,11 +1438,12 @@ function setMode(name) {
 }
 
 // ---------------------------------------------------------------------------
-// Dimensions & zone labels
+// Dimension Lines & Zone Labels (5 Blocks × 3 m)
 // ---------------------------------------------------------------------------
 const dimGroup = new THREE.Group();
 const dimLabels = [];
 const zoneLabels = [];
+
 function dimLine(a, b, text, tick) {
   const mat = new THREE.LineBasicMaterial({ color: 0xf3c98b, depthTest: false, transparent: true });
   const pts = [a, b, a.clone().add(tick), a.clone().sub(tick), b.clone().add(tick), b.clone().sub(tick)];
@@ -1459,54 +1458,64 @@ function dimLine(a, b, text, tick) {
   dimGroup.add(lab);
   dimLabels.push(lab);
 }
+
 function buildAnnotations() {
   scene.add(dimGroup);
   scene.add(exhibitGroup);
-  dimLine(new V3(-W / 2, 0.02, D + 0.45), new V3(W / 2, 0.02, D + 0.45), 'กว้าง 15.00 m', new V3(0, 0, 0.12));
+
+  // Overall Dimensions
+  dimLine(new V3(-W / 2, 0.02, D + 0.45), new V3(W / 2, 0.02, D + 0.45), 'กว้าง 15.00 m (5 บล็อก × 3.00 m)', new V3(0, 0, 0.12));
   dimLine(new V3(-W / 2 - 0.35, FY, 0.05), new V3(-W / 2 - 0.35, FY + H, 0.05), 'สูง 3.00 m', new V3(0.12, 0, 0));
   dimLine(new V3(W / 2 + 0.4, 0.02, 0), new V3(W / 2 + 0.4, 0.02, D), `ลึก ${D.toFixed(2)} m`, new V3(0.12, 0, 0));
-  // Left entrance dimension (1.50 m)
-  dimLine(new V3(-5.75, FY + 2.55, D + 0.10), new V3(-4.25, FY + 2.55, D + 0.10), 'ทางเข้า 1.50 m (ซ้าย)', new V3(0, 0.08, 0));
-  // Center window dimension (3.20 m)
-  dimLine(new V3(-1.60, FY + 2.45, D + 0.10), new V3(1.60, FY + 2.45, D + 0.10), 'หน้าต่างส่องชมงาน 3.20 m', new V3(0, 0.08, 0));
-  // Right exit dimension (1.50 m)
-  dimLine(new V3(4.25, FY + 2.55, D + 0.10), new V3(5.75, FY + 2.55, D + 0.10), 'ทางออก 1.50 m (ขวา)', new V3(0, 0.08, 0));
 
-  const s = dimTargets.sculpt;
-  if (s) dimLine(new V3(s.x + 0.34, s.y, s.z), new V3(s.x + 0.34, s.y + SCULPT_H, s.z), 'ประติมากรรม Foxy 50 cm', new V3(0.05, 0, 0));
+  // 5 Individual 3-meter Block Dimension Lines along the front
+  const blockDefs = [
+    { name: 'บล็อก 1 (3.00 m)', x0: -7.5, x1: -4.5 },
+    { name: 'บล็อก 2 (3.00 m)', x0: -4.5, x1: -1.5 },
+    { name: 'บล็อก 3 (3.00 m)', x0: -1.5, x1: 1.5 },
+    { name: 'บล็อก 4 (3.00 m)', x0: 1.5, x1: 4.5 },
+    { name: 'บล็อก 5 (3.00 m)', x0: 4.5, x1: 7.5 },
+  ];
+  blockDefs.forEach(({ name, x0, x1 }) => {
+    dimLine(new V3(x0, FY + 2.85, D + 0.10), new V3(x1, FY + 2.85, D + 0.10), name, new V3(0, 0.08, 0));
+  });
 
-  [['1', 'West Gallery · เข้าซ้าย', -5.0], ['2', 'Center Slat Hall · หน้าต่าง', 0], ['3', 'East Sanctuary · 📸 มุมถ่ายรูป & ออกขวา', 5.0]].forEach(([k, name, x]) => {
+  // Zone Labels over each of the 5 blocks
+  const zoneInfo = [
+    ['1', 'บล็อก 1 · Earth & Brick Lounge', -6.0],
+    ['2', 'บล็อก 2 · Oak Slat Lounge', -3.0],
+    ['3', 'บล็อก 3 · Center Showcase Lounge', 0.0],
+    ['4', 'บล็อก 4 · Japandi Timber Lounge', 3.0],
+    ['5', 'บล็อก 5 · VIP Photo Lounge 📸', 6.0],
+  ];
+  zoneInfo.forEach(([k, name, x]) => {
     const div = document.createElement('div');
     div.className = 'zone-label';
     div.innerHTML = `<b>${k}</b>${name}`;
     const lab = new CSS2DObject(div);
-    lab.position.set(x, FY + H + 0.45, 1.2);
+    lab.position.set(x, FY + H + 0.45, 1.5);
     scene.add(lab);
     zoneLabels.push(lab);
   });
 }
 
 // ---------------------------------------------------------------------------
-// Camera views
+// Camera Views & Tween
 // ---------------------------------------------------------------------------
 const VIEWS = {
-  overview: { pos: [9.5, 4.8, 11.5], target: [0, 1.2, 1.2] },
-  front: { pos: [0, 1.7, 8.8], target: [0, 1.4, 2.5] },
-  entrance: { pos: [-5.0, 1.65, 5.4], target: [-5.0, 1.35, 2.8] },
-  window: { pos: [0, 1.55, 4.5], target: [0, 1.45, 1.65] },
-  exit: { pos: [5.0, 1.65, 5.4], target: [5.0, 1.35, 2.8] },
-  photospot: { pos: [4.65, 1.35, 2.35], target: [4.65, 0.90, 0.70] },
-  walkthrough: { pos: [-5.0, 1.6, 2.7], target: [4.5, 1.4, 1.5] },
-  room1: { pos: [-4.2, 1.6, 2.6], target: [-5.5, 1.3, 0.8] },
-  room2: { pos: [0, 1.7, 3.2], target: [0, 1.3, 0.6] },
-  room3: { pos: [4.65, 1.55, 2.7], target: [5.0, 1.2, 0.8] },
-  sculptures: { pos: [3.9, 1.45, 2.0], target: [3.9, 1.15, 0.7] },
-  paintings: { pos: [0, 1.9, 6.8], target: [0, 1.65, 0.2] },
-  kitchen: { pos: [-4.2, 1.6, 2.6], target: [-5.5, 1.3, 0.8] },
-  living: { pos: [0, 1.7, 3.2], target: [0, 1.3, 0.6] },
-  gallery: { pos: [4.65, 1.55, 2.7], target: [5.0, 1.2, 0.8] },
-  top: { pos: [0, 18, 1.5], target: [0, 0, 1.5] },
+  overview: { pos: [10.5, 5.2, 12.0], target: [0, 1.3, 1.4] },
+  front: { pos: [0, 1.6, 9.2], target: [0, 1.4, 1.5] },
+  block1: { pos: [-6.0, 1.55, 4.0], target: [-6.0, 1.3, 1.2] },
+  block2: { pos: [-3.0, 1.55, 4.0], target: [-3.0, 1.3, 1.2] },
+  block3: { pos: [0.0, 1.55, 4.0], target: [0.0, 1.3, 1.2] },
+  block4: { pos: [3.0, 1.55, 4.0], target: [3.0, 1.3, 1.2] },
+  block5: { pos: [6.0, 1.55, 4.0], target: [6.0, 1.3, 1.2] },
+  photospot: { pos: [5.6, 1.35, 2.5], target: [5.6, 1.05, 1.1] },
+  walkthrough: { pos: [-6.2, 1.55, 2.4], target: [5.8, 1.4, 1.5] },
+  sculptures: { pos: [0.0, 1.55, 2.8], target: [0.0, 1.35, 1.45] },
+  top: { pos: [0, 17, 1.5], target: [0, 0, 1.5] },
 };
+
 let tween = null;
 function flyTo(name) {
   const v = VIEWS[name];
@@ -1631,7 +1640,6 @@ function handle3DFile(file) {
     const center = box.getCenter(new THREE.Vector3());
     const origH = size.y || 1;
 
-    // Center pivot at bottom
     object3D.position.set(-center.x, -box.min.y, -center.z);
 
     const wrapper = new THREE.Group();
@@ -1640,11 +1648,8 @@ function handle3DFile(file) {
     wrapper.userData.name = file.name;
     wrapper.add(object3D);
 
-    // Initial scale: 50 cm
     setObjectHeight(wrapper, 0.5);
-
-    // Initial position: center pedestal in Zone C
-    wrapper.position.set(5.5, FY + 1.10, 1.95);
+    wrapper.position.set(0, FY + 1.00, 1.45);
 
     booth.add(wrapper);
     customObjects.push(wrapper);
@@ -1686,10 +1691,9 @@ function handle3DFile(file) {
 }
 
 // ---------------------------------------------------------------------------
-// UI wiring
+// UI Wiring
 // ---------------------------------------------------------------------------
 function wireUI() {
-  // Drawer / Control panel controls
   const controlPanel = document.getElementById('controlPanel');
   const panelBackdrop = document.getElementById('panelBackdrop');
   const btnTogglePanel = document.getElementById('btnTogglePanel');
@@ -1725,11 +1729,7 @@ function wireUI() {
     if (now - lastActionTime < 250) return;
     lastActionTime = now;
     const isOpen = controlPanel && controlPanel.classList.contains('open');
-    if (isOpen) {
-      closePanel();
-    } else {
-      openPanel();
-    }
+    if (isOpen) closePanel(); else openPanel();
   }
 
   function handleCloseTrigger(e) {
@@ -1743,28 +1743,23 @@ function wireUI() {
     closePanel();
   }
 
-  // Ensure closed by default on page load across all devices
   closePanel();
 
   if (btnTogglePanel) {
     btnTogglePanel.addEventListener('click', handleToggleTrigger);
     btnTogglePanel.addEventListener('touchend', handleToggleTrigger, { passive: false });
   }
-
   if (btnClosePanel) {
     btnClosePanel.addEventListener('click', handleCloseTrigger);
     btnClosePanel.addEventListener('touchend', handleCloseTrigger, { passive: false });
   }
-
   if (panelBackdrop) {
     panelBackdrop.addEventListener('click', handleCloseTrigger);
     panelBackdrop.addEventListener('touchend', handleCloseTrigger, { passive: false });
   }
 
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closePanel();
-    }
+    if (e.key === 'Escape') closePanel();
   });
 
   document.querySelectorAll('#lightModes button').forEach((btn) => {
@@ -1774,13 +1769,17 @@ function wireUI() {
       setMode(btn.dataset.mode);
     });
   });
+
+  // Tour of All Artworks (Cycles through P1..P6 + classics)
   let paintingViewIdx = 0;
   const paintingTourViews = [
-    { pos: [0, 1.9, 6.8], target: [0, 1.65, 0.2] },                               // Center Gallery View
-    { pos: [-5.50, FY + 1.80, 2.25], target: [-5.50, FY + 1.80, 0.04] },         // P1 close-up
-    { pos: [-1.35, FY + 1.80, 2.25], target: [-1.35, FY + 1.80, 0.06] },         // P2 close-up
-    { pos: [0.85, FY + 1.80, 2.25], target: [0.85, FY + 1.80, 0.06] },           // P3 close-up
-    { pos: [5.15, FY + 1.95, 2.45], target: [5.15, FY + 1.95, 0.04] },           // P4 close-up
+    { pos: [0, 1.8, 7.5], target: [0, 1.6, 0.2] },                               // Center Gallery View
+    { pos: [-5.70, FY + 1.82, 2.1], target: [-5.70, FY + 1.82, 0.05] },         // P1 Gold Foxy (01.jpeg)
+    { pos: [-3.70, FY + 1.82, 2.0], target: [-3.70, FY + 1.82, 0.06] },         // P2 Yellow/Blue (02.jpeg)
+    { pos: [-2.30, FY + 1.82, 2.0], target: [-2.30, FY + 1.82, 0.06] },         // P3 Blue/Red (03.jpeg)
+    { pos: [0.0, FY + 1.95, 2.2], target: [0.0, FY + 1.95, 0.06] },             // P4 Master Graffiti (05.jpeg)
+    { pos: [2.35, FY + 1.80, 2.0], target: [2.35, FY + 1.80, 0.06] },           // P5 Abstract Green (04.jpeg)
+    { pos: [6.00, FY + 2.05, 2.2], target: [6.00, FY + 2.05, 0.05] },           // P6 Sun Graffiti (06.jpeg)
   ];
 
   document.querySelectorAll('#viewBar button').forEach((btn) => {
@@ -1800,6 +1799,7 @@ function wireUI() {
       }
     });
   });
+
   const toggleDims = document.getElementById('toggleDims');
   if (toggleDims) {
     dimGroup.visible = toggleDims.checked;
@@ -1812,7 +1812,7 @@ function wireUI() {
 
   const toggleZones = document.getElementById('toggleZones');
   if (toggleZones) {
-    toggleZones.checked = false; // Closed / OFF by default
+    toggleZones.checked = false;
     zoneLabels.forEach((l) => (l.visible = false));
     toggleZones.addEventListener('change', (e) => {
       zoneLabels.forEach((l) => (l.visible = e.target.checked));
@@ -1821,7 +1821,7 @@ function wireUI() {
 
   const toggleExhibits = document.getElementById('toggleExhibits');
   if (toggleExhibits) {
-    toggleExhibits.checked = false; // Closed / OFF by default
+    toggleExhibits.checked = false;
     exhibitGroup.visible = false;
     exhibitLabels.forEach((l) => (l.visible = false));
     toggleExhibits.addEventListener('change', (e) => {
@@ -1829,6 +1829,7 @@ function wireUI() {
       exhibitLabels.forEach((l) => (l.visible = e.target.checked));
     });
   }
+
   const toggleTransparent = document.getElementById('toggleTransparent');
   const xRayControls = document.getElementById('xRayControls');
   const xRayOpacitySlider = document.getElementById('xRayOpacitySlider');
@@ -1853,13 +1854,15 @@ function wireUI() {
       }
     });
   }
+
   document.getElementById('toggleRotate').addEventListener('change', (e) => {
     controls.autoRotate = e.target.checked;
   });
+
   document.getElementById('btnShot').addEventListener('click', () => {
     composer.render();
     const a = document.createElement('a');
-    a.download = `booth-warm-wood-${Date.now()}.png`;
+    a.download = `booth-warm-wood-open-5blocks-${Date.now()}.png`;
     a.href = renderer.domElement.toDataURL('image/png');
     a.click();
   });
@@ -1894,7 +1897,6 @@ function wireUI() {
     });
   }
 
-  // Gizmo mode buttons
   const btnTranslate = document.getElementById('gizmo-translate');
   const btnRotate = document.getElementById('gizmo-rotate');
   if (btnTranslate && btnRotate) {
@@ -1910,7 +1912,6 @@ function wireUI() {
     });
   }
 
-  // Scale slider
   const scaleSlider = document.getElementById('scaleSlider');
   if (scaleSlider) {
     scaleSlider.addEventListener('input', (e) => {
@@ -1920,7 +1921,6 @@ function wireUI() {
     });
   }
 
-  // Presets
   const btnSet50cm = document.getElementById('btnSet50cm');
   if (btnSet50cm) {
     btnSet50cm.addEventListener('click', () => {
@@ -1932,7 +1932,7 @@ function wireUI() {
   if (btnPlacePedestal) {
     btnPlacePedestal.addEventListener('click', () => {
       if (selectedCustomObj) {
-        selectedCustomObj.position.set(0, FY + 1.00, 1.65);
+        selectedCustomObj.position.set(0, FY + 1.00, 1.45);
       }
     });
   }
@@ -1960,18 +1960,27 @@ window.addEventListener('resize', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Init
+// Initialization
 // ---------------------------------------------------------------------------
 async function init() {
   const loaderSub = document.querySelector('.loader-sub');
-  if (loaderSub) loaderSub.textContent = 'กำลังโหลดโมเดลประติมากรรมและภาพวาดศิลปะ...';
+  if (loaderSub) loaderSub.textContent = 'กำลังโหลดโมเดลและรูปภาพศิลปะ Foxy ทั้งหมด...';
 
   try {
-    const [loadedArt1, loadedArt2, loadedArt3, loadedArt4] = await Promise.all([
-      loadArtTexture(ART_SOURCES.art1),
-      loadArtTexture(ART_SOURCES.art2),
-      loadArtTexture(ART_SOURCES.art3),
-      loadArtTexture(ART_SOURCES.art4),
+    const [
+      loadedP01, loadedP02, loadedP03, loadedP04, loadedP05, loadedP06,
+      loadedC1, loadedC2, loadedC3, loadedC4
+    ] = await Promise.all([
+      loadArtTexture(ART_SOURCES.p01),
+      loadArtTexture(ART_SOURCES.p02),
+      loadArtTexture(ART_SOURCES.p03),
+      loadArtTexture(ART_SOURCES.p04),
+      loadArtTexture(ART_SOURCES.p05),
+      loadArtTexture(ART_SOURCES.p06),
+      loadArtTexture(ART_SOURCES.classic1),
+      loadArtTexture(ART_SOURCES.classic2),
+      loadArtTexture(ART_SOURCES.classic3),
+      loadArtTexture(ART_SOURCES.classic4),
       document.fonts.load('600 64px "Cormorant Garamond"'),
       document.fonts.load('400 32px "Outfit"'),
       loadFoxyModel((pct) => {
@@ -1979,16 +1988,22 @@ async function init() {
       }),
     ]);
 
-    if (loadedArt1) TEX.art1 = loadedArt1;
-    if (loadedArt2) TEX.art2 = loadedArt2;
-    if (loadedArt3) TEX.art3 = loadedArt3;
-    if (loadedArt4) TEX.art4 = loadedArt4;
-    TEX.art = TEX.art1;
-  } catch (e) { /* fall back */ }
+    if (loadedP01) TEX.p01 = loadedP01;
+    if (loadedP02) TEX.p02 = loadedP02;
+    if (loadedP03) TEX.p03 = loadedP03;
+    if (loadedP04) TEX.p04 = loadedP04;
+    if (loadedP05) TEX.p05 = loadedP05;
+    if (loadedP06) TEX.p06 = loadedP06;
+    if (loadedC1) TEX.classic1 = loadedC1;
+    if (loadedC2) TEX.classic2 = loadedC2;
+    if (loadedC3) TEX.classic3 = loadedC3;
+    if (loadedC4) TEX.classic4 = loadedC4;
+  } catch (e) {
+    console.warn('Artwork texture loading notice:', e);
+  }
 
-  if (loaderSub) loaderSub.textContent = 'กำลังจัดเตรียมพื้นที่จัดแสดง...';
+  if (loaderSub) loaderSub.textContent = 'กำลังจัดเตรียม 5 บล็อกและมุมนั่งเล่นแบบเปิดโล่ง...';
 
-  // Safety timer to prevent loader hanging under any circumstance
   const safetyTimer = setTimeout(() => {
     const ldr = document.getElementById('loader');
     if (ldr && !ldr.classList.contains('done')) ldr.classList.add('done');
@@ -1998,11 +2013,15 @@ async function init() {
     buildTextures();
     buildMaterials();
     buildHallAndPlatform();
-    buildBackWall();
-    buildEnclosureAndPartitions();
-    buildKitchen();
-    buildLiving();
-    buildGallery();
+    buildOpenCeilingAndPortals();
+
+    // 5 Blocks × 3 m with Dedicated Wall Displays & Seating Lounges
+    buildBlock1();
+    buildBlock2();
+    buildBlock3();
+    buildBlock4();
+    buildBlock5();
+
     buildLights();
     buildAnnotations();
     setMode('golden');

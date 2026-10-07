@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Warm Wood Living Room — 3D Booth Mockup 15 × 3 m</title>
-  <meta name="description" content="Interactive 3D mockup of a 15 x 3 m exhibition booth styled as a Warm Wood Living Room showroom with furniture, shelving and 50 cm sculpture displays." />
+  <title>Warm Wood Living Room — 3D Booth 15 × 3 m (5 Blocks × 3 m Open Plan)</title>
+  <meta name="description" content="Interactive 3D mockup of a 15 x 3 m exhibition booth styled as an open-plan Warm Wood Living Room showcase divided into 5 distinct 3-meter lounge zones with dedicated wall displays and 50 cm sculpture pedestals." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600&family=IBM+Plex+Sans+Thai:wght@300;400;500&display=swap" rel="stylesheet" />
@@ -32,8 +32,6 @@
   <main>
     <div id="scene" aria-label="3D booth viewer"></div>
 
-
-
     <!-- Mobile Floating Menu Button -->
     <button id="btnTogglePanel" class="btn-toggle-panel glass" aria-label="Toggle Control Panel">
       <svg class="toggle-icon-gear" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
@@ -58,9 +56,9 @@
       </div>
 
       <h2>การแสดงผล</h2>
-      <label class="toggle"><input type="checkbox" id="toggleDims" checked autocomplete="off" /><span class="track"></span>แสดงขนาด (Dimensions)</label>
-      <label class="toggle"><input type="checkbox" id="toggleZones" autocomplete="off" /><span class="track"></span>ป้ายชื่อโซน</label>
-      <label class="toggle"><input type="checkbox" id="toggleExhibits" autocomplete="off" /><span class="track"></span>จุดจัดแสดง (S1-S6 / P1-P4)</label>
+      <label class="toggle"><input type="checkbox" id="toggleDims" checked autocomplete="off" /><span class="track"></span>แสดงขนาด (5 บล็อก × 3 เมตร / กว้าง 15 ม.)</label>
+      <label class="toggle"><input type="checkbox" id="toggleZones" autocomplete="off" /><span class="track"></span>ป้ายชื่อโซน (บล็อก 1 - 5)</label>
+      <label class="toggle"><input type="checkbox" id="toggleExhibits" autocomplete="off" /><span class="track"></span>จุดจัดแสดง (P1-P6 / S1-S6)</label>
       <label class="toggle"><input type="checkbox" id="toggleTransparent" /><span class="track"></span>ผนังโปร่งใสทะลุ (See-Through / X-Ray)</label>
       <div id="xRayControls" style="display: none; margin: -2px 0 10px 24px; padding: 6px 10px; background: rgba(255,255,255,0.04); border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); font-size: 11px; color: var(--muted);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
@@ -115,22 +113,19 @@
       </div>
     </div>
 
-
-
     <!-- Camera views -->
     <nav class="views glass" id="viewBar" aria-label="Camera views">
       <button id="view-overview" data-view="overview" class="active">ภาพรวม</button>
-      <button id="view-front" data-view="front">ด้านหน้าตรง</button>
-      <button id="view-photospot" data-view="photospot">📸 มุมถ่ายรูป (Sofa)</button>
-      <button id="view-entrance" data-view="entrance">🚪 ทางเข้าซ้าย (1.5m)</button>
-      <button id="view-window" data-view="window">🪟 ส่องผ่านหน้าต่าง</button>
-      <button id="view-exit" data-view="exit">🚪 ทางออกขวา (1.5m)</button>
-      <button id="view-walkthrough" data-view="walkthrough">🚶 ทางเดินในห้อง</button>
-      <button id="view-room1" data-view="room1">ห้อง 1 · West</button>
-      <button id="view-room2" data-view="room2">ห้อง 2 · Center</button>
-      <button id="view-room3" data-view="room3">ห้อง 3 · East</button>
-      <button id="view-sculptures" data-view="sculptures">6 ประติมากรรม</button>
-      <button id="view-paintings" data-view="paintings">4 รูปภาพ</button>
+      <button id="view-front" data-view="front">ด้านหน้าเปิดโล่ง</button>
+      <button id="view-block1" data-view="block1">บล็อก 1 · Brick</button>
+      <button id="view-block2" data-view="block2">บล็อก 2 · Slat</button>
+      <button id="view-block3" data-view="block3">บล็อก 3 · Center</button>
+      <button id="view-block4" data-view="block4">บล็อก 4 · Japandi</button>
+      <button id="view-block5" data-view="block5">บล็อก 5 · Photo</button>
+      <button id="view-photospot" data-view="photospot">📸 มุมถ่ายรูป</button>
+      <button id="view-walkthrough" data-view="walkthrough">🚶 ทางเดินเปิดโล่ง</button>
+      <button id="view-paintings" data-view="paintings">🖼️ ภาพวาด (P1-P6)</button>
+      <button id="view-sculptures" data-view="sculptures">🦊 6 ประติมากรรม</button>
       <button id="view-top" data-view="top">มุมบน (Floor Plan)</button>
     </nav>
 
