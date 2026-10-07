@@ -605,6 +605,27 @@ async function buildArtworks() {
 // ---------------------------------------------------------------------------
 let foxyTemplate = null;
 
+function normalize(inner, targetH = SCULPT_H) {
+  inner.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(inner);
+  const size = box.getSize(new V3());
+  inner.scale.multiplyScalar(targetH / size.y);
+  inner.updateMatrixWorld(true);
+  const b2 = new THREE.Box3().setFromObject(inner);
+  const c = b2.getCenter(new V3());
+  inner.position.set(-c.x, -b2.min.y, -c.z);
+  const wrap = new THREE.Group();
+  wrap.add(inner);
+  wrap.traverse((o) => {
+    if (o.isMesh) {
+      o.castShadow = true;
+      o.receiveShadow = true;
+    }
+  });
+  return wrap;
+}
+const normalizeModel = normalize;
+
 function loadFoxyModel(onProgress) {
   return new Promise((resolve) => {
     const loader = new GLTFLoader();
@@ -621,10 +642,14 @@ function loadFoxyModel(onProgress) {
               if (child.material) {
                 child.material.envMapIntensity = 1.35;
                 child.material.roughness = Math.min(child.material.roughness, 0.60);
+                if (child.material.metalness > 0.35) {
+                  child.material.metalness = 0.22;
+                }
+                child.material.needsUpdate = true;
               }
             }
           });
-          foxyTemplate = normalizeModel(root, SCULPT_H);
+          foxyTemplate = normalize(root, SCULPT_H);
           resolve(foxyTemplate);
         } catch (e) {
           console.warn('Error processing Foxy.glb:', e);
@@ -645,34 +670,25 @@ function loadFoxyModel(onProgress) {
   });
 }
 
-function normalizeModel(inner, targetH = SCULPT_H) {
-  inner.updateMatrixWorld(true);
-  const box = new THREE.Box3().setFromObject(inner);
-  const size = box.getSize(new V3());
-  const maxDim = Math.max(size.x, size.y, size.z);
-  const scale = targetH / (maxDim || 1);
-  inner.scale.multiplyScalar(scale);
-
-  inner.updateMatrixWorld(true);
-  const nbox = new THREE.Box3().setFromObject(inner);
-  inner.position.y -= nbox.min.y;
-
-  const wrap = new THREE.Group();
-  wrap.add(inner);
-  return wrap;
+function cloneSculpture(template) {
+  const clone = template.clone(true);
+  clone.traverse((child) => {
+    if (child.isMesh) {
+      if (Array.isArray(child.material)) {
+        child.material = child.material.map(m => m.clone());
+      } else if (child.material) {
+        child.material = child.material.clone();
+      }
+      child.castShadow = true;
+      child.receiveShadow = true;
+    }
+  });
+  return clone;
 }
 
-function createProceduralSculpture(type = 'bronze') {
+function createProceduralSculpture(idx = 0) {
   const g = new THREE.Group();
-  let mat = M.sculptBronze;
-  if (type === 'marble') mat = M.sculptMarble;
-  if (type === 'obsidian') mat = M.sculptObsidian;
-  if (type === 'terracotta') mat = M.sculptTerracotta;
-  if (type === 'verdite') mat = M.sculptVerdite;
-  if (type === 'platinum') mat = M.sculptPlatinum;
-
-  // Elegant stylized museum geometric sculpture
-  mesh(new THREE.TorusKnotGeometry(0.12, 0.035, 128, 32, 2, 3), mat, 0, 0.25, 0, g);
+  mesh(new THREE.TorusKnotGeometry(0.12, 0.035, 128, 32, 2, 3), M.sculptBronze, 0, 0.25, 0, g);
   mesh(new THREE.CylinderGeometry(0.08, 0.10, 0.08, 32), M.brassSatin, 0, 0.04, 0, g);
   return g;
 }
@@ -698,49 +714,69 @@ function build6SculpturesInRow() {
     // Recessed LED halo under the plinth
     mesh(B(pedestalW - 0.08, 0.015, pedestalD - 0.08), M.led, 0, 0.015, 0, group, false, false);
 
-    // 2. Sculpture on top of pedestal
+    // Museum Brass Plaque on front face of the plinth
+    const plaqueCanvas = document.createElement('canvas');
+    plaqueCanvas.width = 512;
+    plaqueCanvas.height = 128;
+    const pctx = plaqueCanvas.getContext('2d');
+    pctx.fillStyle = '#1e1610';
+    pctx.fillRect(0, 0, 512, 128);
+    pctx.strokeStyle = '#cda658';
+    pctx.lineWidth = 6;
+    pctx.strokeRect(6, 6, 500, 116);
+    pctx.fillStyle = '#f5cf92';
+    pctx.font = 'bold 34px Outfit, sans-serif';
+    pctx.textAlign = 'center';
+    pctx.textBaseline = 'middle';
+    pctx.fillText(`SCULPTURE S${idx + 1} · FOXY`, 256, 46);
+    pctx.font = '22px Outfit, sans-serif';
+    pctx.fillStyle = '#d8c4a8';
+    pctx.fillText('Marketing Naiin 50cm Exhibition Edition', 256, 88);
+    const plaqueTex = new THREE.CanvasTexture(plaqueCanvas);
+    mesh(
+      new THREE.PlaneGeometry(0.55, 0.138),
+      new THREE.MeshStandardMaterial({ map: plaqueTex, roughness: 0.35, metalness: 0.5 }),
+      0,
+      pedestalH * 0.52,
+      pedestalD / 2 + 0.005,
+      group
+    );
+
+    // 2. Sculpture on top of pedestal (all 6 pedestals have 1 Foxy sculpture 50 cm)
     let sculptObj = null;
     if (foxyTemplate) {
-      sculptObj = foxyTemplate.clone(true);
-      // Give each Foxy an artistic material variation
-      let mat = M.sculptBronze;
-      if (pos.finish === 'marble') mat = M.sculptMarble;
-      if (pos.finish === 'obsidian') mat = M.sculptObsidian;
-      if (pos.finish === 'terracotta') mat = M.sculptTerracotta;
-      if (pos.finish === 'verdite') mat = M.sculptVerdite;
-      if (pos.finish === 'platinum') mat = M.sculptPlatinum;
-
-      sculptObj.traverse((o) => {
-        if (o.isMesh) {
-          o.material = mat;
-          o.castShadow = true;
-          o.receiveShadow = true;
-        }
-      });
+      sculptObj = cloneSculpture(foxyTemplate);
     } else {
-      sculptObj = createProceduralSculpture(pos.finish);
+      sculptObj = createProceduralSculpture(idx);
     }
 
     sculptObj.position.set(0, pedestalH, 0);
-    // Face slightly towards the entrance / aisle
-    sculptObj.rotation.y = Math.PI * 0.15;
+    // Face directly forward towards the front walkway and viewers
+    sculptObj.rotation.y = 0;
     group.add(sculptObj);
+
+    // Add pedestal group to booth
+    booth.add(group);
 
     // 3. Dedicated Overhead Track Spotlight pointing down directly onto sculpture
     const spot = new THREE.SpotLight(0xfff1dc, 3.2, 5.5, Math.PI / 5, 0.35, 1.6);
     spot.position.set(pos.x, FY + H - 0.20, pos.z + 0.35);
-    spot.target = sculptObj;
+
+    // Separate spotlight target in scene space so sculptObj is NEVER detached from group
+    const spotTarget = new THREE.Object3D();
+    spotTarget.position.set(pos.x, FY + pedestalH + SCULPT_H / 2, pos.z);
+    scene.add(spotTarget);
+    spot.target = spotTarget;
+
     spot.castShadow = true;
     spot.shadow.mapSize.set(1024, 1024);
     spot.shadow.bias = -0.0005;
     scene.add(spot);
-    scene.add(spot.target);
     addAccent(spot, 3.2);
 
     // Track luminaire cylinder head on ceiling
     mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.08, 16), M.blackMetal, pos.x, FY + H - 0.22, pos.z + 0.35).rotation.x = Math.PI / 6;
 
-    booth.add(group);
     sculptureRegistry.push({ id: pos.id, group, sculptObj, pos });
   });
 }
@@ -786,8 +822,8 @@ function buildDimensionsAndLabels() {
 
   // 5. Labels for 6 Sculptures in a Row
   SCULPTURE_POSITIONS.forEach((pos, idx) => {
-    const lbl = createPillLabel(`ประติมากรรม ${idx + 1} (${pos.finish})`, 'zone-label');
-    lbl.position.set(pos.x, FY + 1.25, pos.z);
+    const lbl = createPillLabel(`ประติมากรรม ${idx + 1} (Foxy 50 ซม.)`, 'zone-label');
+    lbl.position.set(pos.x, FY + 0.65 + SCULPT_H + 0.18, pos.z);
     zoneGroup.add(lbl);
   });
 
