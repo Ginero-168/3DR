@@ -2,12 +2,14 @@
  * Warm Wood Living Room — Exhibition Booth 3D Mockup
  * Booth: 15 m wide × 3 m deep open platform, with 3 m high backdrop wall.
  * 5 Blocks of 3 meters each (15m total width):
- * - Block 1 (x: -7.5 to -4.5): Earth & Stone Brick Lounge (P1 Gold Foxy, S1 Sculpture)
- * - Block 2 (x: -4.5 to -1.5): Oak Slat Lounge (P2 & P3 Abstract Canvases, S2 Sculpture)
- * - Block 3 (x: -1.5 to +1.5): Marble Pavilion Center Showcase Lounge (P4 Master Graffiti, S3 Center Foxy)
- * - Block 4 (x: +1.5 to +4.5): Japandi Timber Lounge (P5 Abstract Green Canvas, Classic Art, S4 Sculpture)
- * - Block 5 (x: +4.5 to +7.5): VIP Photo Lounge (P6 Sun Graffiti, Photo Sofa, S5 Selfie Foxy)
- * Open-plan concept with open front, continuous walkway, and bespoke wall displays.
+ * - Block 1 (x: -7.5 to -4.5): Kitchen & Beverage Bar (P1 Gold Foxy, Marble Island, S1 Sculpture)
+ * - Partition 1 (x: -4.50): Solid wall with framed artworks (P2 02.jpeg on East, Classic Art on West)
+ * - Block 2 (x: -4.5 to -1.5): Oak Slat Library & Lounge (P3 03.jpeg, Tall Bookcase, Reading Chair, S2 Sculpture)
+ * - Block 3 (x: -1.5 to +1.5): Marble Pavilion Centerpiece (P4 05.jpeg Master Graffiti, Leather Daybed, S3 Master Foxy)
+ * - Partition 2 (x: +1.50): Solid wall with framed artworks (P5 04.jpeg on East, Classic Art on West)
+ * - Block 4 (x: +1.5 to +4.5): Japandi Credenza & Wall Niche (Walnut Sideboard, Display Niche, S4 Sculpture)
+ * - Partition 3 (x: +4.50): Solid wall with framed artworks (Classic Art on both sides)
+ * - Block 5 (x: +4.5 to +7.5): VIP Photo Lounge (P6 06.jpeg Sun Graffiti, Bouclé Sofa, S5 Selfie Foxy)
  */
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -32,7 +34,6 @@ const D = 3;         // platform depth: 3 m
 const FY = 0.1;      // platform top height: 0.1 m
 const SCULPT_H = 0.5; // sculpture height (50 cm)
 
-// 5 Blocks of 3 meters: Centers at [-6.0, -3.0, 0.0, 3.0, 6.0]
 const BLOCK_CENTERS = [-6.0, -3.0, 0.0, 3.0, 6.0];
 
 const V2 = THREE.Vector2;
@@ -134,7 +135,7 @@ function addAccent(light, base) {
 }
 
 // ---------------------------------------------------------------------------
-// Procedural textures (with high fidelity)
+// Procedural textures
 // ---------------------------------------------------------------------------
 function canvasTex(w, h, draw, repeat = [1, 1], srgb = true) {
   const c = document.createElement('canvas');
@@ -229,7 +230,6 @@ function loadArtTexture(url) {
 
 const TEX = {};
 function buildTextures() {
-  // Wide oak plank floor — canvas represents 2 m × 2 m
   TEX.floor = canvasTex(1024, 1024, (g, w, h) => {
     const rows = 9, rh = h / rows;
     for (let r = 0; r < rows; r++) {
@@ -252,7 +252,7 @@ function buildTextures() {
   TEX.walnut = woodTex('#5c3b24', '#2c1a0e', '#8a5f3d');
   TEX.honey = woodTex('#c08a52', '#7a4c27', '#e5bd88');
 
-  // Cream stone brick (colour + bump) for Block 1
+  // Stone brick
   const bw = 1024, bh = 512, rows = 8, rh = bh / rows, gap = 6;
   const layout = [];
   for (let r = 0; r < rows; r++) {
@@ -280,7 +280,6 @@ function buildTextures() {
     noise(g, bw, bh, 14000, ['#ffffff', '#555555'], [1, 4], [0.1, 0.35]);
   }, [1, 1], false);
 
-  // Calacatta Gold Marble for Block 3
   TEX.marble = canvasTex(1024, 1024, (g, w, h) => {
     g.fillStyle = '#f6f1e8'; g.fillRect(0, 0, w, h);
     const vein = (lw, alpha, blur, col = 'rgba(140,118,92,') => {
@@ -298,7 +297,6 @@ function buildTextures() {
     g.filter = 'none';
   });
 
-  // Woven jute & wool rugs
   TEX.jute = canvasTex(1024, 1024, (g, w, h) => {
     g.fillStyle = '#a98c63'; g.fillRect(0, 0, w, h);
     const s = 8;
@@ -348,7 +346,7 @@ function buildTextures() {
     noise(g, w, h, 20000, ['#000000', '#5a4a3e'], [1, 2], [0.05, 0.15]);
   });
 
-  // Fallback procedural art canvases if image loading is delayed or offline
+  // Fallback procedural art canvases
   if (!TEX.p01) TEX.p01 = canvasTex(512, 680, (g, w, h) => {
     g.fillStyle = '#f4e6c8'; g.fillRect(0, 0, w, h);
     g.fillStyle = '#db9c38'; g.beginPath(); g.arc(w / 2, h * 0.45, w * 0.35, 0, Math.PI * 2); g.fill();
@@ -414,7 +412,7 @@ function buildMaterials() {
   M.plaster = std(0xffffff, 0.92, 0, { map: TEX.plaster });
   M.limewash = std(0xd9c0a0, 0.95, 0, { map: texRepeat(TEX.plaster, 2, 2) });
   M.olivePlaster = std(0xa6ad92, 0.92, 0, { map: texRepeat(TEX.plaster, 2, 2) });
-  M.olive = std(0x56603f, 0.55);
+  M.olive = std(0x525c3e, 0.55);
   M.marble = std(0xffffff, 0.25, 0, { map: TEX.marble });
   M.brass = std(0xc9a25a, 0.28, 1);
   M.brassSatin = std(0xb8904c, 0.45, 1);
@@ -439,7 +437,6 @@ function buildMaterials() {
   M.bulb = glow(0xffd699, 1.4);
   M.flame = glow(0xffa64a, 1.5);
 
-  // Artwork Materials for the 6 new pictures + classic art
   M.p01 = std(0xffffff, 0.85, 0, { map: TEX.p01 });
   M.p02 = std(0xffffff, 0.85, 0, { map: TEX.p02 });
   M.p03 = std(0xffffff, 0.85, 0, { map: TEX.p03 });
@@ -461,7 +458,7 @@ function buildMaterials() {
 }
 
 // ---------------------------------------------------------------------------
-// Props & Props Makers
+// Props Makers
 // ---------------------------------------------------------------------------
 function lathe(points, mat, seg = 48) {
   return new THREE.Mesh(new THREE.LatheGeometry(points.map(([x, y]) => new V2(x, y)), seg), mat);
@@ -558,11 +555,8 @@ function makeFruitBowl() {
 function makeFramedPicture(w, h, mat, artKey = '', viewPos = null, title = '') {
   const g = new THREE.Group();
   const frameD = 0.04, frameBorder = 0.045;
-  // Outer walnut frame
   mesh(B(w + frameBorder * 2, h + frameBorder * 2, frameD), M.walnut, 0, 0, 0, g);
-  // Satin brass inner reveal
   mesh(B(w + 0.015, h + 0.015, frameD + 0.005), M.brassSatin, 0, 0, 0, g);
-  // Canvas plane
   const canvasMesh = mesh(new THREE.PlaneGeometry(w, h), mat, 0, 0, frameD / 2 + 0.004, g, false, true);
   if (artKey) {
     canvasMesh.userData.isArt = true;
@@ -572,7 +566,7 @@ function makeFramedPicture(w, h, mat, artKey = '', viewPos = null, title = '') {
     artMeshes.push(canvasMesh);
   }
 
-  // Museum Picture Light Fixture
+  // Museum Picture Light
   const lightBar = new THREE.Group();
   lightBar.position.set(0, h / 2 + frameBorder + 0.09, frameD + 0.08);
   mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.11, 8), M.brass, -w * 0.25, -0.04, -0.04, lightBar).rotation.x = Math.PI / 3;
@@ -586,6 +580,17 @@ function makeFramedPicture(w, h, mat, artKey = '', viewPos = null, title = '') {
   g.add(pl);
 
   return g;
+}
+
+function makePendant(x, z, bottomY) {
+  const top = FY + H - 0.2;
+  mesh(new THREE.CylinderGeometry(0.004, 0.004, top - bottomY - 0.2, 6), M.blackMetal, x, (top + bottomY + 0.2) / 2, z);
+  mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.06, 16), M.brass, x, bottomY + 0.22, z);
+  mesh(new THREE.SphereGeometry(0.20, 36, 18, 0, Math.PI * 2, 0, Math.PI / 2), M.brass, x, bottomY, z).material.side = THREE.DoubleSide;
+  mesh(new THREE.SphereGeometry(0.04, 16, 12), M.bulb, x, bottomY + 0.03, z, booth, false, false);
+  const l = addAccent(new THREE.PointLight(0xffc27a, 1.6, 3.5, 2), 1.6);
+  l.position.set(x, bottomY - 0.05, z);
+  booth.add(l);
 }
 
 // ---------------------------------------------------------------------------
@@ -607,7 +612,6 @@ function normalize(inner, targetH = SCULPT_H) {
 }
 
 const SCULPTURES = [
-  // Fallbacks if GLB fails
   (mat = M.ceramic) => {
     const g = new THREE.Group();
     g.add(lathe([[0, 0], [0.07, 0], [0.09, 0.03], [0.125, 0.12], [0.135, 0.2], [0.1, 0.3], [0.05, 0.38], [0.044, 0.44], [0.062, 0.5]], mat, 64));
@@ -718,7 +722,7 @@ function registerWall(meshObj, type = 'wall') {
     mesh: meshObj,
     origMat: meshObj.material,
     origVisible: meshObj.visible,
-    type: type, // 'wall', 'slat', 'roof', 'trim', 'sign'
+    type: type,
   });
   return meshObj;
 }
@@ -758,42 +762,39 @@ function setWallsTransparent(val, customOpacity = null) {
 }
 
 // ---------------------------------------------------------------------------
-// Booth Structure (Platform & Hall)
+// Booth Structure (Platform & Open Ceilings)
 // ---------------------------------------------------------------------------
 function buildHallAndPlatform() {
   const hall = mesh(new THREE.CircleGeometry(48, 64).rotateX(-Math.PI / 2), M.hall, 0, 0, 2, scene, false, true);
   hall.position.y = 0;
 
-  // 15 m × 3 m floor platform
   const plat = mesh(B(W, FY, D), M.floor, 0, FY / 2, D / 2);
   plat.castShadow = false;
 
-  // Front & side trims in walnut + LED kick line
   mesh(B(W + 0.04, FY, 0.03), M.walnut, 0, FY / 2, D + 0.015);
   mesh(B(0.03, FY, D), M.walnut, -W / 2 - 0.015, FY / 2, D / 2);
   mesh(B(0.03, FY, D), M.walnut, W / 2 + 0.015, FY / 2, D / 2);
   mesh(B(W, 0.012, 0.012), M.led, 0, 0.02, D + 0.035, booth, false, false);
 
-  // Subtle satin brass inlays on floor separating the 5 blocks (at x = -4.5, -1.5, 1.5, 4.5)
   [-4.5, -1.5, 1.5, 4.5].forEach((bx) => {
     mesh(B(0.012, 0.002, D), M.brassSatin, bx, FY + 0.001, D / 2, booth, false, false);
   });
 }
 
 // ---------------------------------------------------------------------------
-// Open-Plan Architecture & Ceiling Rafters ("ทำแบบเปิดโล่ง")
+// Open Ceiling, Portals & Solid Picture-Hanging Partitions ("มีกำแพงกั้นระหว่างห้องได้บ้างแขวนรูป")
 // ---------------------------------------------------------------------------
-function buildOpenCeilingAndPortals() {
-  // 1. Open Front Portals (Slender architectural oak posts defining the 5 open 3m bays)
+function buildOpenCeilingAndPartitions() {
+  // 1. Open Front Portals (Posts at boundaries)
   [-7.5, -4.5, -1.5, 1.5, 4.5, 7.5].forEach((px) => {
-    const post = registerWall(mesh(B(0.07, H, 0.07), M.walnut, px, FY + H / 2, D - 0.035), 'trim');
+    registerWall(mesh(B(0.07, H, 0.07), M.walnut, px, FY + H / 2, D - 0.035), 'trim');
     mesh(B(0.08, 0.06, 0.08), M.brassSatin, px, FY + 0.03, D - 0.035);
   });
 
-  // Continuous walnut front header lintel beam spanning the 15m open facade at ceiling
+  // Walnut front lintel header beam spanning the 15m front
   registerWall(mesh(B(W + 0.10, 0.14, 0.12), M.walnut, 0, FY + H - 0.07, D - 0.035), 'trim');
 
-  // Downlights under front lintel pointing onto each of the 5 entrance bays
+  // Entrance spot lights under lintel
   BLOCK_CENTERS.forEach((cx) => {
     mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.015, 16), M.brass, cx, FY + H - 0.145, D - 0.035);
     mesh(new THREE.CircleGeometry(0.02, 16).rotateX(Math.PI / 2), M.bulb, cx, FY + H - 0.155, D - 0.035, booth, false, false);
@@ -803,7 +804,7 @@ function buildOpenCeilingAndPortals() {
     booth.add(sp, sp.target);
   });
 
-  // 2. Open Ceiling Louvers / Timber Rafters (Front-to-back across 15m)
+  // 2. Open Ceiling Louvers / Timber Rafters across 15m
   const rafterCount = 21;
   const startX = -7.2;
   const dx = (7.2 - startX) / (rafterCount - 1);
@@ -812,26 +813,83 @@ function buildOpenCeilingAndPortals() {
     registerWall(mesh(B(0.045, 0.10, D), M.oak, rx, FY + H - 0.05, D / 2), 'roof');
   }
 
-  // 3. Side Walls (Left & Right 3m end walls)
+  // 3. Side Walls
   registerWall(mesh(B(0.10, H, D), M.plaster, -W / 2 - 0.05, FY + H / 2, D / 2), 'wall');
   registerWall(mesh(B(0.10, H, D), M.plaster, W / 2 + 0.05, FY + H / 2, D / 2), 'wall');
   registerWall(mesh(B(0.12, 0.04, D + 0.04), M.walnut, -W / 2 - 0.05, FY + H + 0.02, D / 2), 'trim');
   registerWall(mesh(B(0.12, 0.04, D + 0.04), M.walnut, W / 2 + 0.05, FY + H + 0.02, D / 2), 'trim');
 
-  // 4. Open-Air Dividers Between Blocks (z: 0 to 1.1m only, leaving 1.9m open walkway along front!)
-  [-4.5, -1.5, 1.5, 4.5].forEach((dx) => {
-    // Slender open wood slat screen fin from back wall to z = 1.1m
-    const finW = 0.06, finD = 1.10;
-    registerWall(mesh(B(finW, H, 0.06), M.walnut, dx, FY + H / 2, finD - 0.03), 'trim'); // end jamb
-    mesh(B(0.015, H - 0.2, 0.005), M.brassSatin, dx, FY + H / 2, finD + 0.005);
+  // =========================================================================
+  // 4. SOLID PARTITION WALLS BETWEEN ROOMS TO HANG PICTURES ("กำแพงกั้นระหว่างห้องแขวนรูป")
+  // =========================================================================
+  // Solid partitions extend from back wall (z = 0.05 to 1.65m, depth 1.60m)
+  // Leaves a comfortable 1.35m open walkway in front (z = 1.65 to 3.0m)!
 
-    // Decorative vertical slats within the 1.1m divider
-    for (let sz = 0.18; sz <= finD - 0.12; sz += 0.22) {
-      registerWall(mesh(B(0.025, H - 0.20, 0.045), M.oakV, dx, FY + H / 2, sz), 'slat');
-    }
-    // Vertical warm LED strip along divider fin end
-    mesh(B(0.008, H - 0.40, 0.008), M.led, dx, FY + H / 2, finD + 0.008, booth, false, false);
-  });
+  // --- PARTITION WALL 1 (at x = -4.50, separating Block 1 & Block 2) ---
+  const pw1X = -4.50, partD = 1.60, partZ = 0.05 + partD / 2; // center z = 0.85
+  registerWall(mesh(B(0.10, H, partD), M.plaster, pw1X, FY + H / 2, partZ), 'wall');
+  // Walnut trim casing & brass reveal at front opening edge (z = 1.65)
+  registerWall(mesh(B(0.14, H, 0.06), M.walnut, pw1X, FY + H / 2, 0.05 + partD), 'trim');
+  mesh(B(0.02, H - 0.20, 0.005), M.brassSatin, pw1X, FY + H / 2, 0.05 + partD + 0.032);
+  // Warm vertical LED strip along opening edge
+  mesh(B(0.008, H - 0.30, 0.008), M.led, pw1X, FY + H / 2, 0.05 + partD + 0.035, booth, false, false);
+
+  // Artwork hung on Partition 1 East face (facing Block 2): P2 (pic/02.jpeg, 0.90 × 0.90 m)
+  const p2Z = 0.85, p2Y = FY + 1.80;
+  place(
+    makeFramedPicture(0.90, 0.90, M.p02, 'p02', { pos: [-3.30, p2Y, p2Z], target: [pw1X + 0.06, p2Y, p2Z] }, 'P2 · Abstract Yellow/Blue (02.jpeg)'),
+    pw1X + 0.06, p2Y, p2Z, booth, Math.PI / 2
+  );
+  addExhibitBadge('P2 · ผนังกั้น 1 (02.jpeg)', new V3(pw1X + 0.15, p2Y + 0.65, p2Z), 'art');
+
+  // Artwork hung on Partition 1 West face (facing Block 1): Classic Oil Painting (Dark Rust Foxy)
+  place(
+    makeFramedPicture(0.82, 1.15, M.classic3, 'classic3', { pos: [-5.70, p2Y, p2Z], target: [pw1X - 0.06, p2Y, p2Z] }, 'Classic Oil · Dark Rust Foxy'),
+    pw1X - 0.06, p2Y, p2Z, booth, -Math.PI / 2
+  );
+  addExhibitBadge('ภาพสีน้ำมันคลาสสิก (ผนังกั้น 1 ฝั่งซ้าย)', new V3(pw1X - 0.15, p2Y + 0.75, p2Z), 'art');
+
+  // --- PARTITION WALL 2 (at x = +1.50, separating Block 3 & Block 4) ---
+  const pw2X = 1.50;
+  registerWall(mesh(B(0.10, H, partD), M.plaster, pw2X, FY + H / 2, partZ), 'wall');
+  registerWall(mesh(B(0.14, H, 0.06), M.walnut, pw2X, FY + H / 2, 0.05 + partD), 'trim');
+  mesh(B(0.02, H - 0.20, 0.005), M.brassSatin, pw2X, FY + H / 2, 0.05 + partD + 0.032);
+  mesh(B(0.008, H - 0.30, 0.008), M.led, pw2X, FY + H / 2, 0.05 + partD + 0.035, booth, false, false);
+
+  // Artwork hung on Partition 2 East face (facing Block 4): P5 (pic/04.jpeg, 0.90 × 0.90 m)
+  place(
+    makeFramedPicture(0.88, 0.88, M.p04, 'p04', { pos: [2.70, p2Y, p2Z], target: [pw2X + 0.06, p2Y, p2Z] }, 'P5 · Abstract Green (04.jpeg)'),
+    pw2X + 0.06, p2Y, p2Z, booth, Math.PI / 2
+  );
+  addExhibitBadge('P5 · ผนังกั้น 2 (04.jpeg Green)', new V3(pw2X + 0.15, p2Y + 0.65, p2Z), 'art');
+
+  // Artwork hung on Partition 2 West face (facing Block 3): Classic Portrait Painting
+  place(
+    makeFramedPicture(0.80, 1.12, M.classic4, 'classic4', { pos: [0.30, p2Y, p2Z], target: [pw2X - 0.06, p2Y, p2Z] }, 'Classic Oil · Portrait Foxy'),
+    pw2X - 0.06, p2Y, p2Z, booth, -Math.PI / 2
+  );
+  addExhibitBadge('ภาพสีน้ำมันคลาสสิก (ผนังกั้น 2 ฝั่งกลาง)', new V3(pw2X - 0.15, p2Y + 0.75, p2Z), 'art');
+
+  // --- PARTITION WALL 3 (at x = +4.50, separating Block 4 & Block 5) ---
+  const pw3X = 4.50;
+  registerWall(mesh(B(0.10, H, partD), M.plaster, pw3X, FY + H / 2, partZ), 'wall');
+  registerWall(mesh(B(0.14, H, 0.06), M.walnut, pw3X, FY + H / 2, 0.05 + partD), 'trim');
+  mesh(B(0.02, H - 0.20, 0.005), M.brassSatin, pw3X, FY + H / 2, 0.05 + partD + 0.032);
+  mesh(B(0.008, H - 0.30, 0.008), M.led, pw3X, FY + H / 2, 0.05 + partD + 0.035, booth, false, false);
+
+  // Artwork hung on Partition 3 West face (facing Block 4): Classic Burning Metallic Foxy
+  place(
+    makeFramedPicture(0.82, 1.15, M.classic1, 'classic1', { pos: [3.30, p2Y, p2Z], target: [pw3X - 0.06, p2Y, p2Z] }, 'Classic Oil · Burning Foxy'),
+    pw3X - 0.06, p2Y, p2Z, booth, -Math.PI / 2
+  );
+  addExhibitBadge('ภาพสีน้ำมันคลาสสิก (ผนังกั้น 3 ฝั่งซ้าย)', new V3(pw3X - 0.15, p2Y + 0.75, p2Z), 'art');
+
+  // Artwork hung on Partition 3 East face (facing Block 5 Photo Lounge): Classic Flame Foxy
+  place(
+    makeFramedPicture(0.80, 1.12, M.classic2, 'classic2', { pos: [5.70, p2Y, p2Z], target: [pw3X + 0.06, p2Y, p2Z] }, 'Classic Oil · Flame Foxy'),
+    pw3X + 0.06, p2Y, p2Z, booth, Math.PI / 2
+  );
+  addExhibitBadge('ภาพสีน้ำมันคลาสสิก (ผนังกั้น 3 ฝั่งโฟโต้)', new V3(pw3X + 0.15, p2Y + 0.75, p2Z), 'art');
 }
 
 // ---------------------------------------------------------------------------
@@ -853,41 +911,39 @@ function addExhibitBadge(text, pos, type = 'sculpture') {
 
 // ---------------------------------------------------------------------------
 // BLOCK 1 (x: -7.5 … -4.5, Center -6.0)
-// Theme: Earth & Stone Brick Lounge
-// Art: P1 (pic/01.jpeg Gold Foxy), S1 Foxy Sculpture (50cm)
-// Seating: Pair of Cream Bouclé Armchairs, Round Travertine Coffee Table
+// Theme: Kitchen & Beverage Bar Island (แทนที่เก้าอี้/โซฟา)
+// Art: P1 (pic/01.jpeg Gold Foxy) on Brick Wall + S1 Sculpture
+// Furniture: Calacatta Marble Kitchen Bar Island, High Walnut Bar Stools, Shelving
 // ---------------------------------------------------------------------------
 function buildBlock1() {
   const cx = -6.0;
 
-  // 1. Distinct Wall Display: Stone Brick Feature Wall
+  // 1. Stone Brick Feature Back Wall
   const brick = std(0xffffff, 0.9, 0, { map: texRepeat(TEX.brick, 1.5, 3), bumpMap: texRepeat(TEX.brickBump, 1.5, 3), bumpScale: 2 });
   registerWall(mesh(B(3.0, H, 0.04), brick, cx, FY + H / 2, 0.02), 'wall');
   registerWall(mesh(B(3.02, 0.04, 0.08), M.walnut, cx, FY + H + 0.02, 0.04), 'trim');
-
-  // Top & bottom warm wall washer lights
   mesh(B(2.9, 0.01, 0.01), M.led, cx, FY + 0.01, 0.06, booth, false, false);
   mesh(B(2.9, 0.01, 0.01), M.led, cx, FY + H - 0.02, 0.06, booth, false, false);
 
   // 2. Art Display: P1 (pic/01.jpeg Gold Foxy, 0.98 × 1.28 m)
-  const art1X = -5.70, art1Y = FY + 1.82;
+  const art1X = -6.00, art1Y = FY + 1.82;
   place(
     makeFramedPicture(0.98, 1.28, M.p01, 'p01', { pos: [art1X, art1Y, 2.2], target: [art1X, art1Y, 0.05] }, 'P1 · Gold Foxy (01.jpeg)'),
     art1X, art1Y, 0.05
   );
   addExhibitBadge('P1 · ภาพวาด 1 (01.jpeg Gold Foxy)', new V3(art1X, art1Y + 0.85, 0.16), 'art');
 
-  // Floating oak shelves on left section (x = -6.85)
-  [FY + 1.40, FY + 2.10].forEach((y) => {
-    mesh(B(0.95, 0.035, 0.24), M.oak, -6.85, y, 0.14);
-    mesh(B(0.90, 0.006, 0.012), M.led, -6.85, y - 0.02, 0.24, booth, false, false);
+  // Floating oak display shelves on left wall section
+  [FY + 1.35, FY + 2.05].forEach((y) => {
+    mesh(B(0.95, 0.035, 0.24), M.oak, -7.00, y, 0.14);
+    mesh(B(0.90, 0.006, 0.012), M.led, -7.00, y - 0.02, 0.24, booth, false, false);
   });
-  place(makePlant({ potR: 0.06, potH: 0.11, tree: false, crown: [0.11, 0.09, 0.11], leaves: 40, leafSize: 0.04 }), -7.10, FY + 1.40 + 0.02, 0.14);
-  place(makeBooks(3), -6.65, FY + 1.40 + 0.02, 0.14);
-  place(makeBowl(0.08, M.walnut), -6.85, FY + 2.10 + 0.02, 0.14);
+  place(makePlant({ potR: 0.06, potH: 0.11, tree: false, crown: [0.11, 0.09, 0.11], leaves: 40, leafSize: 0.04 }), -7.20, FY + 1.35 + 0.02, 0.14);
+  place(makeBooks(3), -6.80, FY + 1.35 + 0.02, 0.14);
+  place(makeBowl(0.08, M.walnut), -7.00, FY + 2.05 + 0.02, 0.14);
 
   // 3. Sculpture S1 on Travertine Pedestal
-  const ped1X = -6.80, ped1Z = 1.10, ped1H = 0.90;
+  const ped1X = -7.00, ped1Z = 1.05, ped1H = 0.90;
   mesh(B(0.44, ped1H, 0.44, 0.01), M.travertine, ped1X, FY + ped1H / 2, ped1Z);
   mesh(B(0.40, 0.025, 0.40), M.basalt, ped1X, FY + 0.012, ped1Z);
   place(nextSculpture(), ped1X, FY + ped1H, ped1Z, booth, -0.25);
@@ -898,36 +954,76 @@ function buildBlock1() {
   spot1.target.position.set(ped1X, FY + ped1H + 0.25, ped1Z);
   booth.add(spot1, spot1.target);
 
-  // 4. Seating Vignette: Pair of Cream Bouclé Armchairs & Travertine Table
-  // Area Rug (Woven Wool, 2.3 × 1.8 m)
-  mesh(B(2.30, 0.005, 1.80, 0.04), M.boucle, cx, FY + 0.003, 1.75, booth, false, true);
+  // 4. FURNITURE: Kitchen & Beverage Bar Counter Island (แทนที่โซฟา/เก้าอี้ชุดใหญ่)
+  const barX = -5.85, barZ = 1.55;
+  makeKitchenBar(barX, barZ);
+}
 
-  // Left Armchair (angled right)
-  makeArmchair(-6.60, 1.70, 0.35, M.boucle);
-  // Right Armchair (angled left)
-  makeArmchair(-5.40, 1.70, -0.35, M.boucle);
+function makeKitchenBar(cx, cz) {
+  const g = new THREE.Group();
+  g.position.set(cx, FY, cz);
 
-  // Round Travertine Low Coffee Table (diameter 0.70m, height 0.38m)
-  const tabX = cx, tabZ = 1.70;
-  mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.035, 32), M.travertine, tabX, FY + 0.36, tabZ);
-  mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.34, 24), M.walnut, tabX, FY + 0.17, tabZ);
-  mesh(new THREE.CylinderGeometry(0.26, 0.26, 0.01, 24), M.brassSatin, tabX, FY + 0.01, tabZ);
-  place(makeBowl(0.09, M.brassSatin), tabX, FY + 0.38, tabZ);
+  const barW = 1.85, barH = 0.88, barD = 0.65;
+  // Olive green fluted base cabinet with satin brass kick plate
+  mesh(B(barW, barH - 0.08, barD - 0.06), M.olive, 0, (barH - 0.08) / 2 + 0.08, 0, g);
+  mesh(B(barW + 0.02, 0.08, barD - 0.04), M.brassSatin, 0, 0.04, 0, g);
 
-  // Slim Brass Floor Lamp
-  makeFloorLamp(-7.15, 2.15);
+  // Calacatta Marble luxury countertop
+  mesh(B(barW + 0.06, 0.045, barD + 0.06, 0.01), M.marble, 0, barH + 0.022, 0, g);
+
+  // Undermount brass prep sink & faucet
+  mesh(B(0.38, 0.02, 0.28), M.brassSatin, -0.45, barH + 0.046, 0, g);
+  mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.22, 12), M.brass, -0.45, barH + 0.15, -0.10, g);
+  mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.12, 12), M.brass, -0.45, barH + 0.26, -0.04, g).rotation.x = Math.PI / 2;
+
+  // Bar accessories: fruit bowl with lemons, bouquet
+  place(makeFruitBowl(), cx + 0.42, FY + barH + 0.05, cz, booth);
+  place(makeBouquet(), cx - 0.05, FY + barH + 0.05, cz - 0.05, booth);
+
+  // 2 Designer High Bar Stools (High Bar Seating)
+  [-0.45, 0.45].forEach((sx) => {
+    makeBarStool(cx + sx, cz + 0.58);
+  });
+
+  // 2 Overhead Brass Dome Pendant Lights
+  [-0.55, 0.55].forEach((px) => {
+    makePendant(cx + px, cz, FY + 2.05);
+  });
+
+  booth.add(g);
+  return g;
+}
+
+function makeBarStool(x, z) {
+  const grp = new THREE.Group();
+  grp.position.set(x, FY, z);
+
+  const seatH = 0.64;
+  // 4 walnut angled legs
+  const legGeo = new THREE.CylinderGeometry(0.014, 0.010, seatH, 12);
+  [[-0.14, -0.14], [0.14, -0.14], [-0.14, 0.14], [0.14, 0.14]].forEach(([lx, lz]) => {
+    mesh(legGeo, M.walnut, lx, seatH / 2, lz, grp);
+  });
+  // Brass footrest ring
+  mesh(new THREE.TorusGeometry(0.18, 0.008, 12, 24).rotateX(Math.PI / 2), M.brass, 0, 0.22, 0, grp);
+  // Round upholstered seat in camel leather
+  mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.06, 24), M.leather, 0, seatH + 0.03, 0, grp);
+
+  booth.add(grp);
+  return grp;
 }
 
 // ---------------------------------------------------------------------------
 // BLOCK 2 (x: -4.5 … -1.5, Center -3.0)
-// Theme: Oak Slat Acoustic Lounge
-// Art: P2 (pic/02.jpeg Abstract Yellow/Blue) & P3 (pic/03.jpeg Abstract Blue/Red)
-// Seating: Modern Walnut Low Sofa in Oatmeal Linen, Circular Jute Rug
+// Theme: Oak Slat Library & Exhibition Gallery (ลดโซฟา เหลือเก้าอี้อ่านหนังสือเดี่ยว + ชั้นหนังสือสูง)
+// Art: P3 (pic/03.jpeg Abstract Blue/Red Foxy) on back slat wall
+//      P2 (pic/02.jpeg) on Partition Wall 1 East face!
+// Furniture: Tall Architectural Bookcase, Single Scandinavian Reading Chair, Round Table
 // ---------------------------------------------------------------------------
 function buildBlock2() {
   const cx = -3.0;
 
-  // 1. Distinct Wall Display: Vertical Oak Slat Feature Wall
+  // 1. Vertical Oak Slat Feature Back Wall
   registerWall(mesh(B(3.0, H, 0.02), std(0x22170f, 0.8), cx, FY + H / 2, 0.01), 'wall');
   const slatGeo = new THREE.BoxGeometry(0.042, H, 0.032);
   const slatCount = 35;
@@ -940,66 +1036,85 @@ function buildBlock2() {
   mesh(B(2.9, 0.01, 0.01), M.led, cx, FY + 0.01, 0.065, booth, false, false);
   mesh(B(2.9, 0.01, 0.01), M.led, cx, FY + H - 0.02, 0.065, booth, false, false);
 
-  // 2. Art Display: P2 (pic/02.jpeg, 0.90 × 0.90 m) and P3 (pic/03.jpeg, 0.90 × 0.90 m)
-  const p2X = -3.70, p2Y = FY + 1.82;
-  place(
-    makeFramedPicture(0.90, 0.90, M.p02, 'p02', { pos: [p2X, p2Y, 2.1], target: [p2X, p2Y, 0.06] }, 'P2 · Abstract Yellow/Blue (02.jpeg)'),
-    p2X, p2Y, 0.06
-  );
-  addExhibitBadge('P2 · ภาพวาด 2 (02.jpeg)', new V3(p2X, p2Y + 0.65, 0.16), 'art');
-
-  const p3X = -2.30, p3Y = FY + 1.82;
+  // 2. Art Display: P3 (pic/03.jpeg Blue/Red Canvas, 0.90 × 0.90 m) on back wall
+  const p3X = -3.00, p3Y = FY + 1.82;
   place(
     makeFramedPicture(0.90, 0.90, M.p03, 'p03', { pos: [p3X, p3Y, 2.1], target: [p3X, p3Y, 0.06] }, 'P3 · Abstract Blue/Red (03.jpeg)'),
     p3X, p3Y, 0.06
   );
   addExhibitBadge('P3 · ภาพวาด 3 (03.jpeg)', new V3(p3X, p3Y + 0.65, 0.16), 'art');
 
-  // 3. Seating Vignette: Modern Walnut Low Sofa & Organic Coffee Table
-  // Circular Jute Rug (diameter 2.10 m)
-  mesh(new THREE.CircleGeometry(1.05, 40).rotateX(-Math.PI / 2), M.jute, cx, FY + 0.003, 1.65, booth, false, true);
+  // 3. FURNITURE: Tall Architectural Bookcase Tower against partition (x = -4.30)
+  makeBookcase(-4.25, 0.85);
 
-  // 2-Seater Walnut Lounge Sofa
-  makeLoungeSofa(cx, 1.15, 0, 1.90, M.linen);
+  // 4. FURNITURE: Single Minimalist Reading Armchair (ลดโซฟาตัวใหญ่ออก)
+  const chairX = -2.75, chairZ = 1.65;
+  makeOakArmchair(chairX, chairZ, -0.25);
 
-  // Low Dark Walnut Organic Coffee Table
-  const ctX = cx, ctZ = 1.85;
-  mesh(B(0.95, 0.04, 0.48, 0.03), M.walnut, ctX, FY + 0.28, ctZ);
-  mesh(new THREE.CylinderGeometry(0.02, 0.015, 0.26, 12), M.blackMetal, ctX - 0.38, FY + 0.13, ctZ - 0.16);
-  mesh(new THREE.CylinderGeometry(0.02, 0.015, 0.26, 12), M.blackMetal, ctX + 0.38, FY + 0.13, ctZ - 0.16);
-  mesh(new THREE.CylinderGeometry(0.02, 0.015, 0.26, 12), M.blackMetal, ctX, FY + 0.13, ctZ + 0.16);
-  place(makeFruitBowl(), ctX, FY + 0.30, ctZ);
+  // Small Round Travertine Drinks Table next to chair
+  mesh(new THREE.CylinderGeometry(0.20, 0.20, 0.03, 24), M.travertine, chairX + 0.60, FY + 0.40, chairZ - 0.10);
+  mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.38, 12), M.brass, chairX + 0.60, FY + 0.19, chairZ - 0.10);
+  mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.02, 24), M.travertine, chairX + 0.60, FY + 0.01, chairZ - 0.10);
+  place(makeBowl(0.07, M.walnut), chairX + 0.60, FY + 0.42, chairZ - 0.10);
 
-  // Low Divider Credenza between Block 2 & 1 (holding Sculpture S2)
-  const credX = -4.40, credZ = 0.85, credH = 0.58;
-  mesh(B(0.36, credH, 0.90, 0.01), M.walnut, credX, FY + credH / 2, credZ);
-  mesh(B(0.38, 0.025, 0.92, 0.005), M.travertine, credX, FY + credH + 0.012, credZ);
-  place(nextSculpture(), credX, FY + credH + 0.025, credZ, booth, 0.30);
-  addExhibitBadge('S2 · ประติมากรรม Foxy (50 cm)', new V3(credX, FY + credH + SCULPT_H + 0.15, credZ));
+  // Circular Jute Rug (diameter 1.80 m)
+  mesh(new THREE.CircleGeometry(0.90, 36).rotateX(-Math.PI / 2), M.jute, -2.60, FY + 0.003, 1.65, booth, false, true);
+
+  // Sculpture S2 on low travertine plinth
+  const ped2X = -1.95, ped2Z = 0.85, ped2H = 0.80;
+  mesh(B(0.40, ped2H, 0.40, 0.01), M.travertine, ped2X, FY + ped2H / 2, ped2Z);
+  place(nextSculpture(), ped2X, FY + ped2H, ped2Z, booth, 0.15);
+  addExhibitBadge('S2 · ประติมากรรม Foxy (50 cm)', new V3(ped2X, FY + ped2H + SCULPT_H + 0.15, ped2Z));
+}
+
+function makeBookcase(x, z) {
+  const g = new THREE.Group();
+  g.position.set(x, FY, z);
+
+  const bcW = 0.32, bcH = 2.15, bcD = 0.95;
+  // Oak outer casing
+  mesh(B(bcW, bcH, 0.03), M.oak, 0, bcH / 2, -bcD / 2, g);
+  mesh(B(bcW, bcH, 0.03), M.oak, 0, bcH / 2, bcD / 2, g);
+  mesh(B(bcW, 0.04, bcD), M.oak, 0, bcH, 0, g);
+  mesh(B(bcW, 0.04, bcD), M.oak, 0, 0.02, 0, g);
+
+  // 4 Shelves
+  const shelfHeights = [0.45, 0.90, 1.35, 1.75];
+  shelfHeights.forEach((sy) => {
+    mesh(B(bcW - 0.02, 0.03, bcD - 0.02), M.oak, 0, sy, 0, g);
+    mesh(B(0.008, 0.008, bcD - 0.04), M.led, bcW / 2 - 0.02, sy - 0.02, 0, g, false, false);
+  });
+
+  // Shelf Styling Items (Books, Ceramics, Plants)
+  place(makeBooks(3), x, FY + 0.48, z - 0.20, booth);
+  place(makeBowl(0.08, M.ceramic), x, FY + 0.48, z + 0.22, booth);
+  place(makePlant({ potR: 0.05, potH: 0.09, tree: false, crown: [0.09, 0.08, 0.09], leaves: 32, leafSize: 0.035 }), x, FY + 0.93, z - 0.20, booth);
+  place(makeBooks(4), x, FY + 1.38, z + 0.15, booth);
+  place(makeBowl(0.07, M.brassSatin), x, FY + 1.78, z, booth);
+
+  booth.add(g);
+  return g;
 }
 
 // ---------------------------------------------------------------------------
-// BLOCK 3 (x: -1.5 … +1.5, Center 0.0 - Central Showcase Lounge)
+// BLOCK 3 (x: -1.5 … +1.5, Center 0.0 - Central Showcase Pavilion)
 // Theme: Calacatta Gold Marble Pavilion & Centerpiece Foxy Sculpture
-// Art: P4 (pic/05.jpeg Wide Blue Foxy Master Graffiti, 1.80 × 0.86 m)
-// Sculpture: S3 (Master Foxy 50 cm on Grand Travertine Plinth)
-// Seating: Curved Modular Daybed / Bench in Saddle Camel Leather
+// Art: P4 (pic/05.jpeg Wide Master Graffiti, 1.80 × 0.86 m)
+// Sculpture: S3 Master Foxy 50 cm on Grand Travertine Plinth
+// Furniture: Sleek Museum Gallery Daybed / Bench in Saddle Camel Leather
 // ---------------------------------------------------------------------------
 function buildBlock3() {
   const cx = 0.0;
 
-  // 1. Distinct Wall Display: Calacatta Gold Marble Slab with Fluted Walnut Frame
+  // 1. Calacatta Gold Marble Slab with Fluted Walnut Frame Back Wall
   registerWall(mesh(B(3.0, H, 0.02), M.plaster, cx, FY + H / 2, 0.01), 'wall');
-  // Marble central feature slab (2.5m × 2.6m)
   registerWall(mesh(B(2.50, 2.60, 0.035), M.marble, cx, FY + 1.40, 0.028), 'wall');
-  // Fluted walnut side pilasters
   registerWall(mesh(B(0.20, 2.60, 0.05), M.walnut, -1.35, FY + 1.40, 0.035), 'trim');
   registerWall(mesh(B(0.20, 2.60, 0.05), M.walnut, 1.35, FY + 1.40, 0.035), 'trim');
-  // Backlit halo cove around marble slab
   mesh(B(2.56, 0.01, 0.01), M.led, cx, FY + 2.70, 0.04, booth, false, false);
   mesh(B(2.56, 0.01, 0.01), M.led, cx, FY + 0.10, 0.04, booth, false, false);
 
-  // Exhibition Title Badge overhead: "MARKETING NAIIN · FOXY EXHIBITION"
+  // Exhibition Title Badge: "MARKETING NAIIN · FOXY EXHIBITION"
   const signMat = new THREE.MeshStandardMaterial({
     map: logoTexture('MARKETING NAIIN', 'FOXY EXHIBITION · ART PAVILION'),
     transparent: true,
@@ -1012,7 +1127,7 @@ function buildBlock3() {
   glowMats.push({ mat: signMat, base: 0.95 });
   registerWall(mesh(new THREE.PlaneGeometry(2.10, 0.26), signMat, cx, FY + 2.82, 0.045, booth, false, false), 'sign');
 
-  // 2. Art Display: P4 (pic/05.jpeg Wide Blue Foxy Master Graffiti, 1.80 × 0.86 m)
+  // 2. Art Display: P4 (pic/05.jpeg Wide Master Graffiti, 1.80 × 0.86 m)
   const p4Y = FY + 1.95;
   place(
     makeFramedPicture(1.80, 0.86, M.p05, 'p05', { pos: [0, p4Y, 2.3], target: [0, p4Y, 0.06] }, 'P4 · Wide Master Graffiti (05.jpeg)'),
@@ -1020,15 +1135,14 @@ function buildBlock3() {
   );
   addExhibitBadge('P4 · ผลงานมาสเตอร์กราฟฟิตี้ (05.jpeg)', new V3(0, p4Y + 0.65, 0.16), 'art');
 
-  // 3. Centerpiece Sculpture S3 on Grand Travertine & Basalt Plinth
-  const ped3Z = 1.45, ped3H = 0.95;
+  // 3. Centerpiece Sculpture S3 on Grand Travertine Plinth
+  const ped3Z = 1.35, ped3H = 0.95;
   mesh(B(0.50, ped3H, 0.50, 0.015), M.travertine, cx, FY + ped3H / 2, ped3Z);
   mesh(B(0.44, 0.03, 0.44), M.basalt, cx, FY + 0.015, ped3Z);
   mesh(B(0.48, 0.015, 0.48), M.brassSatin, cx, FY + ped3H + 0.008, ped3Z);
   place(nextSculpture(), cx, FY + ped3H + 0.016, ped3Z, booth, 0.0);
   addExhibitBadge('S3 · ประติมากรรมมาสเตอร์ Foxy (50 cm)', new V3(cx, FY + ped3H + SCULPT_H + 0.18, ped3Z));
 
-  // Front Key Spotlight directly illuminating Master Foxy S3
   const spot3 = addAccent(new THREE.SpotLight(0xfff6e8, 9.0, 5.5, 0.36, 0.5, 2), 9.0);
   spot3.position.set(0, FY + H - 0.15, ped3Z + 0.95);
   spot3.target.position.set(0, FY + ped3H + 0.25, ped3Z);
@@ -1038,104 +1152,124 @@ function buildBlock3() {
   fill3.position.set(0, FY + ped3H + 0.35, ped3Z + 0.70);
   booth.add(fill3);
 
-  // 4. Seating Vignette: Curved Modular Daybed / Bench in Saddle Leather
-  // Oval Designer Rug (2.40 × 1.60 m)
-  mesh(B(2.40, 0.005, 1.60, 0.06), M.linen, cx, FY + 0.003, 2.05, booth, false, true);
+  // 4. FURNITURE: Sleek Museum Gallery Bench / Daybed in Saddle Leather (นั่งชมงานศิลปะแบบมินิมอล)
+  makeMuseumBench(cx, 2.15);
+}
 
-  // Curved Low-Profile Leather Bench (framing the pedestal)
-  makeLeatherDaybed(cx, 2.30, 0);
+function makeMuseumBench(x, z) {
+  const grp = new THREE.Group();
+  grp.position.set(x, FY, z);
 
-  // Round Fluted Walnut Side Table
-  mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.36, 32), M.walnut, -0.95, FY + 0.18, 1.95);
-  mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.02, 32), M.marble, -0.95, FY + 0.37, 1.95);
-  place(makeBowl(0.08, M.brassSatin), -0.95, FY + 0.38, 1.95);
+  const w = 1.70, d = 0.60;
+  // Solid walnut legs with brass ferrules
+  [[-w / 2 + 0.12, -d / 2 + 0.10], [w / 2 - 0.12, -d / 2 + 0.10], [-w / 2 + 0.12, d / 2 - 0.10], [w / 2 - 0.12, d / 2 - 0.10]].forEach(([lx, lz]) => {
+    mesh(new THREE.CylinderGeometry(0.018, 0.012, 0.24, 12), M.walnut, lx, 0.12, lz, grp);
+    mesh(new THREE.CylinderGeometry(0.020, 0.014, 0.035, 12), M.brass, lx, 0.02, lz, grp);
+  });
+
+  // Solid walnut frame base
+  mesh(B(w, 0.04, d, 0.01), M.walnut, 0, 0.26, 0, grp);
+  // Saddle Leather Tufted Cushion
+  mesh(B(w - 0.04, 0.15, d - 0.04, 0.04), M.leather, 0, 0.355, 0, grp);
+
+  booth.add(grp);
+  return grp;
 }
 
 // ---------------------------------------------------------------------------
 // BLOCK 4 (x: +1.5 … +4.5, Center +3.0)
-// Theme: Japandi Olive Limewash & Recessed Walnut Niche Lounge
-// Art: P5 (pic/04.jpeg Abstract Green Canvas) + Classic Metallic Foxy Oil Painting
-// Sculpture: S4 Foxy (50 cm) on Travertine Plinth
-// Seating: Pair of Scandinavian Oak Armchairs & Travertine Disc Table
+// Theme: Japandi Display Credenza & Wall Niche (ลดโซฟา แทนด้วยตู้ไซด์บอร์ดโชว์ผลงาน)
+// Art: P5 (pic/04.jpeg) on Partition Wall 2 East face!
+//      Classic Painting on Partition Wall 3 West face!
+// Sculpture: S4 Foxy (50 cm) in Illuminated Wall Niche
+// Furniture: Long Solid Walnut & Travertine Sideboard Credenza, Poufs
 // ---------------------------------------------------------------------------
 function buildBlock4() {
   const cx = 3.0;
 
-  // 1. Distinct Wall Display: Olive-Cream Limewash with Recessed Display Niche
+  // 1. Olive-Cream Limewash Back Wall with Recessed Display Niche
   registerWall(mesh(B(3.0, H, 0.02), M.olivePlaster, cx, FY + H / 2, 0.01), 'wall');
   registerWall(mesh(B(3.02, 0.04, 0.08), M.walnut, cx, FY + H + 0.02, 0.04), 'trim');
 
   // Recessed illuminated display niche in solid walnut
   const nicheW = 1.10, nicheH = 1.50, nicheD = 0.24;
-  const nicheX = 2.35, nicheY = FY + 1.70;
+  const nicheX = 3.00, nicheY = FY + 1.70;
   mesh(B(nicheW, 0.03, nicheD), M.oak, nicheX, nicheY - nicheH / 2, nicheD / 2);
   mesh(B(nicheW, 0.03, nicheD), M.oak, nicheX, nicheY + nicheH / 2, nicheD / 2);
   mesh(B(0.03, nicheH, nicheD), M.oak, nicheX - nicheW / 2, nicheY, nicheD / 2);
   mesh(B(0.03, nicheH, nicheD), M.oak, nicheX + nicheW / 2, nicheY, nicheD / 2);
   mesh(B(nicheW - 0.04, 0.01, 0.01), M.led, nicheX, nicheY + nicheH / 2 - 0.02, 0.04, booth, false, false);
 
-  // 2. Art Display: P5 (pic/04.jpeg Green Canvas, 0.90 × 0.90 m)
-  place(
-    makeFramedPicture(0.85, 0.85, M.p04, 'p04', { pos: [nicheX, nicheY, 2.1], target: [nicheX, nicheY, 0.06] }, 'P5 · Abstract Green (04.jpeg)'),
-    nicheX, nicheY + 0.10, 0.06
-  );
-  addExhibitBadge('P5 · ภาพวาด 5 (04.jpeg Green)', new V3(nicheX, nicheY + 0.70, 0.16), 'art');
+  // Sculpture S4 inside niche plinth
+  const ped4H = 0.65;
+  mesh(B(0.42, ped4H, 0.36, 0.01), M.travertine, nicheX, FY + ped4H / 2, 0.12);
+  place(nextSculpture(), nicheX, FY + ped4H, 0.12, booth, 0.0);
+  addExhibitBadge('S4 · ประติมากรรม Foxy (50 cm)', new V3(nicheX, FY + ped4H + SCULPT_H + 0.15, 0.14));
 
-  // Classic Oil Painting (Burning Steel Foxy) mounted at x = +3.65
-  const classicX = 3.65, classicY = FY + 1.82;
-  place(
-    makeFramedPicture(0.82, 1.15, M.classic1, 'classic1', { pos: [classicX, classicY, 2.1], target: [classicX, classicY, 0.05] }, 'Classic Oil · Burning Foxy'),
-    classicX, classicY, 0.05
-  );
-  addExhibitBadge('ภาพสีน้ำมันคลาสสิก (Foxy Steel)', new V3(classicX, classicY + 0.78, 0.16), 'art');
+  // 2. FURNITURE: Long Solid Walnut & Travertine Display Sideboard Credenza (2.10m long)
+  const credX = 3.00, credZ = 1.35;
+  makeCredenza(credX, credZ);
 
-  // 3. Sculpture S4 on Niche Plinth
-  const ped4X = nicheX, ped4Z = 0.55, ped4H = 0.65;
-  mesh(B(0.38, ped4H, 0.38, 0.01), M.travertine, ped4X, FY + ped4H / 2, ped4Z);
-  place(nextSculpture(), ped4X, FY + ped4H, ped4Z, booth, 0.15);
-  addExhibitBadge('S4 · ประติมากรรม Foxy (50 cm)', new V3(ped4X, FY + ped4H + SCULPT_H + 0.15, ped4Z));
+  // 2 Upholstered Round Minimal Poufs / Stools in Front of Credenza
+  makeStool(2.45, 2.05);
+  makeStool(3.55, 2.05);
 
-  // 4. Seating Vignette: Scandinavian Oak Armchairs & Travertine Disc Table
-  // Textured Neutral Rug (2.3 × 1.8 m)
-  mesh(B(2.30, 0.005, 1.80, 0.04), M.fabric, cx, FY + 0.003, 1.75, booth, false, true);
+  // Designer Arc Floor Lamp sweeping over Block 4
+  makeArcLamp(4.25, 0.45, new V3(3.20, FY + 2.05, 1.45));
+}
 
-  // Left Oak Armchair
-  makeOakArmchair(cx - 0.60, 1.70, 0.35);
-  // Right Oak Armchair
-  makeOakArmchair(cx + 0.60, 1.70, -0.35);
+function makeCredenza(cx, cz) {
+  const g = new THREE.Group();
+  g.position.set(cx, FY, cz);
 
-  // Travertine Disc Coffee Table with Brass Tripod Legs
-  const t4X = cx, t4Z = 1.70;
-  mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.03, 32), M.travertine, t4X, FY + 0.38, t4Z);
-  mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.36, 12), M.brass, t4X - 0.18, FY + 0.18, t4Z - 0.10);
-  mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.36, 12), M.brass, t4X + 0.18, FY + 0.18, t4Z - 0.10);
-  mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.36, 12), M.brass, t4X, FY + 0.18, t4Z + 0.20);
-  place(makeBouquet(), t4X, FY + 0.40, t4Z);
+  const w = 2.10, h = 0.54, d = 0.42;
+  // Walnut cabinet body
+  mesh(B(w, h - 0.12, d, 0.01), M.walnut, 0, (h - 0.12) / 2 + 0.12, 0, g);
+  // Travertine honed slab top
+  mesh(B(w + 0.04, 0.03, d + 0.04, 0.008), M.travertine, 0, h + 0.015, 0, g);
+  // Walnut & brass conical legs
+  [[-w / 2 + 0.15, -d / 2 + 0.08], [w / 2 - 0.15, -d / 2 + 0.08], [-w / 2 + 0.15, d / 2 - 0.08], [w / 2 - 0.15, d / 2 - 0.08]].forEach(([lx, lz]) => {
+    mesh(new THREE.CylinderGeometry(0.018, 0.012, 0.12, 12), M.walnut, lx, 0.06, lz, g);
+    mesh(new THREE.CylinderGeometry(0.020, 0.014, 0.03, 12), M.brass, lx, 0.015, lz, g);
+  });
 
-  // Designer Arc Floor Lamp
-  makeArcLamp(4.25, 0.45, new V3(3.40, FY + 2.05, 1.55));
+  // Credenza Art Styling: Bronze torus knot, art books, bowl
+  place(makeBooks(3), cx - 0.65, FY + h + 0.03, cz, booth);
+  place(makeBowl(0.09, M.brassSatin), cx, FY + h + 0.03, cz, booth);
+  place(makePlant({ potR: 0.08, potH: 0.14, tree: false, crown: [0.14, 0.12, 0.14], leaves: 48, leafSize: 0.04 }), cx + 0.65, FY + h + 0.03, cz, booth);
+
+  booth.add(g);
+  return g;
+}
+
+function makeStool(x, z) {
+  const grp = new THREE.Group();
+  grp.position.set(x, FY, z);
+
+  mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.04, 24), M.brassSatin, 0, 0.02, 0, grp);
+  mesh(new THREE.CylinderGeometry(0.20, 0.20, 0.38, 24), M.boucle, 0, 0.23, 0, grp);
+
+  booth.add(grp);
+  return grp;
 }
 
 // ---------------------------------------------------------------------------
 // BLOCK 5 (x: +4.5 … +7.5, Center +6.0 - VIP Photo Lounge)
 // Theme: Warm Walnut Wainscoting & Limewash Photo Studio Wall
-// Art: P6 (pic/06.jpeg Sun & Lightning Master Graffiti, 1.80 × 0.90 m)
+// Art: P6 (pic/06.jpeg Sun & Lightning Master Graffiti, 1.80 × 0.90 m) as Photo Backdrop
 // Sculpture: S5 Selfie Foxy (50 cm on Travertine Pedestal beside Sofa)
-// Seating: Iconic Curved Designer Sofa in Warm Bouclé with Velvet Cushions
+// Seating: Iconic Curved Designer Sofa in Warm Bouclé with Velvet Cushions (เก็บไว้เฉพาะจุดถ่ายรูป)
 // ---------------------------------------------------------------------------
 function buildBlock5() {
   const cx = 6.0;
 
-  // 1. Distinct Wall Display: Lower Walnut Wainscoting + Upper Warm Limewash
-  // Upper Limewash Wall
+  // 1. Walnut Wainscoting + Limewash Photo Studio Back Wall
   registerWall(mesh(B(3.0, H - 1.10, 0.02), M.limewash, cx, FY + 1.10 + (H - 1.10) / 2, 0.01), 'wall');
-  // Lower Walnut Fluted Wainscoting (height 1.10 m)
   registerWall(mesh(B(3.0, 1.10, 0.04), M.walnut, cx, FY + 0.55, 0.02), 'wall');
-  registerWall(mesh(B(3.02, 0.04, 0.08), M.walnut, cx, FY + 1.10 + 0.02, 0.04), 'trim'); // dado rail
-  registerWall(mesh(B(3.02, 0.04, 0.08), M.walnut, cx, FY + H + 0.02, 0.04), 'trim');     // top cornice
+  registerWall(mesh(B(3.02, 0.04, 0.08), M.walnut, cx, FY + 1.10 + 0.02, 0.04), 'trim');
+  registerWall(mesh(B(3.02, 0.04, 0.08), M.walnut, cx, FY + H + 0.02, 0.04), 'trim');
   mesh(B(2.9, 0.01, 0.01), M.led, cx, FY + 1.12, 0.045, booth, false, false);
 
-  // Photo Spot Badge on the wall
   const photoBadgeMat = new THREE.MeshStandardMaterial({
     map: logoTexture('MARKETING NAIIN', '📸 SIGNATURE PHOTO LOUNGE'),
     transparent: true,
@@ -1156,13 +1290,7 @@ function buildBlock5() {
   );
   addExhibitBadge('P6 · ผลงานกราฟฟิตี้ (06.jpeg Sun/Lightning)', new V3(cx, p6Y + 0.65, 0.16), 'art');
 
-  // Classic Oil Painting (Flame Foxy) on the right
-  place(
-    makeFramedPicture(0.78, 1.10, M.classic2, 'classic2', { pos: [7.10, FY + 1.80, 2.0], target: [7.10, FY + 1.80, 0.05] }, 'Classic Oil · Flame Foxy'),
-    7.10, FY + 1.80, 0.05
-  );
-
-  // 3. 📸 PHOTO SPOT: Iconic Curved Bouclé Designer Sofa
+  // 3. 📸 PHOTO SPOT: Iconic Curved Bouclé Designer Sofa (เก็บไว้เป็นมุมถ่ายรูปหลัก)
   const sofaX = 6.00, sofaZ = 1.15;
   makeCurvedSofa(sofaX, sofaZ, 0);
 
@@ -1173,10 +1301,9 @@ function buildBlock5() {
   place(nextSculpture(), ped5X, FY + ped5H, ped5Z, booth, 0.18);
   addExhibitBadge('S5 · ประติมากรรม Foxy (50 cm)', new V3(ped5X, FY + ped5H + SCULPT_H + 0.15, ped5Z));
 
-  // Dedicated Photo Spot Badge
   addExhibitBadge('📸 มุมถ่ายรูป · Photo Spot (Sofa & Foxy)', new V3(5.50, FY + 1.55, 1.15), 'photo');
 
-  // Studio Key Spotlight aimed directly at Foxy S5 & Sofa
+  // Studio Portrait Lighting
   const spot5 = addAccent(new THREE.SpotLight(0xfff5e6, 8.5, 5.5, 0.40, 0.5, 2), 8.5);
   spot5.position.set(ped5X, FY + H - 0.15, ped5Z + 0.95);
   spot5.target.position.set(ped5X, FY + ped5H + 0.25, ped5Z);
@@ -1186,13 +1313,12 @@ function buildBlock5() {
   fill5.position.set(ped5X, FY + ped5H + 0.35, ped5Z + 0.65);
   booth.add(fill5);
 
-  // Flattering studio portrait spotlight directly lighting visitors on the sofa
   const portraitSpot = addAccent(new THREE.SpotLight(0xffeedd, 6.5, 5.5, 0.48, 0.5, 2), 6.5);
   portraitSpot.position.set(5.50, FY + H - 0.15, 2.25);
   portraitSpot.target.position.set(5.50, FY + 0.65, sofaZ);
   booth.add(portraitSpot, portraitSpot.target);
 
-  // Designer Round Travertine & Brass Side Table next to sofa right arm
+  // Side Drinks Table
   const tab5X = 7.15, tab5Z = 1.15;
   mesh(new THREE.CylinderGeometry(0.20, 0.20, 0.03, 24), M.travertine, tab5X, FY + 0.48, tab5Z);
   mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.46, 12), M.brass, tab5X, FY + 0.24, tab5Z);
@@ -1205,94 +1331,28 @@ function buildBlock5() {
   place(nextSculpture(), ped6X, FY + ped6H, ped6Z, booth, -0.25);
   addExhibitBadge('S6 · ประติมากรรม Foxy (50 cm)', new V3(ped6X, FY + ped6H + SCULPT_H + 0.15, ped6Z));
 
-  // Corner Lush Olive Tree in Terracotta Pot
+  // Corner Lush Olive Tree
   place(makePlant({ potR: 0.22, potH: 0.46, potMat: M.terracotta, trunkH: 1.25, crown: [0.48, 0.42, 0.48], leaves: 240 }), 7.20, FY, 2.20);
 }
 
 // ---------------------------------------------------------------------------
-// Furniture Builders for the 5 Lounge Vignettes
+// Seating Builders
 // ---------------------------------------------------------------------------
-function makeArmchair(x, z, rotY = 0, seatMat = M.boucle) {
-  const grp = new THREE.Group();
-  grp.position.set(x, FY, z);
-  grp.rotation.y = rotY;
-
-  // 4 angled tapered walnut legs with brass tips
-  const legGeo = new THREE.CylinderGeometry(0.016, 0.011, 0.16, 12);
-  const ferruleGeo = new THREE.CylinderGeometry(0.018, 0.013, 0.035, 12);
-  [[-0.26, -0.24], [0.26, -0.24], [-0.26, 0.24], [0.26, 0.24]].forEach(([lx, lz]) => {
-    mesh(legGeo, M.walnut, lx, 0.08, lz, grp);
-    mesh(ferruleGeo, M.brass, lx, 0.02, lz, grp);
-  });
-
-  // Seat Base Cushion
-  mesh(B(0.68, 0.18, 0.66, 0.06), seatMat, 0, 0.25, 0.02, grp);
-  // Curved Wraparound Backrest
-  const back = mesh(B(0.68, 0.46, 0.16, 0.06), seatMat, 0, 0.48, -0.24, grp);
-  back.rotation.x = -0.06;
-  // Side Armrests
-  mesh(B(0.12, 0.28, 0.58, 0.05), seatMat, -0.34, 0.38, 0.02, grp);
-  mesh(B(0.12, 0.28, 0.58, 0.05), seatMat, 0.34, 0.38, 0.02, grp);
-  // Accent Pillow
-  const p = mesh(B(0.28, 0.28, 0.09, 0.03), M.pillow.rust, 0, 0.38, -0.16, grp);
-  p.rotation.set(-0.1, rand(-0.15, 0.15), 0);
-
-  booth.add(grp);
-  return grp;
-}
-
 function makeOakArmchair(x, z, rotY = 0) {
   const grp = new THREE.Group();
   grp.position.set(x, FY, z);
   grp.rotation.y = rotY;
 
-  // Scandinavian solid oak exposed frame
   mesh(B(0.04, 0.55, 0.68), M.oak, -0.32, 0.27, 0, grp);
   mesh(B(0.04, 0.55, 0.68), M.oak, 0.32, 0.27, 0, grp);
-  mesh(B(0.64, 0.03, 0.05), M.oak, 0, 0.54, -0.32, grp); // top rail
+  mesh(B(0.64, 0.03, 0.05), M.oak, 0, 0.54, -0.32, grp);
 
-  // Textured cushions
   mesh(B(0.58, 0.16, 0.60, 0.05), M.linen, 0, 0.22, 0.02, grp);
   const back = mesh(B(0.58, 0.42, 0.14, 0.05), M.linen, 0, 0.44, -0.22, grp);
   back.rotation.x = -0.10;
 
   const p = mesh(B(0.28, 0.28, 0.08, 0.03), M.pillow.olive, 0, 0.36, -0.15, grp);
   p.rotation.set(-0.12, 0.10, 0);
-
-  booth.add(grp);
-  return grp;
-}
-
-function makeLoungeSofa(x, z, rotY = 0, w = 1.90, seatMat = M.linen) {
-  const grp = new THREE.Group();
-  grp.position.set(x, FY, z);
-  grp.rotation.y = rotY;
-
-  // Walnut legs
-  const legGeo = new THREE.CylinderGeometry(0.018, 0.012, 0.14, 12);
-  const ferruleGeo = new THREE.CylinderGeometry(0.020, 0.014, 0.035, 12);
-  const hw = w / 2 - 0.12;
-  [[-hw, -0.26], [hw, -0.26], [-hw, 0.26], [hw, 0.26]].forEach(([lx, lz]) => {
-    mesh(legGeo, M.walnut, lx, 0.07, lz, grp);
-    mesh(ferruleGeo, M.brass, lx, 0.02, lz, grp);
-  });
-
-  // Solid Walnut Base Platform
-  mesh(B(w, 0.05, 0.74, 0.02), M.walnut, 0, 0.165, 0, grp);
-  // Main Seat Cushion
-  mesh(B(w - 0.04, 0.24, 0.70, 0.06), seatMat, 0, 0.31, 0.01, grp);
-  // Backrest Cushion
-  const back = mesh(B(w - 0.04, 0.42, 0.20, 0.06), seatMat, 0, 0.56, -0.24, grp);
-  back.rotation.x = -0.06;
-  // Armrests
-  mesh(B(0.14, 0.26, 0.68, 0.05), seatMat, -w / 2 + 0.07, 0.41, 0.01, grp);
-  mesh(B(0.14, 0.26, 0.68, 0.05), seatMat, w / 2 - 0.07, 0.41, 0.01, grp);
-
-  // Cushions
-  const p1 = mesh(B(0.34, 0.34, 0.11, 0.04), M.pillow.rust, -w * 0.28, 0.46, -0.14, grp);
-  p1.rotation.set(-0.15, 0.25, 0.10);
-  const p2 = mesh(B(0.32, 0.32, 0.11, 0.04), M.pillow.olive, w * 0.28, 0.46, -0.14, grp);
-  p2.rotation.set(-0.15, -0.22, -0.08);
 
   booth.add(grp);
   return grp;
@@ -1311,66 +1371,17 @@ function makeCurvedSofa(x, z, rotY = 0) {
     mesh(ferruleGeo, M.brass, lx, 0.02, lz, grp);
   });
 
-  // Base platform
   mesh(B(w, 0.05, 0.74, 0.02), M.walnut, 0, 0.165, 0, grp);
-  // Seat cushion (Warm Bouclé)
   mesh(B(w - 0.04, 0.25, 0.70, 0.07), M.boucle, 0, 0.315, 0.01, grp);
-  // Curved Backrest cushion
   const back = mesh(B(w - 0.04, 0.44, 0.22, 0.07), M.boucle, 0, 0.58, -0.24, grp);
   back.rotation.x = -0.06;
-  // Armrests
   mesh(B(0.14, 0.28, 0.68, 0.06), M.boucle, -w / 2 + 0.07, 0.42, 0.01, grp);
   mesh(B(0.14, 0.28, 0.68, 0.06), M.boucle, w / 2 - 0.07, 0.42, 0.01, grp);
 
-  // Accent cushions
   const p1 = mesh(B(0.34, 0.34, 0.11, 0.04), M.pillow.rust, -0.55, 0.48, -0.13, grp);
   p1.rotation.set(-0.15, 0.25, 0.10);
   const p2 = mesh(B(0.32, 0.32, 0.11, 0.04), M.pillow.olive, 0.55, 0.48, -0.13, grp);
   p2.rotation.set(-0.15, -0.22, -0.08);
-
-  booth.add(grp);
-  return grp;
-}
-
-function makeLeatherDaybed(x, z, rotY = 0) {
-  const grp = new THREE.Group();
-  grp.position.set(x, FY, z);
-  grp.rotation.y = rotY;
-
-  const w = 1.90, d = 0.78;
-  // Tapered walnut legs
-  [[-0.82, -0.30], [0.82, -0.30], [-0.82, 0.30], [0.82, 0.30]].forEach(([lx, lz]) => {
-    mesh(new THREE.CylinderGeometry(0.018, 0.012, 0.16, 12), M.walnut, lx, 0.08, lz, grp);
-    mesh(new THREE.CylinderGeometry(0.020, 0.014, 0.035, 12), M.brass, lx, 0.02, lz, grp);
-  });
-
-  // Walnut subframe
-  mesh(B(w, 0.04, d, 0.015), M.walnut, 0, 0.18, 0, grp);
-  // Tufted Saddle Leather mattress cushion
-  mesh(B(w - 0.04, 0.18, d - 0.04, 0.05), M.leather, 0, 0.29, 0, grp);
-  // Cylindrical Leather Bolster Pillows (Left & Right)
-  const b1 = mesh(new THREE.CylinderGeometry(0.09, 0.09, d - 0.08, 24).rotateX(Math.PI / 2), M.leatherDark, -w / 2 + 0.18, 0.44, 0, grp);
-  const b2 = mesh(new THREE.CylinderGeometry(0.09, 0.09, d - 0.08, 24).rotateX(Math.PI / 2), M.leatherDark, w / 2 - 0.18, 0.44, 0, grp);
-
-  booth.add(grp);
-  return grp;
-}
-
-function makeFloorLamp(x, z) {
-  const grp = new THREE.Group();
-  grp.position.set(x, FY, z);
-
-  // Weighted Travertine Base
-  mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.04, 24), M.travertine, 0, 0.02, 0, grp);
-  // Slender Brass Rod
-  mesh(new THREE.CylinderGeometry(0.008, 0.008, 1.45, 12), M.brass, 0, 0.76, 0, grp);
-  // Fabric Cone Shade
-  mesh(new THREE.ConeGeometry(0.18, 0.24, 24, 1, true), M.shade, 0, 1.45, 0, grp);
-  mesh(new THREE.SphereGeometry(0.03, 12, 10), M.bulb, 0, 1.40, 0, grp, false, false);
-
-  const l = addAccent(new THREE.PointLight(0xffdfb8, 1.5, 3.2, 2), 1.5);
-  l.position.set(0, 1.35, 0);
-  grp.add(l);
 
   booth.add(grp);
   return grp;
@@ -1438,7 +1449,7 @@ function setMode(name) {
 }
 
 // ---------------------------------------------------------------------------
-// Dimension Lines & Zone Labels (5 Blocks × 3 m)
+// Dimension Lines & Zone Labels
 // ---------------------------------------------------------------------------
 const dimGroup = new THREE.Group();
 const dimLabels = [];
@@ -1463,29 +1474,26 @@ function buildAnnotations() {
   scene.add(dimGroup);
   scene.add(exhibitGroup);
 
-  // Overall Dimensions
   dimLine(new V3(-W / 2, 0.02, D + 0.45), new V3(W / 2, 0.02, D + 0.45), 'กว้าง 15.00 m (5 บล็อก × 3.00 m)', new V3(0, 0, 0.12));
   dimLine(new V3(-W / 2 - 0.35, FY, 0.05), new V3(-W / 2 - 0.35, FY + H, 0.05), 'สูง 3.00 m', new V3(0.12, 0, 0));
   dimLine(new V3(W / 2 + 0.4, 0.02, 0), new V3(W / 2 + 0.4, 0.02, D), `ลึก ${D.toFixed(2)} m`, new V3(0.12, 0, 0));
 
-  // 5 Individual 3-meter Block Dimension Lines along the front
   const blockDefs = [
-    { name: 'บล็อก 1 (3.00 m)', x0: -7.5, x1: -4.5 },
-    { name: 'บล็อก 2 (3.00 m)', x0: -4.5, x1: -1.5 },
-    { name: 'บล็อก 3 (3.00 m)', x0: -1.5, x1: 1.5 },
-    { name: 'บล็อก 4 (3.00 m)', x0: 1.5, x1: 4.5 },
-    { name: 'บล็อก 5 (3.00 m)', x0: 4.5, x1: 7.5 },
+    { name: 'บล็อก 1 (3.00 m · Bar)', x0: -7.5, x1: -4.5 },
+    { name: 'บล็อก 2 (3.00 m · Library)', x0: -4.5, x1: -1.5 },
+    { name: 'บล็อก 3 (3.00 m · Showcase)', x0: -1.5, x1: 1.5 },
+    { name: 'บล็อก 4 (3.00 m · Credenza)', x0: 1.5, x1: 4.5 },
+    { name: 'บล็อก 5 (3.00 m · Photo)', x0: 4.5, x1: 7.5 },
   ];
   blockDefs.forEach(({ name, x0, x1 }) => {
     dimLine(new V3(x0, FY + 2.85, D + 0.10), new V3(x1, FY + 2.85, D + 0.10), name, new V3(0, 0.08, 0));
   });
 
-  // Zone Labels over each of the 5 blocks
   const zoneInfo = [
-    ['1', 'บล็อก 1 · Earth & Brick Lounge', -6.0],
-    ['2', 'บล็อก 2 · Oak Slat Lounge', -3.0],
-    ['3', 'บล็อก 3 · Center Showcase Lounge', 0.0],
-    ['4', 'บล็อก 4 · Japandi Timber Lounge', 3.0],
+    ['1', 'บล็อก 1 · Kitchen & Bar Lounge', -6.0],
+    ['2', 'บล็อก 2 · Library & Gallery', -3.0],
+    ['3', 'บล็อก 3 · Center Showcase Pavilion', 0.0],
+    ['4', 'บล็อก 4 · Japandi Sideboard Lounge', 3.0],
     ['5', 'บล็อก 5 · VIP Photo Lounge 📸', 6.0],
   ];
   zoneInfo.forEach(([k, name, x]) => {
@@ -1505,14 +1513,14 @@ function buildAnnotations() {
 const VIEWS = {
   overview: { pos: [10.5, 5.2, 12.0], target: [0, 1.3, 1.4] },
   front: { pos: [0, 1.6, 9.2], target: [0, 1.4, 1.5] },
-  block1: { pos: [-6.0, 1.55, 4.0], target: [-6.0, 1.3, 1.2] },
-  block2: { pos: [-3.0, 1.55, 4.0], target: [-3.0, 1.3, 1.2] },
-  block3: { pos: [0.0, 1.55, 4.0], target: [0.0, 1.3, 1.2] },
-  block4: { pos: [3.0, 1.55, 4.0], target: [3.0, 1.3, 1.2] },
-  block5: { pos: [6.0, 1.55, 4.0], target: [6.0, 1.3, 1.2] },
+  block1: { pos: [-6.0, 1.60, 4.0], target: [-6.0, 1.25, 1.4] },
+  block2: { pos: [-3.0, 1.60, 4.0], target: [-3.0, 1.30, 1.3] },
+  block3: { pos: [0.0, 1.60, 4.0], target: [0.0, 1.35, 1.3] },
+  block4: { pos: [3.0, 1.60, 4.0], target: [3.0, 1.30, 1.3] },
+  block5: { pos: [6.0, 1.60, 4.0], target: [6.0, 1.30, 1.3] },
   photospot: { pos: [5.6, 1.35, 2.5], target: [5.6, 1.05, 1.1] },
   walkthrough: { pos: [-6.2, 1.55, 2.4], target: [5.8, 1.4, 1.5] },
-  sculptures: { pos: [0.0, 1.55, 2.8], target: [0.0, 1.35, 1.45] },
+  sculptures: { pos: [0.0, 1.55, 2.8], target: [0.0, 1.35, 1.35] },
   top: { pos: [0, 17, 1.5], target: [0, 0, 1.5] },
 };
 
@@ -1581,7 +1589,6 @@ function setupCustomObjectSystem() {
       }
     }
 
-    // Interactive art click: zoom directly in front of the artwork
     const artHits = raycaster.intersectObjects(artMeshes, false);
     if (artHits.length > 0 && artHits[0].object.userData.viewPos) {
       const vp = artHits[0].object.userData.viewPos;
@@ -1770,16 +1777,18 @@ function wireUI() {
     });
   });
 
-  // Tour of All Artworks (Cycles through P1..P6 + classics)
+  // Tour of Artworks (Cycles through P1..P6 and partition wall paintings)
   let paintingViewIdx = 0;
   const paintingTourViews = [
     { pos: [0, 1.8, 7.5], target: [0, 1.6, 0.2] },                               // Center Gallery View
-    { pos: [-5.70, FY + 1.82, 2.1], target: [-5.70, FY + 1.82, 0.05] },         // P1 Gold Foxy (01.jpeg)
-    { pos: [-3.70, FY + 1.82, 2.0], target: [-3.70, FY + 1.82, 0.06] },         // P2 Yellow/Blue (02.jpeg)
-    { pos: [-2.30, FY + 1.82, 2.0], target: [-2.30, FY + 1.82, 0.06] },         // P3 Blue/Red (03.jpeg)
-    { pos: [0.0, FY + 1.95, 2.2], target: [0.0, FY + 1.95, 0.06] },             // P4 Master Graffiti (05.jpeg)
-    { pos: [2.35, FY + 1.80, 2.0], target: [2.35, FY + 1.80, 0.06] },           // P5 Abstract Green (04.jpeg)
-    { pos: [6.00, FY + 2.05, 2.2], target: [6.00, FY + 2.05, 0.05] },           // P6 Sun Graffiti (06.jpeg)
+    { pos: [-6.00, FY + 1.82, 2.1], target: [-6.00, FY + 1.82, 0.05] },         // P1 Gold Foxy (01.jpeg) on Block 1 wall
+    { pos: [-3.30, FY + 1.80, 0.85], target: [-4.44, FY + 1.80, 0.85] },         // P2 Yellow/Blue (02.jpeg) on Partition 1
+    { pos: [-3.00, FY + 1.82, 2.0], target: [-3.00, FY + 1.82, 0.06] },         // P3 Blue/Red (03.jpeg) on Block 2 slat wall
+    { pos: [0.0, FY + 1.95, 2.2], target: [0.0, FY + 1.95, 0.06] },             // P4 Master Graffiti (05.jpeg) on Block 3 marble
+    { pos: [2.70, FY + 1.80, 0.85], target: [1.56, FY + 1.80, 0.85] },          // P5 Abstract Green (04.jpeg) on Partition 2
+    { pos: [6.00, FY + 2.05, 2.2], target: [6.00, FY + 2.05, 0.05] },           // P6 Sun Graffiti (06.jpeg) on Block 5 wall
+    { pos: [-5.70, FY + 1.80, 0.85], target: [-4.56, FY + 1.80, 0.85] },        // Classic Art on Partition 1 West
+    { pos: [3.30, FY + 1.80, 0.85], target: [4.44, FY + 1.80, 0.85] },          // Classic Art on Partition 3 West
   ];
 
   document.querySelectorAll('#viewBar button').forEach((btn) => {
@@ -1867,7 +1876,6 @@ function wireUI() {
     a.click();
   });
 
-  // 3D File Upload & Drag-Drop
   const fileUpload = document.getElementById('fileUpload');
   const btnUpload = document.getElementById('btnUpload');
   if (btnUpload && fileUpload) {
@@ -1932,7 +1940,7 @@ function wireUI() {
   if (btnPlacePedestal) {
     btnPlacePedestal.addEventListener('click', () => {
       if (selectedCustomObj) {
-        selectedCustomObj.position.set(0, FY + 1.00, 1.45);
+        selectedCustomObj.position.set(0, FY + 1.00, 1.35);
       }
     });
   }
@@ -2002,7 +2010,7 @@ async function init() {
     console.warn('Artwork texture loading notice:', e);
   }
 
-  if (loaderSub) loaderSub.textContent = 'กำลังจัดเตรียม 5 บล็อกและมุมนั่งเล่นแบบเปิดโล่ง...';
+  if (loaderSub) loaderSub.textContent = 'กำลังจัดเตรียม 5 บล็อกและมุมจัดแสดง...';
 
   const safetyTimer = setTimeout(() => {
     const ldr = document.getElementById('loader');
@@ -2013,9 +2021,8 @@ async function init() {
     buildTextures();
     buildMaterials();
     buildHallAndPlatform();
-    buildOpenCeilingAndPortals();
+    buildOpenCeilingAndPartitions();
 
-    // 5 Blocks × 3 m with Dedicated Wall Displays & Seating Lounges
     buildBlock1();
     buildBlock2();
     buildBlock3();
