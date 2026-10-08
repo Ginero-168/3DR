@@ -18,7 +18,6 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
@@ -82,10 +81,6 @@ renderer.toneMappingExposure = 1.0;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 container.appendChild(renderer.domElement);
 
-const labelRenderer = new CSS2DRenderer();
-labelRenderer.setSize(window.innerWidth, window.innerHeight);
-labelRenderer.domElement.className = 'label-layer';
-container.appendChild(labelRenderer.domElement);
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x14100c);
@@ -781,70 +776,6 @@ function build6SculpturesInRow() {
   });
 }
 
-// ---------------------------------------------------------------------------
-// 3D Measurement Labels & Annotations
-// ---------------------------------------------------------------------------
-const dimGroup = new THREE.Group();
-const zoneGroup = new THREE.Group();
-dimGroup.visible = false;
-zoneGroup.visible = false;
-scene.add(dimGroup);
-scene.add(zoneGroup);
-
-function createPillLabel(text, cls = 'dim-label') {
-  const d = document.createElement('div');
-  d.className = cls;
-  d.textContent = text;
-  return new CSS2DObject(d);
-}
-
-function buildDimensionsAndLabels() {
-  dimGroup.clear();
-  zoneGroup.clear();
-  dimGroup.visible = false;
-  zoneGroup.visible = false;
-
-  // 1. Overall Width 15 m Label (Along front edge)
-  const lblWidth = createPillLabel('หน้ากว้าง 15.00 เมตร');
-  lblWidth.position.set(0, FY + 0.08, D / 2 + 0.35);
-  dimGroup.add(lblWidth);
-
-  // 2. Depth 3.0 m Label (Right edge)
-  const lblDepth = createPillLabel('ความลึก 3.00 ม.');
-  lblDepth.position.set(W / 2 + 0.35, FY + 0.08, 0);
-  dimGroup.add(lblDepth);
-
-  // 3. Entrance Door Width (3.0 m)
-  const lblDoor = createPillLabel('ประตูทางเข้า 3.00 ม.');
-  lblDoor.position.set(DOOR_CENTER_X, FY + 2.50, D / 2 + 0.25);
-  dimGroup.add(lblDoor);
-
-  // 4. Front Exhibition Wall (10.8 m)
-  const lblWall = createPillLabel('ผนังจัดแสดง 10.80 ม. (แขวนรูป 2 ด้าน)');
-  lblWall.position.set(2.10, FY + 2.65, D / 2 + 0.25);
-  dimGroup.add(lblWall);
-
-  // 5. Labels for 6 Sculptures in a Row
-  SCULPTURE_POSITIONS.forEach((pos, idx) => {
-    const lbl = createPillLabel(`ประติมากรรม ${idx + 1} (Foxy 50 ซม.)`, 'zone-label');
-    lbl.position.set(pos.x, FY + 0.65 + SCULPT_H + 0.18, pos.z);
-    zoneGroup.add(lbl);
-  });
-
-  // 6. Labels for 5 Outside Artworks
-  ART_PAIR_X.forEach((x, idx) => {
-    const lbl = createPillLabel(`ภาพนอก ${idx + 1}`, 'exhibit-label');
-    lbl.position.set(x, FY + 0.85, D / 2 + 0.22);
-    zoneGroup.add(lbl);
-  });
-
-  // 7. Labels for 5 Inside Artworks
-  ART_PAIR_X.forEach((x, idx) => {
-    const lbl = createPillLabel(`ภาพใน ${idx + 1}`, 'exhibit-label');
-    lbl.position.set(x, FY + 0.85, D / 2 - 0.22);
-    zoneGroup.add(lbl);
-  });
-}
 
 // ---------------------------------------------------------------------------
 // Camera Quick Views
@@ -989,20 +920,6 @@ function initUI() {
   });
 
   // Visibility Toggles
-  const toggleDims = document.getElementById('toggleDims');
-  if (toggleDims) {
-    toggleDims.checked = false;
-    dimGroup.visible = false;
-    toggleDims.addEventListener('change', e => dimGroup.visible = e.target.checked);
-  }
-
-  const toggleZones = document.getElementById('toggleZones');
-  if (toggleZones) {
-    toggleZones.checked = false;
-    zoneGroup.visible = false;
-    toggleZones.addEventListener('change', e => zoneGroup.visible = e.target.checked);
-  }
-
   const toggleRotate = document.getElementById('toggleRotate');
   if (toggleRotate) toggleRotate.addEventListener('change', e => controls.autoRotate = e.target.checked);
 
@@ -1081,13 +998,9 @@ function initUI() {
   const btnShot = document.getElementById('btnShot');
   if (btnShot) {
     btnShot.addEventListener('click', () => {
-      dimGroup.visible = false;
-      zoneGroup.visible = false;
       transformControl.visible = false;
       renderer.render(scene, camera);
       const dataUrl = renderer.domElement.toDataURL('image/png');
-      dimGroup.visible = toggleDims ? toggleDims.checked : false;
-      zoneGroup.visible = toggleZones ? toggleZones.checked : false;
       transformControl.visible = true;
 
       const a = document.createElement('a');
@@ -1102,7 +1015,6 @@ function initUI() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    labelRenderer.setSize(window.innerWidth, window.innerHeight);
     composer.setSize(window.innerWidth, window.innerHeight);
   });
 }
@@ -1118,7 +1030,6 @@ async function init() {
   await loadFoxyModel();
   build6SculpturesInRow();
   await buildArtworks();
-  buildDimensionsAndLabels();
 
   // Hide loader
   const loader = document.getElementById('loader');
@@ -1135,7 +1046,6 @@ async function init() {
     requestAnimationFrame(animate);
     controls.update();
     composer.render();
-    labelRenderer.render(scene, camera);
   }
   animate();
 }
