@@ -786,6 +786,8 @@ function build6SculpturesInRow() {
 // ---------------------------------------------------------------------------
 const dimGroup = new THREE.Group();
 const zoneGroup = new THREE.Group();
+dimGroup.visible = false;
+zoneGroup.visible = false;
 scene.add(dimGroup);
 scene.add(zoneGroup);
 
@@ -799,6 +801,8 @@ function createPillLabel(text, cls = 'dim-label') {
 function buildDimensionsAndLabels() {
   dimGroup.clear();
   zoneGroup.clear();
+  dimGroup.visible = false;
+  zoneGroup.visible = false;
 
   // 1. Overall Width 15 m Label (Along front edge)
   const lblWidth = createPillLabel('หน้ากว้าง 15.00 เมตร');
@@ -986,10 +990,18 @@ function initUI() {
 
   // Visibility Toggles
   const toggleDims = document.getElementById('toggleDims');
-  if (toggleDims) toggleDims.addEventListener('change', e => dimGroup.visible = e.target.checked);
+  if (toggleDims) {
+    toggleDims.checked = false;
+    dimGroup.visible = false;
+    toggleDims.addEventListener('change', e => dimGroup.visible = e.target.checked);
+  }
 
   const toggleZones = document.getElementById('toggleZones');
-  if (toggleZones) toggleZones.addEventListener('change', e => zoneGroup.visible = e.target.checked);
+  if (toggleZones) {
+    toggleZones.checked = false;
+    zoneGroup.visible = false;
+    toggleZones.addEventListener('change', e => zoneGroup.visible = e.target.checked);
+  }
 
   const toggleRotate = document.getElementById('toggleRotate');
   if (toggleRotate) toggleRotate.addEventListener('change', e => controls.autoRotate = e.target.checked);
@@ -1074,7 +1086,7 @@ function initUI() {
       transformControl.visible = false;
       renderer.render(scene, camera);
       const dataUrl = renderer.domElement.toDataURL('image/png');
-      dimGroup.visible = toggleDims ? toggleDims.checked : true;
+      dimGroup.visible = toggleDims ? toggleDims.checked : false;
       zoneGroup.visible = toggleZones ? toggleZones.checked : false;
       transformControl.visible = true;
 
