@@ -106,7 +106,11 @@ const artMeshes = [];
 // Renderer, Scene, Camera
 // ---------------------------------------------------------------------------
 const container = document.getElementById('scene');
-const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  preserveDrawingBuffer: true,
+  logarithmicDepthBuffer: true,
+});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
@@ -121,7 +125,7 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x14100c);
 scene.fog = new THREE.Fog(0x14100c, 36, 85);
 
-const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.05, 200);
+const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.15, 120);
 camera.position.set(9.8, 5.0, 11.5);
 
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -598,11 +602,19 @@ function buildArchitecture() {
   // Warm LED toe-kick glow along front edge
   mesh(B(W, 0.014, 0.014), M.led, 0, 0.02, D / 2 + 0.035, booth, false, false);
 
+  // Core architectural heights to prevent any coplanar surface Z-fighting:
+  // Limewash wall core stops 8cm below the top, while the walnut trim cap securely covers the top face
+  const wallCoreH = H - 0.08; // 2.92m core height
+  const baseboardH = 0.12;
+  const baseboardY = FY + baseboardH / 2; // FY + 0.06
+  const trimCapH = 0.14;
+  const trimCapY = FY + H - trimCapH / 2; // FY + H - 0.07 (Top is at FY + H = 3.10m, wall core stops at 3.02m)
+
   // 2. Back Wall (Z = -1.5)
-  const backWall = registerWall(mesh(B(W, H, 0.12), M.limewash, 0, FY + H / 2, -D / 2 - 0.06), 'wall');
-  // Back wall baseboard & top trim
-  registerWall(mesh(B(W + 0.02, 0.12, 0.14), M.walnut, 0, FY + 0.06, -D / 2 - 0.06), 'trim');
-  registerWall(mesh(B(W + 0.02, 0.14, 0.14), M.walnut, 0, FY + H - 0.07, -D / 2 - 0.06), 'trim');
+  const backWall = registerWall(mesh(B(W, wallCoreH, 0.12), M.limewash, 0, FY + wallCoreH / 2, -D / 2 - 0.06), 'wall');
+  // Back wall baseboard & top cap trim
+  registerWall(mesh(B(W + 0.02, baseboardH, 0.14), M.walnut, 0, baseboardY, -D / 2 - 0.06), 'trim');
+  registerWall(mesh(B(W + 0.02, trimCapH, 0.14), M.walnut, 0, trimCapY, -D / 2 - 0.06), 'trim');
 
   // Decorative walnut vertical slats on back wall
   for (let x = -W / 2 + 0.4; x <= W / 2 - 0.4; x += 0.35) {
@@ -630,24 +642,23 @@ function buildArchitecture() {
   mesh(new THREE.PlaneGeometry(4.7, 0.40), new THREE.MeshBasicMaterial({ map: stex }), 0, FY + 2.45, -D / 2 + 0.048, booth, false, false);
 
   // 3. Left Wall (X = -7.5) & Right Wall (X = +7.5)
-  registerWall(mesh(B(0.12, H, D), M.limewash, -W / 2 - 0.06, FY + H / 2, 0), 'wall');
-  registerWall(mesh(B(0.14, 0.12, D), M.walnut, -W / 2 - 0.06, FY + 0.06, 0), 'trim');
-  registerWall(mesh(B(0.14, 0.14, D), M.walnut, -W / 2 - 0.06, FY + H - 0.07, 0), 'trim');
+  registerWall(mesh(B(0.12, wallCoreH, D), M.limewash, -W / 2 - 0.06, FY + wallCoreH / 2, 0), 'wall');
+  registerWall(mesh(B(0.14, baseboardH, D), M.walnut, -W / 2 - 0.06, baseboardY, 0), 'trim');
+  registerWall(mesh(B(0.14, trimCapH, D), M.walnut, -W / 2 - 0.06, trimCapY, 0), 'trim');
 
-  registerWall(mesh(B(0.12, H, D), M.limewash, W / 2 + 0.06, FY + H / 2, 0), 'wall');
-  registerWall(mesh(B(0.14, 0.12, D), M.walnut, W / 2 + 0.06, FY + 0.06, 0), 'trim');
-  registerWall(mesh(B(0.14, 0.14, D), M.walnut, W / 2 + 0.06, FY + H - 0.07, 0), 'trim');
+  registerWall(mesh(B(0.12, wallCoreH, D), M.limewash, W / 2 + 0.06, FY + wallCoreH / 2, 0), 'wall');
+  registerWall(mesh(B(0.14, baseboardH, D), M.walnut, W / 2 + 0.06, baseboardY, 0), 'trim');
+  registerWall(mesh(B(0.14, trimCapH, D), M.walnut, W / 2 + 0.06, trimCapY, 0), 'trim');
 
   // 4. FRONT WALL (Z = +1.5)
-  // Part A: Left Return Wall (X = -7.5 to -6.3, width 1.2m, height 3.0m)
+  // Part A: Left Return Wall (X = -7.5 to -6.3, width 1.2m)
   const leftReturnW = 1.20;
   const leftReturnX = -W / 2 + leftReturnW / 2; // -6.90
-  registerWall(mesh(B(leftReturnW, H, 0.15), M.limewash, leftReturnX, FY + H / 2, D / 2), 'wall');
-  registerWall(mesh(B(leftReturnW, 0.12, 0.18), M.walnut, leftReturnX, FY + 0.06, D / 2), 'trim');
-  registerWall(mesh(B(leftReturnW, 0.14, 0.18), M.walnut, leftReturnX, FY + H - 0.07, D / 2), 'trim');
+  registerWall(mesh(B(leftReturnW, wallCoreH, 0.15), M.limewash, leftReturnX, FY + wallCoreH / 2, D / 2), 'wall');
+  registerWall(mesh(B(leftReturnW, baseboardH, 0.18), M.walnut, leftReturnX, baseboardY, D / 2), 'trim');
+  registerWall(mesh(B(leftReturnW, trimCapH, 0.18), M.walnut, leftReturnX, trimCapY, D / 2), 'trim');
 
   // Part B: Grand Entrance Portal Header (X = -6.3 to -3.3, width 3.0m)
-  // Clear door opening height: 2.35m, header above from 2.35m to 3.0m (height 0.65m)
   const headerH = 0.65;
   const headerY = FY + H - headerH / 2;
   registerWall(mesh(B(DOOR_WIDTH, headerH, 0.18), M.walnut, DOOR_CENTER_X, headerY, D / 2), 'trim');
@@ -683,19 +694,20 @@ function buildArchitecture() {
     booth.add(pl);
   });
 
-  // Part C: Solid Front Exhibition Wall (X = -3.3 to +7.5, width 10.8m, height 3.0m)
+  // Part C: Solid Front Exhibition Wall (X = -3.3 to +7.5, width 10.8m)
+  // Wall core height is 2.92m, completely capped by walnut coping at 3.00m (ZERO Z-fighting)
   const frontWallW = 10.80;
   const frontWallX = -3.30 + frontWallW / 2; // +2.10
-  registerWall(mesh(B(frontWallW, H, 0.15), M.limewash, frontWallX, FY + H / 2, D / 2), 'wall');
-  registerWall(mesh(B(frontWallW + 0.04, 0.12, 0.18), M.walnut, frontWallX, FY + 0.06, D / 2), 'trim');
-  registerWall(mesh(B(frontWallW + 0.04, 0.14, 0.18), M.walnut, frontWallX, FY + H - 0.07, D / 2), 'trim');
+  registerWall(mesh(B(frontWallW, wallCoreH, 0.15), M.limewash, frontWallX, FY + wallCoreH / 2, D / 2), 'wall');
+  registerWall(mesh(B(frontWallW + 0.04, baseboardH, 0.18), M.walnut, frontWallX, baseboardY, D / 2), 'trim');
+  registerWall(mesh(B(frontWallW + 0.04, trimCapH, 0.18), M.walnut, frontWallX, trimCapY, D / 2), 'trim');
 
   // Brass divide line between outside walking path
   mesh(B(frontWallW, 0.01, 0.01), M.brassSatin, frontWallX, FY + 0.005, D / 2 + 0.12);
 
-  // 5. Open Ceiling Rafters & Lighting Tracks
+  // 5. Open Ceiling Rafters & Lighting Tracks (cleanly seated between front and back wall copings)
   [-6.0, -3.0, 0, 3.0, 6.0].forEach(rx => {
-    registerWall(mesh(B(0.08, 0.14, D), M.walnut, rx, FY + H - 0.07, 0), 'trim');
+    registerWall(mesh(B(0.08, 0.10, D - 0.28), M.walnut, rx, FY + H - 0.09, 0), 'trim');
   });
 
   // Longitudinal track lighting rail over sculptures at Z = -0.82
@@ -706,14 +718,13 @@ function buildArchitecture() {
   // 6. Architectural Partition Walls dividing into 3 Curated Rooms (like 5m)
   // Partition 1 at X = -2.50 (Dividing Room 1 & Room 2): Staggered to back
   const pw1X = -2.50;
-  // Solid wall extends from Back wall (Z = -1.50 to Z = +0.25, length 1.75m, center Z = -0.625)
-  registerWall(mesh(B(0.10, H, 1.75), M.limewash, pw1X, FY + H / 2, -0.625), 'wall');
-  // Walnut trim jamb at opening edge (Z = +0.25)
+  registerWall(mesh(B(0.10, wallCoreH, 1.75), M.limewash, pw1X, FY + wallCoreH / 2, -0.625), 'wall');
+  registerWall(mesh(B(0.14, trimCapH, 1.75), M.walnut, pw1X, trimCapY, -0.625), 'trim');
   registerWall(mesh(B(0.14, H, 0.08), M.walnut, pw1X, FY + H / 2, 0.25), 'trim');
   mesh(B(0.02, H - 0.20, 0.005), M.brassSatin, pw1X, FY + H / 2, 0.285);
-  // Walkway opening header above clearance (Z = +0.25 to +1.50, width 1.25m, clearance 2.40m, header height 0.60m)
-  registerWall(mesh(B(0.10, 0.60, 1.25), M.limewash, pw1X, FY + 2.70, 0.875), 'wall');
+  registerWall(mesh(B(0.10, 0.52, 1.25), M.limewash, pw1X, FY + 2.66, 0.875), 'wall');
   registerWall(mesh(B(0.14, 0.08, 1.25), M.walnut, pw1X, FY + 2.36, 0.875), 'trim');
+  registerWall(mesh(B(0.14, trimCapH, 1.25), M.walnut, pw1X, trimCapY, 0.875), 'trim');
   // Vertical decorative oak slats on Partition 1 West face (facing Room 1)
   for (let sz = -1.35; sz <= 0.05; sz += 0.25) {
     const slat = mesh(B(0.025, H - 0.30, 0.045), M.oak, pw1X - 0.055, FY + H / 2, sz, booth, false, true);
@@ -722,14 +733,14 @@ function buildArchitecture() {
 
   // Partition 2 at X = +2.50 (Dividing Room 2 & Room 3): Staggered to front
   const pw2X = 2.50;
-  // Solid wall extends from Front wall (Z = +1.50 to Z = -0.25, length 1.75m, center Z = +0.625)
-  registerWall(mesh(B(0.10, H, 1.75), M.limewash, pw2X, FY + H / 2, 0.625), 'wall');
-  // Walnut trim jamb at opening edge (Z = -0.25)
+  // Wall length stops at interior face of front wall to prevent any intersection
+  registerWall(mesh(B(0.10, wallCoreH, 1.66), M.limewash, pw2X, FY + wallCoreH / 2, 0.58), 'wall');
+  registerWall(mesh(B(0.14, trimCapH, 1.66), M.walnut, pw2X, trimCapY, 0.58), 'trim');
   registerWall(mesh(B(0.14, H, 0.08), M.walnut, pw2X, FY + H / 2, -0.25), 'trim');
   mesh(B(0.02, H - 0.20, 0.005), M.brassSatin, pw2X, FY + H / 2, -0.285);
-  // Walkway opening header above clearance at the back (Z = -0.25 to -1.50, width 1.25m, clearance 2.40m)
-  registerWall(mesh(B(0.10, 0.60, 1.25), M.limewash, pw2X, FY + 2.70, -0.875), 'wall');
+  registerWall(mesh(B(0.10, 0.52, 1.25), M.limewash, pw2X, FY + 2.66, -0.875), 'wall');
   registerWall(mesh(B(0.14, 0.08, 1.25), M.walnut, pw2X, FY + 2.36, -0.875), 'trim');
+  registerWall(mesh(B(0.14, trimCapH, 1.25), M.walnut, pw2X, trimCapY, -0.875), 'trim');
   // Vertical decorative oak slats on Partition 2 West face (facing Room 2)
   for (let sz = -0.05; sz <= 1.35; sz += 0.25) {
     const slat = mesh(B(0.025, H - 0.30, 0.045), M.oak, pw2X - 0.055, FY + H / 2, sz, booth, false, true);
