@@ -37,57 +37,53 @@ const DOOR_CENTER_X = -4.80; // Door portal center
 const DOOR_WIDTH = 3.0;     // Door portal width (-6.3 to -3.3)
 
 // 6 Pedestal Centers in a row (Z = -0.82)
-// 6 Sculptures distributed across Room 1, Room 2, and Room 3 (สไตล์ 5m)
+// 6 Sculptures in a row inside Room 2 (10m Grand Pavilion) like Version 1
 const SCULPTURE_POSITIONS = [
-  // Room 1 (West: X = -7.5 to -2.5) — Welcome Foyer
-  { id: 's1', name: 'S1 · Room 1 Welcome Gatekeeper', x: -4.20, z: -0.25, rotY: -0.25, pedestalH: 0.85, type: 'plinth' },
-
-  // Room 2 (Center: X = -2.5 to +2.5) — Central Art Pavilion & Lounge
-  { id: 's2', name: 'S2 · Room 2 Showcase Centerpiece', x: -0.80, z: -0.25, rotY: 0.10, pedestalH: 0.90, type: 'plinth' },
-  { id: 's3', name: 'S3 · Room 2 Credenza Feature',     x:  1.10, z: -1.25, rotY: -0.15, pedestalH: 0.62, type: 'credenza' },
-
-  // Room 3 (East: X = +2.5 to +7.5) — VIP Sculpture Sanctuary & Photo Lounge
-  { id: 's4', name: 'S4 · Room 3 Photo Spot Companion', x:  4.05, z: -0.35, rotY: 0.15, pedestalH: 0.75, type: 'plinth' },
-  { id: 's5', name: 'S5 · Room 3 Wall Niche 1',         x:  3.20, z: -1.35, rotY: 0.15, pedestalH: 0.0,  type: 'niche', nicheY: 1.10 },
-  { id: 's6', name: 'S6 · Room 3 Wall Niche 2',         x:  6.80, z: -1.35, rotY: -0.15, pedestalH: 0.0, type: 'niche', nicheY: 1.10 },
+  { id: 's1', name: 'S1 · Golden Amber Foxy',   x: -1.25, z: -0.82, rotY: 0, pedestalH: 0.65, type: 'plinth', finish: 'bronze' },
+  { id: 's2', name: 'S2 · Carrara Marble Foxy',  x:  0.25, z: -0.82, rotY: 0, pedestalH: 0.65, type: 'plinth', finish: 'marble' },
+  { id: 's3', name: 'S3 · Royal Obsidian Foxy',  x:  1.75, z: -0.82, rotY: 0, pedestalH: 0.65, type: 'plinth', finish: 'obsidian' },
+  { id: 's4', name: 'S4 · Ochre Amber Foxy',     x:  3.25, z: -0.82, rotY: 0, pedestalH: 0.65, type: 'plinth', finish: 'terracotta' },
+  { id: 's5', name: 'S5 · Patina Bronze Foxy',   x:  4.75, z: -0.82, rotY: 0, pedestalH: 0.65, type: 'plinth', finish: 'verdite' },
+  { id: 's6', name: 'S6 · Platinum Chrome Foxy', x:  6.25, z: -0.82, rotY: 0, pedestalH: 0.65, type: 'plinth', finish: 'platinum' },
 ];
 
-// 20 Curated Mini Artworks (25 × 25 cm = 0.25 × 0.25 m)
+// 20 Curated Mini Artworks (25 × 25 cm) surrounding Room 1 (ทางเข้า 5m)
 const MINI_ART_SPOTS = [
-  // Room 1 (West: X = -7.5 to -2.5) — 8 ภาพ
-  { id: 1,  x: -7.42, y: FY + 1.70, z: -0.65, rotY: Math.PI / 2, title: 'Mini 01 · Golden Dawn' },
-  { id: 2,  x: -7.42, y: FY + 1.70, z: +0.25, rotY: Math.PI / 2, title: 'Mini 02 · Azure Flow' },
-  { id: 3,  x: -6.15, y: FY + 1.70, z: -1.42, rotY: 0, title: 'Mini 03 · Terracotta Ochre' },
-  { id: 4,  x: -5.75, y: FY + 1.70, z: -1.42, rotY: 0, title: 'Mini 04 · Obsidian Wave' },
-  { id: 5,  x: -5.35, y: FY + 1.70, z: -1.42, rotY: 0, title: 'Mini 05 · Emerald Patina' },
-  { id: 6,  x: -2.58, y: FY + 1.85, z: -0.95, rotY: -Math.PI / 2, title: 'Mini 06 · Cobalt Crest' },
-  { id: 7,  x: -2.58, y: FY + 1.40, z: -0.95, rotY: -Math.PI / 2, title: 'Mini 07 · Sunset Ember' },
-  { id: 8,  x: -2.58, y: FY + 1.62, z: -0.35, rotY: -Math.PI / 2, title: 'Mini 08 · Platinum Arch' },
+  // Wall 1: West Wall (X = -7.42, หันหน้าไปทางทิศตะวันออก เข้ากลางห้อง) — 6 ภาพ (2 แถว × 3)
+  { id: 1,  x: -7.42, y: FY + 1.80, z: -0.80, rotY: Math.PI / 2,  title: 'Mini 01 · Golden Dawn' },
+  { id: 2,  x: -7.42, y: FY + 1.80, z:  0.00, rotY: Math.PI / 2,  title: 'Mini 02 · Azure Flow' },
+  { id: 3,  x: -7.42, y: FY + 1.80, z: +0.80, rotY: Math.PI / 2,  title: 'Mini 03 · Terracotta Ochre' },
+  { id: 4,  x: -7.42, y: FY + 1.35, z: -0.80, rotY: Math.PI / 2,  title: 'Mini 04 · Obsidian Wave' },
+  { id: 5,  x: -7.42, y: FY + 1.35, z:  0.00, rotY: Math.PI / 2,  title: 'Mini 05 · Emerald Patina' },
+  { id: 6,  x: -7.42, y: FY + 1.35, z: +0.80, rotY: Math.PI / 2,  title: 'Mini 06 · Cobalt Crest' },
 
-  // Room 2 (Center: X = -2.5 to +2.5) — 7 ภาพ
-  { id: 9,  x: -2.42, y: FY + 1.75, z: -0.95, rotY: Math.PI / 2, title: 'Mini 09 · Foxy Horizon' },
-  { id: 10, x: -2.42, y: FY + 1.75, z: -0.35, rotY: Math.PI / 2, title: 'Mini 10 · Golden Grain' },
-  { id: 11, x: -0.45, y: FY + 1.75, z: -1.42, rotY: 0, title: 'Mini 11 · Bronze Symphony I' },
-  { id: 12, x:  0.00, y: FY + 1.75, z: -1.42, rotY: 0, title: 'Mini 12 · Bronze Symphony II' },
-  { id: 13, x: +0.45, y: FY + 1.75, z: -1.42, rotY: 0, title: 'Mini 13 · Bronze Symphony III' },
-  { id: 14, x: +2.42, y: FY + 1.75, z: +0.35, rotY: -Math.PI / 2, title: 'Mini 14 · Verdant Echo' },
-  { id: 15, x: +2.42, y: FY + 1.75, z: +0.95, rotY: -Math.PI / 2, title: 'Mini 15 · Amber Spark' },
+  // Wall 2: North Back Wall (Z = -1.42, หันหน้าไปทางด้านหน้าบูธ) — 8 ภาพ (2 แถว × 4)
+  { id: 7,  x: -6.20, y: FY + 1.85, z: -1.42, rotY: 0, title: 'Mini 07 · Sunset Ember' },
+  { id: 8,  x: -5.20, y: FY + 1.85, z: -1.42, rotY: 0, title: 'Mini 08 · Platinum Arch' },
+  { id: 9,  x: -4.20, y: FY + 1.85, z: -1.42, rotY: 0, title: 'Mini 09 · Foxy Horizon' },
+  { id: 10, x: -3.20, y: FY + 1.85, z: -1.42, rotY: 0, title: 'Mini 10 · Golden Grain' },
+  { id: 11, x: -6.20, y: FY + 1.40, z: -1.42, rotY: 0, title: 'Mini 11 · Bronze Symphony I' },
+  { id: 12, x: -5.20, y: FY + 1.40, z: -1.42, rotY: 0, title: 'Mini 12 · Bronze Symphony II' },
+  { id: 13, x: -4.20, y: FY + 1.40, z: -1.42, rotY: 0, title: 'Mini 13 · Bronze Symphony III' },
+  { id: 14, x: -3.20, y: FY + 1.40, z: -1.42, rotY: 0, title: 'Mini 14 · Verdant Echo' },
 
-  // Room 3 (East: X = +2.5 to +7.5) — 5 ภาพ
-  { id: 16, x: +2.58, y: FY + 1.75, z: +0.35, rotY: Math.PI / 2, title: 'Mini 16 · Royal Indigo' },
-  { id: 17, x: +2.58, y: FY + 1.75, z: +0.95, rotY: Math.PI / 2, title: 'Mini 17 · Crimson Bloom' },
-  { id: 18, x: +5.00, y: FY + 1.70, z: -1.42, rotY: 0, title: 'Mini 18 · Calacatta Muse' },
-  { id: 19, x: +7.42, y: FY + 1.70, z: -0.65, rotY: -Math.PI / 2, title: 'Mini 19 · Solar Whisper' },
-  { id: 20, x: +7.42, y: FY + 1.70, z: +0.25, rotY: -Math.PI / 2, title: 'Mini 20 · Apex Twilight' },
+  // Wall 3: Partition Wall West Face (X = -2.58, หันหน้าเข้าหาห้อง 1) — 4 ภาพ (2 แถว × 2)
+  { id: 15, x: -2.58, y: FY + 1.80, z: -0.85, rotY: -Math.PI / 2, title: 'Mini 15 · Amber Spark' },
+  { id: 16, x: -2.58, y: FY + 1.80, z: -0.25, rotY: -Math.PI / 2, title: 'Mini 16 · Royal Indigo' },
+  { id: 17, x: -2.58, y: FY + 1.35, z: -0.85, rotY: -Math.PI / 2, title: 'Mini 17 · Crimson Bloom' },
+  { id: 18, x: -2.58, y: FY + 1.35, z: -0.25, rotY: -Math.PI / 2, title: 'Mini 18 · Calacatta Muse' },
+
+  // Wall 4: Front Return Walls inside Room 1 (Z = +1.42, หันหน้าเข้าห้อง) — 2 ภาพ
+  { id: 19, x: -6.85, y: FY + 1.60, z: +1.42, rotY: Math.PI, title: 'Mini 19 · Solar Whisper' },
+  { id: 20, x: -2.90, y: FY + 1.60, z: +1.42, rotY: Math.PI, title: 'Mini 20 · Apex Twilight' },
 ];
 
 // 5 Outside Paintings on Exterior Facade (Cleanly distributed across 10.8m solid front wall)
 const ART_OUT_X = [-1.90, 0.20, 2.30, 4.40, 6.30];
 
-// 5 Inside Paintings on Interior Front Wall (Divided into Room 2 and Room 3, avoiding Partition 2 at X = +2.50)
-// Room 2 (X = -2.50 to +2.50): in1 at -0.95, in2 at +1.18 (centered with 62cm gallery spacing)
-// Room 3 (X = +2.50 to +7.50): in3 at +3.43, in4 at +4.95, in5 at +6.52 (uniform 25.5cm gallery spacing)
-const ART_IN_X = [-0.95, 1.18, 3.43, 4.95, 6.52];
+// 5 Inside Paintings on Interior Front Wall in Room 2 (10m uninterrupted wall)
+// Centered harmoniously opposite the 6 sculptures in a row
+const ART_IN_X = [-1.25, 0.60, 2.50, 4.40, 6.25];
 
 const ART_SOURCES = {
   out1: { src: 'pic/01.jpeg', title: 'P1 · Gold Foxy Master', w: 1.05, h: 1.35 },
@@ -621,16 +617,16 @@ function buildArchitecture() {
   registerWall(mesh(B(W + 0.02, baseboardH, 0.14), M.walnut, 0, baseboardY, -D / 2 - 0.06), 'trim');
   registerWall(mesh(B(W + 0.02, trimCapH, 0.14), M.walnut, 0, trimCapY, -D / 2 - 0.06), 'trim');
 
-  // Decorative walnut vertical slats on back wall
-  for (let x = -W / 2 + 0.4; x <= W / 2 - 0.4; x += 0.35) {
+  // Decorative walnut vertical slats on back wall (Room 2)
+  for (let x = -2.20; x <= W / 2 - 0.4; x += 0.35) {
     const slat = mesh(B(0.045, H - 0.3, 0.025), M.oak, x, FY + H / 2, -D / 2 + 0.015, booth, false, true);
     registerWall(slat, 'slat');
   }
 
-  // Backlit Gallery Signage on Back Wall (Centered in Room 2, cleanly bounded)
-  const signBacking = mesh(B(3.80, 0.45, 0.03), M.walnut, 0, FY + 2.45, -D / 2 + 0.03);
+  // Backlit Gallery Signage on Back Wall (Centered in Room 2 at X = +2.50, width 4.8m)
+  const signBacking = mesh(B(4.80, 0.45, 0.03), M.walnut, 2.50, FY + 2.45, -D / 2 + 0.03);
   registerWall(signBacking, 'sign');
-  mesh(B(3.84, 0.47, 0.01), M.brassSatin, 0, FY + 2.45, -D / 2 + 0.015);
+  mesh(B(4.84, 0.47, 0.01), M.brassSatin, 2.50, FY + 2.45, -D / 2 + 0.015);
   // Canvas text for sign
   const sc = document.createElement('canvas');
   sc.width = 1024; sc.height = 128;
@@ -638,13 +634,13 @@ function buildArchitecture() {
   sctx.fillStyle = '#1c140d';
   sctx.fillRect(0, 0, 1024, 128);
   sctx.fillStyle = '#f5cf92';
-  sctx.font = '600 34px Outfit, sans-serif';
+  sctx.font = '600 36px Outfit, sans-serif';
   sctx.textAlign = 'center';
   sctx.textBaseline = 'middle';
-  sctx.letterSpacing = '4px';
+  sctx.letterSpacing = '5px';
   sctx.fillText('MARKETING NAIIN · SCULPTURE & ART PAVILION', 512, 64);
   const stex = new THREE.CanvasTexture(sc);
-  mesh(new THREE.PlaneGeometry(3.70, 0.40), new THREE.MeshBasicMaterial({ map: stex }), 0, FY + 2.45, -D / 2 + 0.048, booth, false, false);
+  mesh(new THREE.PlaneGeometry(4.70, 0.40), new THREE.MeshBasicMaterial({ map: stex }), 2.50, FY + 2.45, -D / 2 + 0.048, booth, false, false);
 
   // 3. Left Wall (X = -7.5) & Right Wall (X = +7.5)
   registerWall(mesh(B(0.12, wallCoreH, D), M.limewash, -W / 2 - 0.06, FY + wallCoreH / 2, 0), 'wall');
@@ -715,65 +711,45 @@ function buildArchitecture() {
     registerWall(mesh(B(0.08, 0.10, D - 0.28), M.walnut, rx, FY + H - 0.09, 0), 'trim');
   });
 
-  // Dedicated track lighting rails segmented per room (stops cleanly before partition walls)
+  // Dedicated track lighting rails (Room 1 [5m] and Room 2 [10m])
   const trackZ = -0.82;
   const trackY = FY + H - 0.15;
-  // Room 1 Track Rail (X = -7.15 to -2.75, length 4.40, center -4.95)
-  mesh(B(4.40, 0.03, 0.04), M.blackMetal, -4.95, trackY, trackZ);
-  mesh(B(4.40, 0.01, 0.01), M.led, -4.95, trackY - 0.02, trackZ, booth, false, false);
-  // Room 2 Track Rail (X = -2.25 to +2.25, length 4.50, center 0.00)
-  mesh(B(4.50, 0.03, 0.04), M.blackMetal, 0.00, trackY, trackZ);
-  mesh(B(4.50, 0.01, 0.01), M.led, 0.00, trackY - 0.02, trackZ, booth, false, false);
-  // Room 3 Track Rail (X = +2.75 to +7.15, length 4.40, center +4.95)
-  mesh(B(4.40, 0.03, 0.04), M.blackMetal, 4.95, trackY, trackZ);
-  mesh(B(4.40, 0.01, 0.01), M.led, 4.95, trackY - 0.02, trackZ, booth, false, false);
+  // Room 1 Track Rail (5m Foyer: X = -7.15 to -2.85, length 4.30, center -5.00)
+  mesh(B(4.30, 0.03, 0.04), M.blackMetal, -5.00, trackY, trackZ);
+  mesh(B(4.30, 0.01, 0.01), M.led, -5.00, trackY - 0.02, trackZ, booth, false, false);
+  // Room 2 Track Rail (10m Grand Pavilion: X = -2.15 to +7.15, length 9.30, center +2.50)
+  mesh(B(9.30, 0.03, 0.04), M.blackMetal, 2.50, trackY, trackZ);
+  mesh(B(9.30, 0.01, 0.01), M.led, 2.50, trackY - 0.02, trackZ, booth, false, false);
 
-  // 6. Architectural Partition Walls dividing into 3 Curated Rooms (like 5m)
-  // Partition 1 at X = -2.50 (Dividing Room 1 & Room 2): Staggered to back
+  // 6. Architectural Dividing Partition Wall (at X = -2.50 dividing Room 1 [5m] & Room 2 [10m])
   const pw1X = -2.50;
-  registerWall(mesh(B(0.10, wallCoreH, 1.75), M.limewash, pw1X, FY + wallCoreH / 2, -0.625), 'wall');
-  registerWall(mesh(B(0.14, trimCapH, 1.75), M.walnut, pw1X, trimCapY, -0.625), 'trim');
-  registerWall(mesh(B(0.14, H, 0.08), M.walnut, pw1X, FY + H / 2, 0.25), 'trim');
-  mesh(B(0.02, H - 0.20, 0.005), M.brassSatin, pw1X, FY + H / 2, 0.285);
-  registerWall(mesh(B(0.10, 0.52, 1.25), M.limewash, pw1X, FY + 2.66, 0.875), 'wall');
-  registerWall(mesh(B(0.14, 0.08, 1.25), M.walnut, pw1X, FY + 2.36, 0.875), 'trim');
-  registerWall(mesh(B(0.14, trimCapH, 1.25), M.walnut, pw1X, trimCapY, 0.875), 'trim');
-  // Vertical decorative oak slats on Partition 1 West face (facing Room 1)
-  for (let sz = -1.35; sz <= 0.05; sz += 0.25) {
+  // Solid wall section from Z = -1.50 to +0.30 (length 1.80m, center Z = -0.60)
+  registerWall(mesh(B(0.10, wallCoreH, 1.80), M.limewash, pw1X, FY + wallCoreH / 2, -0.60), 'wall');
+  registerWall(mesh(B(0.14, trimCapH, 1.80), M.walnut, pw1X, trimCapY, -0.60), 'trim');
+  registerWall(mesh(B(0.14, baseboardH, 1.80), M.walnut, pw1X, baseboardY, -0.60), 'trim');
+
+  // Doorway portal jamb pillar at Z = +0.30
+  registerWall(mesh(B(0.14, H, 0.10), M.walnut, pw1X, FY + H / 2, 0.30), 'trim');
+  mesh(B(0.02, H - 0.20, 0.005), M.brassSatin, pw1X, FY + H / 2, 0.355);
+
+  // Doorway lintel header spanning Z = +0.30 to +1.50 (width 1.20m, height 0.60m)
+  registerWall(mesh(B(0.10, 0.54, 1.20), M.limewash, pw1X, FY + 2.65, 0.90), 'wall');
+  registerWall(mesh(B(0.14, 0.08, 1.20), M.walnut, pw1X, FY + 2.34, 0.90), 'trim');
+  registerWall(mesh(B(0.14, trimCapH, 1.20), M.walnut, pw1X, trimCapY, 0.90), 'trim');
+
+  // Brass transition threshold on floor across doorway
+  mesh(B(0.16, 0.008, 1.20), M.brassSatin, pw1X, FY + 0.004, 0.90);
+
+  // Warm welcome downlight in doorway portal
+  const doorwayPl = addAccent(new THREE.PointLight(0xffe6c8, 1.4, 2.8, 2), 1.4);
+  doorwayPl.position.set(pw1X, FY + 2.25, 0.90);
+  booth.add(doorwayPl);
+
+  // Vertical acoustic oak slats on Partition 1 West face (facing Room 1)
+  for (let sz = -1.35; sz <= 0.15; sz += 0.25) {
     const slat = mesh(B(0.025, H - 0.30, 0.045), M.oak, pw1X - 0.055, FY + H / 2, sz, booth, false, true);
     registerWall(slat, 'slat');
   }
-
-  // Partition 2 at X = +2.50 (Dividing Room 2 & Room 3): Staggered to front
-  const pw2X = 2.50;
-  // Wall length stops at interior face of front wall to prevent any intersection
-  registerWall(mesh(B(0.10, wallCoreH, 1.66), M.limewash, pw2X, FY + wallCoreH / 2, 0.58), 'wall');
-  registerWall(mesh(B(0.14, trimCapH, 1.66), M.walnut, pw2X, trimCapY, 0.58), 'trim');
-  registerWall(mesh(B(0.14, H, 0.08), M.walnut, pw2X, FY + H / 2, -0.25), 'trim');
-  mesh(B(0.02, H - 0.20, 0.005), M.brassSatin, pw2X, FY + H / 2, -0.285);
-  registerWall(mesh(B(0.10, 0.52, 1.25), M.limewash, pw2X, FY + 2.66, -0.875), 'wall');
-  registerWall(mesh(B(0.14, 0.08, 1.25), M.walnut, pw2X, FY + 2.36, -0.875), 'trim');
-  registerWall(mesh(B(0.14, trimCapH, 1.25), M.walnut, pw2X, trimCapY, -0.875), 'trim');
-  // Vertical decorative oak slats on Partition 2 West face (facing Room 2)
-  for (let sz = -0.05; sz <= 1.35; sz += 0.25) {
-    const slat = mesh(B(0.025, H - 0.30, 0.045), M.oak, pw2X - 0.055, FY + H / 2, sz, booth, false, true);
-    registerWall(slat, 'slat');
-  }
-
-  // 7. Architectural Illuminated Wall Niches in Room 3 (Back wall at Z = -1.50)
-  const nicheW = 0.65, nicheH = 0.95, nicheD = 0.30;
-  const nicheY = FY + 1.60;
-  [3.20, 6.80].forEach((nx) => {
-    mesh(B(nicheW, 0.035, nicheD), M.oak, nx, nicheY - nicheH / 2, -D / 2 + nicheD / 2);
-    mesh(B(nicheW, 0.035, nicheD), M.oak, nx, nicheY + nicheH / 2, -D / 2 + nicheD / 2);
-    mesh(B(0.035, nicheH, nicheD), M.oak, nx - nicheW / 2, nicheY, -D / 2 + nicheD / 2);
-    mesh(B(0.035, nicheH, nicheD), M.oak, nx + nicheW / 2, nicheY, -D / 2 + nicheD / 2);
-    mesh(B(nicheW - 0.06, 0.04, nicheD - 0.04), M.travertine, nx, nicheY - nicheH / 2 + 0.04, -D / 2 + nicheD / 2);
-    mesh(B(nicheW - 0.04, 0.012, 0.012), M.led, nx, nicheY + nicheH / 2 - 0.02, -D / 2 + 0.06, booth, false, false);
-    const nl = addAccent(new THREE.PointLight(0xffeed8, 3.2, 2.2, 2), 3.2);
-    nl.position.set(nx, nicheY + nicheH / 2 - 0.08, -D / 2 + 0.20);
-    booth.add(nl);
-  });
 }
 
 // ---------------------------------------------------------------------------
@@ -945,9 +921,14 @@ function loadFoxyModel(onProgress) {
         }
       },
       (xhr) => {
-        if (xhr.lengthComputable && onProgress) {
-          const pct = Math.round((xhr.loaded / xhr.total) * 100);
-          onProgress(pct);
+        if (onProgress) {
+          if (xhr.lengthComputable && xhr.total > 0) {
+            const pct = Math.round((xhr.loaded / xhr.total) * 100);
+            onProgress(pct);
+          } else if (xhr.loaded > 0) {
+            const estPct = Math.min(95, Math.round((xhr.loaded / (12 * 1024 * 1024)) * 100));
+            onProgress(estPct);
+          }
         }
       },
       (err) => {
@@ -1157,13 +1138,13 @@ function buildMiniArtworks() {
 }
 
 // ---------------------------------------------------------------------------
-// Furniture from 5m Adapted to 3 Curated Rooms
+// Furniture Adapted to 2 Rooms (5m Foyer + 10m Grand Pavilion)
 // ---------------------------------------------------------------------------
 function buildFurniture() {
   // -------------------------------------------------------------------------
-  // Room 1 (West: X = -7.5 to -2.5) — Welcome Foyer & Refreshments
+  // Room 1 (West: X = -7.5 to -2.5) — Welcome Foyer with 20 Mini Artworks
   // -------------------------------------------------------------------------
-  const cabW = 1.60, cabX = -5.80, cabZ = -1.25;
+  const cabW = 1.60, cabX = -5.00, cabZ = -1.25;
   // Olive wall console cabinet along back wall
   mesh(B(cabW, 0.82, 0.40), M.olive, cabX, FY + 0.41, cabZ);
   // Calacatta marble countertop
@@ -1187,7 +1168,7 @@ function buildFurniture() {
   place(makeBooks(3), -7.05, shelfY[1] + 0.02, -1.28);
   place(makeCandle(0.12), -6.65, shelfY[1] + 0.02, -1.28);
 
-  // Overhead oak beam + brass dome pendants
+  // Overhead oak beam + brass dome pendants over foyer
   mesh(B(4.6, 0.08, 0.08), M.oak, -5.0, FY + H - 0.14, 0.0);
   [-5.8, -4.2].forEach((px) => makePendant(px, 0.0, FY + 2.05));
 
@@ -1195,62 +1176,28 @@ function buildFurniture() {
   place(makePlant({ potR: 0.22, potH: 0.48, potMat: M.ceramic, trunkH: 1.3, crown: [0.46, 0.44, 0.46], leaves: 220 }), -7.10, FY, -0.95);
 
   // -------------------------------------------------------------------------
-  // Room 2 (Center: X = -2.5 to +2.5) — Art Lounge & Showcase
+  // Room 2 (Center & East: X = -2.5 to +7.5) — 10m Grand Sculpture Pavilion
   // -------------------------------------------------------------------------
-  // Wall credenza along back wall under S3
-  const credX = 1.10, credZ = -1.25, credH = 0.62, credW = 1.60, credD = 0.42;
-  mesh(B(credW, credH - 0.05, credD), M.walnut, credX, FY + (credH - 0.05) / 2, credZ);
-  mesh(B(credW + 0.04, 0.05, credD + 0.04), M.travertine, credX, FY + credH - 0.025, credZ);
-  mesh(B(credW + 0.02, 0.012, credD + 0.02), M.brassSatin, credX, FY + credH - 0.055, credZ);
-  mesh(B(credW - 0.06, 0.012, credD - 0.06), M.led, credX, FY + 0.012, credZ, booth, false, false);
-  // Props on credenza beside sculpture S3
-  place(makeBooks(3), credX - 0.55, FY + credH, credZ);
-  place(makeBowl(0.09, M.walnut), credX + 0.55, FY + credH, credZ);
-  place(makeCandle(0.12), credX + 0.40, FY + credH, credZ);
-
-  // Museum leather daybed / bench in Room 2 lounge area
-  makeMuseumBench(0.50, 0.35);
+  // Museum leather daybed / bench in center lounge area (viewing 6 sculptures & artworks)
+  makeMuseumBench(2.50, 0.45);
 
   // Arched brass floor lamp near partition 1 transition
   makeArcLamp(-2.05, 0.75, new V3(-1.40, FY + 1.95, 0.55));
 
-  // Potted ficus plant near partition edge
-  place(makePlant({ potR: 0.18, potH: 0.38, potMat: M.ceramic, trunkH: 1.0, crown: [0.40, 0.38, 0.40], leaves: 160 }), -2.05, FY, -1.05);
-
-  // -------------------------------------------------------------------------
-  // Room 3 (East: X = +2.5 to +7.5) — VIP Photo Lounge & Sanctuary
-  // -------------------------------------------------------------------------
-  // Designer bouclé sofa
-  const sofaX = 5.15, sofaZ = 0.35;
-  makeSofa(sofaX, sofaZ, 0);
-
-  // Round travertine & brass side table next to sofa right arm
-  const tableX = 6.25, tableZ = 0.35;
-  mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.03, 24), M.travertine, tableX, FY + 0.48, tableZ);
-  mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.46, 12), M.brass, tableX, FY + 0.24, tableZ);
-  mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.02, 24), M.travertine, tableX, FY + 0.01, tableZ);
-  place(makeBowl(0.08, M.walnut), tableX, FY + 0.50, tableZ);
-
-  // Flattering studio portrait spotlight aimed at sofa photo spot
-  const portraitSpot = addAccent(new THREE.SpotLight(0xffeedd, 5.5, 6.0, 0.45, 0.5, 2), 5.5);
-  portraitSpot.position.set(4.60, FY + H - 0.15, 1.80);
-  const pTarget = new THREE.Object3D();
-  pTarget.position.set(4.60, FY + 0.65, sofaZ);
-  scene.add(pTarget);
-  portraitSpot.target = pTarget;
-  scene.add(portraitSpot);
-
-  // Corner potted plant in Room 3
+  // Potted ficus tree in the right corner
   place(makePlant({ potR: 0.22, potH: 0.48, potMat: M.ceramic, trunkH: 1.35, crown: [0.48, 0.45, 0.48], leaves: 240 }), 7.15, FY, -1.05);
 }
 
 // ---------------------------------------------------------------------------
-// 6 Sculptures Distributed across Room 1, Room 2, and Room 3 (like 5m)
+// 6 Sculptures in a Row inside Room 2 (เหมือนเวอร์ชั่นแรก)
 // ---------------------------------------------------------------------------
 const sculptureRegistry = [];
 
 function buildSculptures() {
   sculptureRegistry.length = 0;
+  const pedestalW = 1.15;
+  const pedestalD = 0.75;
+  const pedestalH = 0.65;
 
   SCULPTURE_POSITIONS.forEach((pos, idx) => {
     let sculptObj = null;
@@ -1260,93 +1207,73 @@ function buildSculptures() {
       sculptObj = createProceduralSculpture(idx);
     }
 
-    if (pos.type === 'plinth') {
-      const group = new THREE.Group();
-      group.position.set(pos.x, FY, pos.z);
+    const group = new THREE.Group();
+    group.position.set(pos.x, FY, pos.z);
 
-      const pedestalW = 0.52;
-      const pedestalD = 0.52;
-      const pedestalH = pos.pedestalH;
+    // Walnut fluted plinth body
+    mesh(B(pedestalW, pedestalH - 0.08, pedestalD), M.walnut, 0, (pedestalH - 0.08) / 2, 0, group);
+    // Travertine luxurious top slab
+    mesh(B(pedestalW + 0.06, 0.08, pedestalD + 0.06), M.travertine, 0, pedestalH - 0.04, 0, group);
+    // Satin brass reveal inlay strip
+    mesh(B(pedestalW + 0.04, 0.012, pedestalD + 0.04), M.brassSatin, 0, pedestalH - 0.085, 0, group);
+    // Recessed LED halo under the plinth
+    mesh(B(pedestalW - 0.08, 0.015, pedestalD - 0.08), M.led, 0, 0.015, 0, group, false, false);
+    // Basalt base plate
+    mesh(B(pedestalW - 0.04, 0.02, pedestalD - 0.04), M.basalt, 0, 0.01, 0, group);
 
-      // Walnut fluted plinth body
-      mesh(B(pedestalW, pedestalH - 0.08, pedestalD), M.walnut, 0, (pedestalH - 0.08) / 2, 0, group);
-      // Travertine luxurious top slab
-      mesh(B(pedestalW + 0.05, 0.08, pedestalD + 0.05), M.travertine, 0, pedestalH - 0.04, 0, group);
-      // Satin brass reveal inlay strip
-      mesh(B(pedestalW + 0.03, 0.012, pedestalD + 0.03), M.brassSatin, 0, pedestalH - 0.085, 0, group);
-      // Recessed LED halo under the plinth
-      mesh(B(pedestalW - 0.06, 0.015, pedestalD - 0.06), M.led, 0, 0.015, 0, group, false, false);
-      // Basalt base plate
-      mesh(B(pedestalW - 0.04, 0.02, pedestalD - 0.04), M.basalt, 0, 0.01, 0, group);
+    // Museum Brass Plaque on front face of the plinth
+    const plaqueCanvas = document.createElement('canvas');
+    plaqueCanvas.width = 512;
+    plaqueCanvas.height = 128;
+    const pctx = plaqueCanvas.getContext('2d');
+    pctx.fillStyle = '#1e1610';
+    pctx.fillRect(0, 0, 512, 128);
+    pctx.strokeStyle = '#cda658';
+    pctx.lineWidth = 6;
+    pctx.strokeRect(6, 6, 500, 116);
+    pctx.fillStyle = '#f5cf92';
+    pctx.font = 'bold 34px Outfit, sans-serif';
+    pctx.textAlign = 'center';
+    pctx.textBaseline = 'middle';
+    pctx.fillText(`SCULPTURE S${idx + 1} · FOXY`, 256, 46);
+    pctx.font = '22px Outfit, sans-serif';
+    pctx.fillStyle = '#d8c4a8';
+    pctx.fillText('Marketing Naiin 50cm Exhibition Edition', 256, 88);
+    const plaqueTex = new THREE.CanvasTexture(plaqueCanvas);
+    mesh(
+      new THREE.PlaneGeometry(0.50, 0.125),
+      new THREE.MeshStandardMaterial({ map: plaqueTex, roughness: 0.35, metalness: 0.5 }),
+      0,
+      pedestalH * 0.50,
+      pedestalD / 2 + 0.005,
+      group
+    );
 
-      // Sculpture on top of pedestal
-      sculptObj.position.set(0, pedestalH, 0);
-      sculptObj.rotation.y = pos.rotY || 0;
-      group.add(sculptObj);
-      booth.add(group);
+    // Sculpture on top of pedestal (faces forward)
+    sculptObj.position.set(0, pedestalH, 0);
+    sculptObj.rotation.y = 0;
+    group.add(sculptObj);
+    booth.add(group);
 
-      // Dedicated overhead track spotlight
-      const spot = new THREE.SpotLight(0xfff1dc, 4.0, 5.5, Math.PI / 5, 0.35, 1.6);
-      spot.position.set(pos.x, FY + H - 0.20, pos.z + 0.35);
-      const spotTarget = new THREE.Object3D();
-      spotTarget.position.set(pos.x, FY + pedestalH + SCULPT_H / 2, pos.z);
-      scene.add(spotTarget);
-      spot.target = spotTarget;
-      spot.castShadow = true;
-      spot.shadow.mapSize.set(1024, 1024);
-      spot.shadow.bias = -0.0005;
-      scene.add(spot);
-      addAccent(spot, 4.0);
+    // Dedicated overhead track spotlight
+    const spot = new THREE.SpotLight(0xfff1dc, 4.0, 5.5, Math.PI / 5, 0.35, 1.6);
+    spot.position.set(pos.x, FY + H - 0.20, pos.z + 0.35);
+    const spotTarget = new THREE.Object3D();
+    spotTarget.position.set(pos.x, FY + pedestalH + SCULPT_H / 2, pos.z);
+    scene.add(spotTarget);
+    spot.target = spotTarget;
+    spot.castShadow = true;
+    spot.shadow.mapSize.set(1024, 1024);
+    spot.shadow.bias = -0.0005;
+    scene.add(spot);
+    addAccent(spot, 4.0);
 
-      // Soft fill light
-      const fill = addAccent(new THREE.PointLight(0xffebd2, 1.8, 2.5, 2), 1.8);
-      fill.position.set(pos.x - 0.15, FY + pedestalH + 0.35, pos.z + 0.45);
-      booth.add(fill);
+    // Soft fill light
+    const fill = addAccent(new THREE.PointLight(0xffebd2, 1.8, 2.5, 2), 1.8);
+    fill.position.set(pos.x - 0.15, FY + pedestalH + 0.35, pos.z + 0.45);
+    booth.add(fill);
 
-      sculptureRegistry.push({ id: pos.id, group, sculptObj, pos });
-
-    } else if (pos.type === 'credenza') {
-      // Placed directly on the credenza surface built in buildFurniture()
-      const sculptY = FY + pos.pedestalH;
-      sculptObj.position.set(pos.x, sculptY, pos.z);
-      sculptObj.rotation.y = pos.rotY || 0;
-      booth.add(sculptObj);
-
-      // Dedicated spotlight
-      const spot = new THREE.SpotLight(0xfff2df, 4.2, 5.0, Math.PI / 5, 0.35, 1.6);
-      spot.position.set(pos.x, FY + H - 0.20, pos.z + 0.40);
-      const spotTarget = new THREE.Object3D();
-      spotTarget.position.set(pos.x, sculptY + SCULPT_H / 2, pos.z);
-      scene.add(spotTarget);
-      spot.target = spotTarget;
-      spot.castShadow = true;
-      scene.add(spot);
-      addAccent(spot, 4.2);
-
-      const fill = addAccent(new THREE.PointLight(0xffe2bf, 1.6, 2.2, 2), 1.6);
-      fill.position.set(pos.x, sculptY + 0.32, pos.z + 0.35);
-      booth.add(fill);
-
-      sculptureRegistry.push({ id: pos.id, sculptObj, pos });
-
-    } else if (pos.type === 'niche') {
-      // Placed inside architectural wall niche at niche shelf height
-      const shelfY = FY + 1.60 - 0.95 / 2 + 0.04;
-      sculptObj.position.set(pos.x, shelfY, pos.z);
-      sculptObj.rotation.y = pos.rotY || 0;
-      booth.add(sculptObj);
-
-      // Soft spot from the front of the niche illuminating sculpture face
-      const nicheSpot = addAccent(new THREE.SpotLight(0xfff6e6, 3.8, 3.0, 0.45, 0.5, 2), 3.8);
-      nicheSpot.position.set(pos.x, shelfY + 0.55, pos.z + 0.65);
-      const nicheTarget = new THREE.Object3D();
-      nicheTarget.position.set(pos.x, shelfY + SCULPT_H / 2, pos.z);
-      scene.add(nicheTarget);
-      nicheSpot.target = nicheTarget;
-      scene.add(nicheSpot);
-
-      sculptureRegistry.push({ id: pos.id, sculptObj, pos });
-    }
+    sculptureRegistry.push({ id: pos.id, group, sculptObj, pos });
   });
 }
 
@@ -1367,24 +1294,16 @@ const VIEWS = {
     target: [-4.8, 1.6, 0],
   },
   room1: {
-    pos: [-4.8, 1.8, 2.2],
-    target: [-5.2, 1.3, -0.6],
+    pos: [-5.0, 1.8, 1.8],
+    target: [-5.0, 1.5, -0.6],
   },
   room2: {
-    pos: [0.0, 1.8, 2.2],
-    target: [0.0, 1.3, -0.5],
-  },
-  room3: {
-    pos: [4.6, 1.8, 2.2],
-    target: [5.2, 1.3, -0.5],
+    pos: [2.5, 2.2, 4.0],
+    target: [2.5, 1.2, -0.82],
   },
   inside_art: {
-    pos: [2.1, 1.6, -0.3],
-    target: [2.1, 1.55, D / 2],
-  },
-  mini_art: {
-    pos: [-2.0, 1.7, -0.1],
-    target: [-2.5, 1.7, -0.6],
+    pos: [2.5, 1.6, -0.3],
+    target: [2.5, 1.55, D / 2],
   },
   top: {
     pos: [0, 14.5, 0.001],
@@ -1395,8 +1314,8 @@ const VIEWS = {
     target: [-4.2, 1.2, -0.25],
   },
   sculptures: {
-    pos: [-6.2, 1.8, -0.82],
-    target: [5.0, 1.2, -0.82],
+    pos: [-2.5, 1.8, 0.8],
+    target: [2.5, 1.0, -0.82],
   },
 };
 
@@ -1666,11 +1585,66 @@ async function init() {
   // Load artworks and 3D Foxy model in background without blocking
   buildArtworks().catch(e => console.warn('buildArtworks error:', e));
 
-  loadFoxyModel().then((template) => {
+  // Background Model Loading HUD tracking
+  function updateModelLoadingProgress(pct) {
+    const hud = document.getElementById('model-loader-hud');
+    const bar = document.getElementById('hud-fill');
+    const text = document.getElementById('hud-pct');
+    const status = document.getElementById('hud-status');
+    if (bar) bar.style.width = `${Math.max(5, pct)}%`;
+    if (text) text.textContent = `${pct}%`;
+    if (status && pct < 100) status.textContent = `กำลังโหลดโมเดล 3D ประติมากรรม Foxy (${pct}%)…`;
+  }
+
+  function setModelLoadingComplete() {
+    const hud = document.getElementById('model-loader-hud');
+    if (!hud) return;
+    hud.classList.add('complete');
+    const status = document.getElementById('hud-status');
+    if (status) status.textContent = '✓ โมเดล 3D Foxy โหลดสมบูรณ์แล้ว (6 ชิ้น)';
+    const text = document.getElementById('hud-pct');
+    if (text) text.textContent = '100%';
+    const bar = document.getElementById('hud-fill');
+    if (bar) bar.style.width = '100%';
+    const spinner = document.getElementById('hud-spinner');
+    if (spinner) spinner.style.display = 'none';
+
+    setTimeout(() => {
+      hud.style.opacity = '0';
+      hud.style.transform = 'translate(-50%, 15px)';
+      setTimeout(() => { if (hud.parentNode) hud.remove(); }, 500);
+    }, 3000);
+  }
+
+  function setModelLoadingError() {
+    const hud = document.getElementById('model-loader-hud');
+    if (!hud) return;
+    hud.classList.add('error');
+    const status = document.getElementById('hud-status');
+    if (status) status.textContent = '⚠️ ใช้โมเดลสำรอง (Procedural Sculptures)';
+    const text = document.getElementById('hud-pct');
+    if (text) text.textContent = 'พร้อมชม';
+    const spinner = document.getElementById('hud-spinner');
+    if (spinner) spinner.style.display = 'none';
+    setTimeout(() => {
+      hud.style.opacity = '0';
+      setTimeout(() => { if (hud.parentNode) hud.remove(); }, 500);
+    }, 4000);
+  }
+
+  loadFoxyModel((pct) => {
+    updateModelLoadingProgress(pct);
+  }).then((template) => {
     if (template) {
       updateSculpturesWithFoxy(template);
+      setModelLoadingComplete();
+    } else {
+      setModelLoadingError();
     }
-  }).catch(e => console.warn('loadFoxyModel error:', e));
+  }).catch((e) => {
+    console.warn('loadFoxyModel error:', e);
+    setModelLoadingError();
+  });
 }
 
 init();

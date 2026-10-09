@@ -16,7 +16,102 @@
         "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
       }
     }
-  </script>
+  <style>
+    /* Background Model Loading Indicator HUD */
+    .model-loader-hud {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      background: rgba(22, 16, 12, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(229, 185, 115, 0.38);
+      border-radius: 999px;
+      padding: 8px 18px 8px 14px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55), 0 0 20px rgba(212, 168, 83, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      font-family: 'Outfit', 'IBM Plex Sans Thai', sans-serif;
+    }
+    .model-loader-hud.complete {
+      border-color: rgba(72, 199, 142, 0.55);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55), 0 0 24px rgba(72, 199, 142, 0.25);
+    }
+    .model-loader-hud.error {
+      border-color: rgba(229, 100, 100, 0.55);
+    }
+    .hud-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hud-spinner {
+      width: 15px;
+      height: 15px;
+      border: 2px solid rgba(229, 185, 115, 0.25);
+      border-top-color: #f5cf92;
+      border-radius: 50%;
+      animation: hudSpin 0.75s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes hudSpin {
+      to { transform: rotate(360deg); }
+    }
+    .hud-icon {
+      font-size: 16px;
+      line-height: 1;
+      filter: drop-shadow(0 0 6px rgba(245, 207, 146, 0.5));
+    }
+    .hud-text {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #f2e9dc;
+      white-space: nowrap;
+    }
+    .hud-status {
+      font-weight: 500;
+      letter-spacing: 0.2px;
+    }
+    .hud-pct {
+      font-family: monospace;
+      font-weight: 600;
+      color: #f5cf92;
+      background: rgba(245, 207, 146, 0.12);
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+    .hud-track {
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .hud-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #d4a853, #ffd899);
+      border-radius: 2px;
+      transition: width 0.2s ease-out;
+    }
+    .model-loader-hud.complete .hud-fill {
+      background: linear-gradient(90deg, #3bb77e, #55e6a5);
+    }
+    @media (max-width: 600px) {
+      .model-loader-hud {
+        bottom: 76px;
+        padding: 6px 14px;
+        font-size: 12px;
+      }
+    }
+  </style>
 </head>
 <body>
   <!-- Loader -->
@@ -42,9 +137,9 @@
         <span class="v-num">1</span>
         <span>5 บล็อก (3m)</span>
       </a>
-      <a href="gallery.html" class="v-pill active" title="ผัง 2: 1 ประตู · 3 ห้องกั้น & เฟอร์นิเจอร์ 5m">
+      <a href="gallery.html" class="v-pill active" title="ผัง 2: 2 ห้องสัดส่วน 1:2 (ห้องรูปจิ๋ว 20 ภาพ & ห้องประติมากรรม 6 ชิ้น)">
         <span class="v-num">2</span>
-        <span>1 ประตู 3 ห้องกั้น & เฟอร์ 5m</span>
+        <span>2 ห้อง (1:2) · 20 รูปจิ๋ว & 6 ตัว</span>
         <span class="v-badge-hot">ใหม่ล่าสุด ✨</span>
       </a>
       <a href="5m.html" class="v-pill" title="ผัง 3: 3 ห้อง × 5 เมตร เวอร์ชันเดิม">
@@ -159,12 +254,10 @@
       <button id="view-overview" data-view="overview" class="active">ภาพรวม</button>
       <button id="view-facade" data-view="facade">ด้านหน้านอก (5 ภาพ)</button>
       <button id="view-entrance" data-view="entrance">🚪 ทางเข้า</button>
-      <button id="view-room1" data-view="room1">🏛️ ห้อง 1 (Foyer & Bar)</button>
-      <button id="view-room2" data-view="room2">🛋️ ห้อง 2 (Art Lounge)</button>
-      <button id="view-room3" data-view="room3">📸 ห้อง 3 (Sofa & Niche)</button>
+      <button id="view-room1" data-view="room1">🎨 ห้อง 1 (รูปจิ๋ว 20 ภาพ)</button>
+      <button id="view-room2" data-view="room2">🦊 ห้อง 2 (ประติมากรรม 6 ชิ้น)</button>
       <button id="view-inside_art" data-view="inside_art">🖼️ ผนังใน (5 ภาพ)</button>
-      <button id="view-mini_art" data-view="mini_art">🎨 รูปจิ๋ว (20 ภาพ)</button>
-      <button id="view-top" data-view="top">📐 แปลนมุมบน</button>
+      <button id="view-top" data-view="top">📐 แปลนมุมบน (สัดส่วน 1:2)</button>
     </nav>
 
     <div class="hint">ลาก: หมุน · Scroll: ซูม · คลิกขวา: เลื่อน</div>
@@ -200,18 +293,18 @@
           </div>
         </a>
 
-        <!-- Card 2: 1 Door 6 Sculptures Double-Sided Art Wall -->
+        <!-- Card 2: 2 Rooms (1:2) · 20 Mini Artworks & 6 Sculptures in a Row -->
         <a href="gallery.html" class="layout-card active">
           <div class="layout-card-thumb">
-            <img src="blueprint_1door_6sculptures.png" alt="ผัง 1 ประตู · 6 ประติมากรรม · ผนังรูป 2 ด้าน" loading="lazy" />
-            <span class="layout-card-tag">✨ กำลังเปิดอยู่นี้ (ตามพิมพ์เขียว)</span>
+            <img src="blueprint_1door_6sculptures.png" alt="ผัง 2 ห้อง (1:2) · 20 รูปจิ๋ว & 6 ประติมากรรมแถวตรง" loading="lazy" />
+            <span class="layout-card-tag">✨ กำลังเปิดอยู่นี้ (สัดส่วน 1:2)</span>
           </div>
           <div class="layout-card-content">
-            <div class="layout-card-title">ผัง 2 · 1 ประตู · 6 ประติมากรรม</div>
-            <p class="layout-card-desc">สร้างตรงตามพิมพ์เขียวสถาปัตยกรรม 1 ประตูทางเข้า และแถวประติมากรรม 6 ตัว</p>
+            <div class="layout-card-title">ผัง 2 · 2 ห้อง (1:2) · 20 รูปจิ๋ว & 6 ประติมากรรม</div>
+            <p class="layout-card-desc">แบ่งสัดส่วน 1:2 (ห้องแรก 5m + ห้องใหญ่ 10m) ทางเข้าติดรูปจิ๋ว 20 รูปรอบห้อง และประติมากรรม 6 ตัวเรียงแถวตรงเหมือนเวอร์ชั่นแรก</p>
             <ul class="layout-card-features">
-              <li><span>🚪</span><span>ประตูทางเข้าซ้าย 1 บาน กว้าง 3.00 ม. สูง 2.40 ม.</span></li>
-              <li><span>🦊</span><span>ประติมากรรม 6 ตัวเรียงแถวตรงกันด้านใน (S1–S6)</span></li>
+              <li><span>🚪</span><span>ห้องทางเข้า (5m): รูปจิ๋ว 25×25cm 20 ภาพ ล้อมรอบ 4 ทิศ</span></li>
+              <li><span>🦊</span><span>ห้องใหญ่ด้านใน (10m): ประติมากรรม 6 ตัวเรียงแถวตรง (S1–S6)</span></li>
               <li><span>🖼️</span><span>ผนังหน้าแสดงรูป 2 ด้าน (นอก 5 รูป / ใน 5 รูป รวม 10 รูป)</span></li>
             </ul>
             <div class="layout-card-action">✓ กำลังเปิดหน้านี้อยู่</div>
@@ -269,6 +362,21 @@
     })();
   </script>
 
-  <script type="module" src="main-gallery.js?v=fix_collision_v4"></script>
+  <!-- Floating Background Model Loading Indicator HUD -->
+  <aside id="model-loader-hud" class="model-loader-hud" aria-live="polite">
+    <div class="hud-pill">
+      <span class="hud-spinner" id="hud-spinner"></span>
+      <span class="hud-icon" id="hud-icon">🦊</span>
+      <div class="hud-text">
+        <span class="hud-status" id="hud-status">กำลังโหลดโมเดล 3D ประติมากรรม Foxy…</span>
+        <span class="hud-pct" id="hud-pct">0%</span>
+      </div>
+    </div>
+    <div class="hud-track">
+      <div class="hud-fill" id="hud-fill" style="width: 5%;"></div>
+    </div>
+  </aside>
+
+  <script type="module" src="main-gallery.js?v=2rooms_1to2_v5"></script>
 </body>
 </html>
