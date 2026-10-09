@@ -1223,6 +1223,8 @@ function buildFurniture() {
 // ---------------------------------------------------------------------------
 // 6 Sculptures Distributed across Room 1, Room 2, and Room 3 (like 5m)
 // ---------------------------------------------------------------------------
+const sculptureRegistry = [];
+
 function buildSculptures() {
   sculptureRegistry.length = 0;
 
@@ -1574,6 +1576,39 @@ function initUI() {
   });
 }
 
+function updateSculpturesWithFoxy(template) {
+  sculptureRegistry.forEach((item) => {
+    const { pos } = item;
+    const foxy = cloneSculpture(template);
+    foxy.rotation.y = pos.rotY || 0;
+
+    if (pos.type === 'plinth') {
+      foxy.position.set(0, pos.pedestalH, 0);
+      if (item.sculptObj && item.group) {
+        item.group.remove(item.sculptObj);
+        item.group.add(foxy);
+        item.sculptObj = foxy;
+      }
+    } else if (pos.type === 'credenza') {
+      const sculptY = FY + pos.pedestalH;
+      foxy.position.set(pos.x, sculptY, pos.z);
+      if (item.sculptObj) {
+        booth.remove(item.sculptObj);
+      }
+      booth.add(foxy);
+      item.sculptObj = foxy;
+    } else if (pos.type === 'niche') {
+      const shelfY = FY + 1.60 - 0.95 / 2 + 0.04;
+      foxy.position.set(pos.x, shelfY, pos.z);
+      if (item.sculptObj) {
+        booth.remove(item.sculptObj);
+      }
+      booth.add(foxy);
+      item.sculptObj = foxy;
+    }
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Initialization & Render Loop
 // ---------------------------------------------------------------------------
@@ -1581,30 +1616,37 @@ async function init() {
   setupLighting();
   buildArchitecture();
   buildFurniture();
-
-  // Load 3D model template and textures
-  await loadFoxyModel();
   buildSculptures();
-  await buildArtworks();
   buildMiniArtworks();
-
-  // Hide loader
-  const loader = document.getElementById('loader');
-  if (loader) {
-    loader.style.opacity = '0';
-    setTimeout(() => loader.remove(), 400);
-  }
 
   initUI();
   setLightMode('golden');
 
-  // Start animation loop
+  // Start animation loop immediately
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
     composer.render();
   }
   animate();
+
+  // Dismiss loader immediately so user sees the gallery instantly
+  const ldr = document.getElementById('loader');
+  if (ldr) {
+    ldr.classList.add('done');
+    ldr.style.opacity = '0';
+    ldr.style.pointerEvents = 'none';
+    setTimeout(() => { if (ldr.parentNode) ldr.remove(); }, 350);
+  }
+
+  // Load artworks and 3D Foxy model in background without blocking
+  buildArtworks().catch(e => console.warn('buildArtworks error:', e));
+
+  loadFoxyModel().then((template) => {
+    if (template) {
+      updateSculpturesWithFoxy(template);
+    }
+  }).catch(e => console.warn('loadFoxyModel error:', e));
 }
 
 init();
