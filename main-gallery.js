@@ -114,12 +114,14 @@ const container = document.getElementById('scene');
 const renderer = new THREE.WebGLRenderer({
   antialias: true,
   preserveDrawingBuffer: true,
-  logarithmicDepthBuffer: true,
+  powerPreference: 'high-performance',
 });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.autoUpdate = false;
+renderer.shadowMap.needsUpdate = true;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.0;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -147,7 +149,12 @@ scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-const bloom = new UnrealBloomPass(new V2(window.innerWidth, window.innerHeight), 0.12, 0.22, 0.94);
+const bloom = new UnrealBloomPass(
+  new V2(Math.floor(window.innerWidth / 2), Math.floor(window.innerHeight / 2)),
+  0.10,
+  0.22,
+  0.94
+);
 composer.addPass(bloom);
 composer.addPass(new OutputPass());
 
@@ -259,7 +266,7 @@ const M = {
 };
 
 const B = (w, h, d) => new RoundedBoxGeometry(w, h, d, 2, 0.008);
-const mesh = (geom, mat, x = 0, y = 0, z = 0, parent = booth, shadow = true, receive = true) => {
+const mesh = (geom, mat, x = 0, y = 0, z = 0, parent = booth, shadow = false, receive = true) => {
   const m = new THREE.Mesh(geom, mat);
   m.position.set(x, y, z);
   m.castShadow = shadow;
@@ -584,6 +591,7 @@ function setLightMode(mode) {
     renderer.toneMappingExposure = 0.92;
     accents.forEach(a => a.light.intensity = a.baseIntensity * 1.55);
   }
+  renderer.shadowMap.needsUpdate = true;
 }
 
 // ---------------------------------------------------------------------------
@@ -793,11 +801,6 @@ function makeFramedArt(w, h, tex, title = '', artKey = '', isFacingOutside = tru
   mesh(new THREE.CylinderGeometry(0.005, 0.005, Math.min(w * 0.70, 0.65), 16), M.led, 0, -0.006, 0, lightBar, false, false).rotation.z = Math.PI / 2;
   g.add(lightBar);
 
-  // Soft spotlight on painting
-  const pl = addAccent(new THREE.PointLight(0xffe2b8, 1.1, 2.4, 2), 1.1);
-  pl.position.set(0, h / 2 + 0.08, frameD + 0.10);
-  g.add(pl);
-
   // Brass Plaque under frame
   const plaqueW = 0.28, plaqueH = 0.07;
   mesh(B(plaqueW, plaqueH, 0.008), M.brassSatin, 0, -h / 2 - frameBorder - 0.06, frameD / 2, g);
@@ -866,6 +869,15 @@ async function buildArtworks() {
     frame.rotation.y = Math.PI; // Look towards interior
     booth.add(frame);
   });
+
+  // Ambient gallery wash lights for exterior and interior front wall exhibitions
+  const outWash = addAccent(new THREE.PointLight(0xffecd4, 2.2, 7.5, 1.8), 2.2);
+  outWash.position.set(2.10, FY + 2.7, wallFrontZ + 1.20);
+  booth.add(outWash);
+
+  const inWash = addAccent(new THREE.PointLight(0xffecd4, 2.2, 7.5, 1.8), 2.2);
+  inWash.position.set(2.50, FY + 2.7, wallFrontZ - 1.20);
+  booth.add(inWash);
 }
 
 // ---------------------------------------------------------------------------
@@ -906,7 +918,7 @@ function loadFoxyModel(onProgress) {
           root.traverse((child) => {
             if (child.isMesh) {
               child.castShadow = true;
-              child.receiveShadow = true;
+              child.receiveShadow = false;
               if (child.material) {
                 child.material.envMapIntensity = 1.35;
                 child.material.roughness = Math.min(child.material.roughness, 0.60);
@@ -953,7 +965,7 @@ function cloneSculpture(template) {
         child.material = child.material.clone();
       }
       child.castShadow = true;
-      child.receiveShadow = true;
+      child.receiveShadow = false;
     }
   });
   return clone;
@@ -1119,11 +1131,6 @@ function makeMiniFramedArt(tex, title = '', spotId = 1) {
   mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.16, 16), M.led, 0, -0.004, 0, lightBar, false, false).rotation.z = Math.PI / 2;
   g.add(lightBar);
 
-  // Dedicated soft warm accent spotlight on mini picture
-  const pl = addAccent(new THREE.PointLight(0xffeed8, 0.85, 2.0, 2), 0.85);
-  pl.position.set(0, h / 2 + 0.04, frameD + 0.06);
-  g.add(pl);
-
   // Brass Plaque under frame: 25x25 cm label
   const plaqueW = 0.16, plaqueH = 0.032;
   mesh(B(plaqueW, plaqueH, 0.005), M.brassSatin, 0, -h / 2 - frameBorder - 0.026, frameD / 2, g);
@@ -1139,6 +1146,11 @@ function buildMiniArtworks() {
     frame.rotation.y = spot.rotY || 0;
     booth.add(frame);
   });
+
+  // Central warm museum gallery ceiling light for Room 1 (illuminates all 4 walls and 20 mini pictures smoothly)
+  const room1Light = addAccent(new THREE.PointLight(0xffeed8, 2.6, 6.0, 1.8), 2.6);
+  room1Light.position.set(-5.0, FY + 2.7, 0);
+  booth.add(room1Light);
 }
 
 // ---------------------------------------------------------------------------
@@ -1259,23 +1271,16 @@ function buildSculptures() {
     group.add(sculptObj);
     booth.add(group);
 
-    // Dedicated overhead track spotlight
-    const spot = new THREE.SpotLight(0xfff1dc, 4.0, 5.5, Math.PI / 5, 0.35, 1.6);
+    // Dedicated overhead track spotlight for sculpture museum focus
+    const spot = new THREE.SpotLight(0xfff1dc, 3.8, 5.5, Math.PI / 5, 0.40, 1.6);
     spot.position.set(pos.x, FY + H - 0.20, pos.z + 0.35);
     const spotTarget = new THREE.Object3D();
     spotTarget.position.set(pos.x, FY + pedestalH + SCULPT_H / 2, pos.z);
     scene.add(spotTarget);
     spot.target = spotTarget;
-    spot.castShadow = true;
-    spot.shadow.mapSize.set(1024, 1024);
-    spot.shadow.bias = -0.0005;
+    spot.castShadow = false; // Turn off expensive shadow map passes (Sun already casts realistic directional shadows)
     scene.add(spot);
-    addAccent(spot, 4.0);
-
-    // Soft fill light
-    const fill = addAccent(new THREE.PointLight(0xffebd2, 1.8, 2.5, 2), 1.8);
-    fill.position.set(pos.x - 0.15, FY + pedestalH + 0.35, pos.z + 0.45);
-    booth.add(fill);
+    addAccent(spot, 3.8);
 
     sculptureRegistry.push({ id: pos.id, group, sculptObj, pos });
   });
@@ -1520,6 +1525,8 @@ function initUI() {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
     composer.setSize(window.innerWidth, window.innerHeight);
+    bloom.setSize(Math.floor(window.innerWidth / 2), Math.floor(window.innerHeight / 2));
+    renderer.shadowMap.needsUpdate = true;
   });
 }
 
@@ -1554,6 +1561,7 @@ function updateSculpturesWithFoxy(template) {
       item.sculptObj = foxy;
     }
   });
+  renderer.shadowMap.needsUpdate = true;
 }
 
 // ---------------------------------------------------------------------------
