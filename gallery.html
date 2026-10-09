@@ -16,6 +16,7 @@
         "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
       }
     }
+  </script>
   <style>
     /* Background Model Loading Indicator HUD */
     .model-loader-hud {
@@ -360,6 +361,17 @@
         if (e.key === 'Escape') closeModal();
       });
     })();
+
+    // Failsafe: unconditionally remove loader after 1.2s to guarantee no black screen freeze
+    setTimeout(function() {
+      var ldr = document.getElementById('loader');
+      if (ldr && !ldr.classList.contains('done')) {
+        ldr.classList.add('done');
+        ldr.style.opacity = '0';
+        ldr.style.pointerEvents = 'none';
+        setTimeout(function() { if (ldr.parentNode) ldr.remove(); }, 350);
+      }
+    }, 1200);
   </script>
 
   <!-- Floating Background Model Loading Indicator HUD -->
@@ -377,6 +389,6 @@
     </div>
   </aside>
 
-  <script type="module" src="main-gallery.js?v=2rooms_1to2_v5"></script>
+  <script type="module" src="main-gallery.js?v=fixed_freeze_v8"></script>
 </body>
 </html>

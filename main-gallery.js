@@ -23,6 +23,10 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
+window.addEventListener('error', e => console.error('GLOBAL ERROR:', e.message, 'at', e.filename, 'line', e.lineno));
+window.addEventListener('unhandledrejection', e => console.error('UNHANDLED REJECTION:', e.reason));
+console.log('*** MAIN-GALLERY.JS LOADED ***');
+
 // ---------------------------------------------------------------------------
 // Booth Dimensions (metres)
 // ---------------------------------------------------------------------------
@@ -926,7 +930,7 @@ function loadFoxyModel(onProgress) {
             const pct = Math.round((xhr.loaded / xhr.total) * 100);
             onProgress(pct);
           } else if (xhr.loaded > 0) {
-            const estPct = Math.min(95, Math.round((xhr.loaded / (12 * 1024 * 1024)) * 100));
+            const estPct = Math.min(95, Math.round((xhr.loaded / (30 * 1024 * 1024)) * 100));
             onProgress(estPct);
           }
         }
@@ -1556,14 +1560,18 @@ function updateSculpturesWithFoxy(template) {
 // Initialization & Render Loop
 // ---------------------------------------------------------------------------
 async function init() {
-  setupLighting();
-  buildArchitecture();
-  buildFurniture();
-  buildSculptures();
-  buildMiniArtworks();
-
-  initUI();
-  setLightMode('golden');
+  console.log('INIT: Starting initialization...');
+  try {
+    setupLighting(); console.log('INIT: 1. setupLighting done');
+    buildArchitecture(); console.log('INIT: 2. buildArchitecture done');
+    buildFurniture(); console.log('INIT: 3. buildFurniture done');
+    buildSculptures(); console.log('INIT: 4. buildSculptures done');
+    buildMiniArtworks(); console.log('INIT: 5. buildMiniArtworks done');
+    initUI(); console.log('INIT: 6. initUI done');
+    setLightMode('golden'); console.log('INIT: 7. setLightMode done');
+  } catch (err) {
+    console.error('INIT ERROR:', err);
+  }
 
   // Start animation loop immediately
   function animate() {
