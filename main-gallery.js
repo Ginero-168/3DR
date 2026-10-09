@@ -37,13 +37,48 @@ const DOOR_CENTER_X = -4.80; // Door portal center
 const DOOR_WIDTH = 3.0;     // Door portal width (-6.3 to -3.3)
 
 // 6 Pedestal Centers in a row (Z = -0.82)
+// 6 Sculptures distributed across Room 1, Room 2, and Room 3 (สไตล์ 5m)
 const SCULPTURE_POSITIONS = [
-  { id: 's1', name: 'S1 · Entrance Gatekeeper', x: -3.80, z: -0.82, finish: 'bronze', label: 'S1 · Golden Amber Foxy' },
-  { id: 's2', name: 'S2 · Acoustic Chamber',   x: -1.85, z: -0.82, finish: 'marble', label: 'S2 · Carrara Marble Foxy' },
-  { id: 's3', name: 'S3 · Central Masterpiece', x:  0.20, z: -0.82, finish: 'obsidian', label: 'S3 · Royal Obsidian Foxy' },
-  { id: 's4', name: 'S4 · Terracotta Pavilion', x:  2.25, z: -0.82, finish: 'terracotta', label: 'S4 · Ochre Amber Foxy' },
-  { id: 's5', name: 'S5 · Heritage Verdite',    x:  4.27, z: -0.82, finish: 'verdite', label: 'S5 · Patina Bronze Foxy' },
-  { id: 's6', name: 'S6 · Platinum Apex',       x:  6.31, z: -0.82, finish: 'platinum', label: 'S6 · Platinum Chrome Foxy' },
+  // Room 1 (West: X = -7.5 to -2.5) — Welcome Foyer
+  { id: 's1', name: 'S1 · Room 1 Welcome Gatekeeper', x: -4.20, z: -0.25, rotY: -0.25, pedestalH: 0.85, type: 'plinth' },
+
+  // Room 2 (Center: X = -2.5 to +2.5) — Central Art Pavilion & Lounge
+  { id: 's2', name: 'S2 · Room 2 Showcase Centerpiece', x: -0.80, z: -0.25, rotY: 0.10, pedestalH: 0.90, type: 'plinth' },
+  { id: 's3', name: 'S3 · Room 2 Credenza Feature',     x:  1.10, z: -1.25, rotY: -0.15, pedestalH: 0.62, type: 'credenza' },
+
+  // Room 3 (East: X = +2.5 to +7.5) — VIP Sculpture Sanctuary & Photo Lounge
+  { id: 's4', name: 'S4 · Room 3 Photo Spot Companion', x:  4.05, z: -0.35, rotY: 0.15, pedestalH: 0.75, type: 'plinth' },
+  { id: 's5', name: 'S5 · Room 3 Wall Niche 1',         x:  3.20, z: -1.35, rotY: 0.15, pedestalH: 0.0,  type: 'niche', nicheY: 1.10 },
+  { id: 's6', name: 'S6 · Room 3 Wall Niche 2',         x:  6.80, z: -1.35, rotY: -0.15, pedestalH: 0.0, type: 'niche', nicheY: 1.10 },
+];
+
+// 20 Curated Mini Artworks (25 × 25 cm = 0.25 × 0.25 m)
+const MINI_ART_SPOTS = [
+  // Room 1 (West: X = -7.5 to -2.5) — 8 ภาพ
+  { id: 1,  x: -7.42, y: FY + 1.70, z: -0.65, rotY: Math.PI / 2, title: 'Mini 01 · Golden Dawn' },
+  { id: 2,  x: -7.42, y: FY + 1.70, z: +0.25, rotY: Math.PI / 2, title: 'Mini 02 · Azure Flow' },
+  { id: 3,  x: -6.15, y: FY + 1.70, z: -1.42, rotY: 0, title: 'Mini 03 · Terracotta Ochre' },
+  { id: 4,  x: -5.75, y: FY + 1.70, z: -1.42, rotY: 0, title: 'Mini 04 · Obsidian Wave' },
+  { id: 5,  x: -5.35, y: FY + 1.70, z: -1.42, rotY: 0, title: 'Mini 05 · Emerald Patina' },
+  { id: 6,  x: -2.58, y: FY + 1.85, z: -0.95, rotY: -Math.PI / 2, title: 'Mini 06 · Cobalt Crest' },
+  { id: 7,  x: -2.58, y: FY + 1.40, z: -0.95, rotY: -Math.PI / 2, title: 'Mini 07 · Sunset Ember' },
+  { id: 8,  x: -2.58, y: FY + 1.62, z: -0.35, rotY: -Math.PI / 2, title: 'Mini 08 · Platinum Arch' },
+
+  // Room 2 (Center: X = -2.5 to +2.5) — 7 ภาพ
+  { id: 9,  x: -2.42, y: FY + 1.75, z: -0.95, rotY: Math.PI / 2, title: 'Mini 09 · Foxy Horizon' },
+  { id: 10, x: -2.42, y: FY + 1.75, z: -0.35, rotY: Math.PI / 2, title: 'Mini 10 · Golden Grain' },
+  { id: 11, x: -0.45, y: FY + 1.75, z: -1.42, rotY: 0, title: 'Mini 11 · Bronze Symphony I' },
+  { id: 12, x:  0.00, y: FY + 1.75, z: -1.42, rotY: 0, title: 'Mini 12 · Bronze Symphony II' },
+  { id: 13, x: +0.45, y: FY + 1.75, z: -1.42, rotY: 0, title: 'Mini 13 · Bronze Symphony III' },
+  { id: 14, x: +2.42, y: FY + 1.75, z: +0.35, rotY: -Math.PI / 2, title: 'Mini 14 · Verdant Echo' },
+  { id: 15, x: +2.42, y: FY + 1.75, z: +0.95, rotY: -Math.PI / 2, title: 'Mini 15 · Amber Spark' },
+
+  // Room 3 (East: X = +2.5 to +7.5) — 5 ภาพ
+  { id: 16, x: +2.58, y: FY + 1.75, z: +0.35, rotY: Math.PI / 2, title: 'Mini 16 · Royal Indigo' },
+  { id: 17, x: +2.58, y: FY + 1.75, z: +0.95, rotY: Math.PI / 2, title: 'Mini 17 · Crimson Bloom' },
+  { id: 18, x: +5.00, y: FY + 1.70, z: -1.42, rotY: 0, title: 'Mini 18 · Calacatta Muse' },
+  { id: 19, x: +7.42, y: FY + 1.70, z: -0.65, rotY: -Math.PI / 2, title: 'Mini 19 · Solar Whisper' },
+  { id: 20, x: +7.42, y: FY + 1.70, z: +0.25, rotY: -Math.PI / 2, title: 'Mini 20 · Apex Twilight' },
 ];
 
 // 5 Pairs of Artworks on Front Wall (Outside & Inside)
@@ -199,6 +234,19 @@ const M = {
   sculptTerracotta: std(0xc46841, 0.58, 0.05),
   sculptVerdite: std(0x3e7a68, 0.28, 0.70),
   sculptPlatinum: std(0xe0e4e8, 0.10, 0.96),
+  // Furniture materials from 5m
+  linen: std(0xefeae2, 0.88, 0.0),
+  leather: std(0x8a4b24, 0.55, 0.05),
+  marble: std(0xfaf8f2, 0.22, 0.05),
+  olive: std(0x525c48, 0.85, 0.0),
+  rust: std(0xa45228, 0.85, 0.0),
+  basalt: std(0x1e1e20, 0.65, 0.1),
+  ceramic: std(0xfaf8f5, 0.15, 0.0),
+  candle: std(0xf4ede2, 0.3),
+  flame: new THREE.MeshBasicMaterial({ color: 0xffaa33 }),
+  soil: std(0x2a1e16, 0.95),
+  bark: std(0x3e281b, 0.85),
+  leaf: std(0x3d5a38, 0.72),
 };
 
 const B = (w, h, d) => new RoundedBoxGeometry(w, h, d, 2, 0.008);
@@ -210,6 +258,179 @@ const mesh = (geom, mat, x = 0, y = 0, z = 0, parent = booth, shadow = true, rec
   parent.add(m);
   return m;
 };
+
+const rand = (min, max) => min + Math.random() * (max - min);
+function lathe(points, mat, seg = 48) {
+  return new THREE.Mesh(new THREE.LatheGeometry(points.map(([x, y]) => new V2(x, y)), seg), mat);
+}
+const place = (obj, x, y, z, parent = booth, ry = 0) => {
+  obj.position.set(x, y, z);
+  obj.rotation.y = ry;
+  parent.add(obj);
+  return obj;
+};
+
+function makePlant({ potR = 0.18, potH = 0.38, potMat = M.ceramic, trunkH = 1.1, crown = [0.45, 0.4, 0.45], leaves = 160, leafSize = 0.07, hue = 0.25, tree = true } = {}) {
+  const g = new THREE.Group();
+  const pot = lathe([[0, 0], [potR * 0.72, 0], [potR, potH * 0.55], [potR * 0.96, potH], [potR * 0.86, potH]], potMat, 32);
+  pot.castShadow = pot.receiveShadow = true;
+  g.add(pot);
+  mesh(new THREE.CircleGeometry(potR * 0.86, 24).rotateX(-Math.PI / 2), M.soil, 0, potH * 0.96, 0, g);
+  let cy = potH + 0.12;
+  if (tree) {
+    const trunk = mesh(new THREE.CylinderGeometry(0.014, 0.026, trunkH, 8), M.bark, 0.02, potH + trunkH / 2, 0, g);
+    trunk.rotation.z = 0.05;
+    cy = potH + trunkH;
+  }
+  const im = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 8, 6), M.leaf, leaves);
+  const d = new THREE.Object3D(), c = new THREE.Color();
+  for (let i = 0; i < leaves; i++) {
+    const dir = new V3(rand(-1, 1), rand(-1, 1), rand(-1, 1)).normalize().multiplyScalar(Math.cbrt(Math.random()));
+    d.position.set(dir.x * crown[0], cy + dir.y * crown[1] + (tree ? 0 : crown[1] * 0.6), dir.z * crown[2]);
+    d.rotation.set(rand(0, Math.PI), rand(0, Math.PI), rand(0, Math.PI));
+    const s = leafSize * rand(0.7, 1.3);
+    d.scale.set(s, s * 0.16, s * 0.42);
+    d.updateMatrix();
+    im.setMatrixAt(i, d.matrix);
+    c.setHSL(hue + rand(-0.02, 0.04), rand(0.28, 0.45), rand(0.2, 0.34));
+    im.setColorAt(i, c);
+  }
+  im.castShadow = true;
+  g.add(im);
+  return g;
+}
+
+function makeBouquet() {
+  const g = new THREE.Group();
+  const vase = lathe([[0, 0], [0.06, 0], [0.1, 0.08], [0.11, 0.15], [0.07, 0.24], [0.05, 0.28], [0.06, 0.3]], M.ceramic);
+  vase.castShadow = true; g.add(vase);
+  const leaves = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 8, 6), M.leaf, 70);
+  const flowers = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), std(0xf6f1e6, 0.8), 24);
+  const d = new THREE.Object3D(), c = new THREE.Color();
+  for (let i = 0; i < 70; i++) {
+    const a = rand(0, Math.PI * 2), r = rand(0.02, 0.22), y = 0.3 + rand(0, 0.30) - r * 0.3;
+    d.position.set(Math.cos(a) * r, y, Math.sin(a) * r);
+    d.rotation.set(rand(0, 3), rand(0, 3), rand(0, 3));
+    const s = rand(0.03, 0.05); d.scale.set(s, s * 0.18, s * 0.45); d.updateMatrix();
+    leaves.setMatrixAt(i, d.matrix);
+    c.setHSL(rand(0.22, 0.28), rand(0.25, 0.4), rand(0.25, 0.38)); leaves.setColorAt(i, c);
+  }
+  for (let i = 0; i < 24; i++) {
+    const a = rand(0, Math.PI * 2), r = rand(0.03, 0.18);
+    d.position.set(Math.cos(a) * r, 0.40 + rand(0, 0.20), Math.sin(a) * r);
+    d.rotation.set(0, 0, 0); d.scale.setScalar(rand(0.016, 0.026)); d.updateMatrix();
+    flowers.setMatrixAt(i, d.matrix);
+  }
+  leaves.castShadow = flowers.castShadow = true;
+  g.add(leaves, flowers);
+  return g;
+}
+
+function makeFruitBowl() {
+  const g = new THREE.Group();
+  const bowl = lathe([[0, 0], [0.08, 0], [0.15, 0.06], [0.18, 0.10]], M.ceramic, 32);
+  bowl.castShadow = true;
+  g.add(bowl);
+  const lemonMat = std(0xe8c24a, 0.55);
+  for (let i = 0; i < 5; i++) {
+    const a = (i / 5) * Math.PI * 2;
+    const l = mesh(new THREE.SphereGeometry(0.035, 16, 12), lemonMat, Math.cos(a) * 0.07, 0.08 + (i % 2) * 0.02, Math.sin(a) * 0.07, g);
+    l.scale.set(1, 0.85, 1.25);
+  }
+  return g;
+}
+
+function makeBooks(n = 3) {
+  const g = new THREE.Group();
+  const cols = [0xd8c8ad, 0x6a4a33, 0x8e8a6a, 0xa4532d, 0xefe6d7];
+  let y = 0;
+  for (let i = 0; i < n; i++) {
+    const h = rand(0.025, 0.04);
+    const b = mesh(B(rand(0.2, 0.26), h, rand(0.15, 0.19)), std(cols[(Math.random() * cols.length) | 0], 0.8), 0, y + h / 2, 0, g);
+    b.rotation.y = rand(-0.2, 0.2);
+    y += h;
+  }
+  return g;
+}
+
+function makeCandle(h = 0.1) {
+  const g = new THREE.Group();
+  mesh(new THREE.CylinderGeometry(0.035, 0.035, h, 20), M.candle, 0, h / 2, 0, g);
+  const f = mesh(new THREE.SphereGeometry(0.012, 10, 8), M.flame, 0, h + 0.016, 0, g, false, false);
+  f.scale.y = 1.8;
+  return g;
+}
+
+function makeBowl(r = 0.14, mat = M.walnut) {
+  const g = new THREE.Group();
+  const bowl = lathe([[0, 0], [r * 0.5, 0], [r * 0.85, r * 0.25], [r, r * 0.45]], mat, 32);
+  bowl.material = mat.clone(); bowl.material.side = THREE.DoubleSide;
+  bowl.castShadow = true; g.add(bowl);
+  return g;
+}
+
+function makePendant(x, z, bottomY) {
+  const top = FY + H - 0.2;
+  mesh(new THREE.CylinderGeometry(0.004, 0.004, top - bottomY - 0.2, 6), M.blackMetal, x, (top + bottomY + 0.2) / 2, z);
+  mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.06, 16), M.brass, x, bottomY + 0.22, z);
+  mesh(new THREE.SphereGeometry(0.22, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2), M.brass, x, bottomY, z).material.side = THREE.DoubleSide;
+  mesh(new THREE.SphereGeometry(0.04, 16, 12), M.bulb, x, bottomY + 0.03, z, booth, false, false);
+  const l = addAccent(new THREE.PointLight(0xffc27a, 1.6, 3.5, 2), 1.6);
+  l.position.set(x, bottomY - 0.05, z);
+  booth.add(l);
+}
+
+function makeMuseumBench(x, z) {
+  const grp = new THREE.Group();
+  grp.position.set(x, FY, z);
+  const w = 1.70, d = 0.60;
+  [[-w / 2 + 0.12, -d / 2 + 0.10], [w / 2 - 0.12, -d / 2 + 0.10], [-w / 2 + 0.12, d / 2 - 0.10], [w / 2 - 0.12, d / 2 - 0.10]].forEach(([lx, lz]) => {
+    mesh(new THREE.CylinderGeometry(0.018, 0.012, 0.24, 12), M.walnut, lx, 0.12, lz, grp);
+    mesh(new THREE.CylinderGeometry(0.020, 0.014, 0.035, 12), M.brass, lx, 0.02, lz, grp);
+  });
+  mesh(B(w, 0.04, d, 0.01), M.walnut, 0, 0.26, 0, grp);
+  mesh(B(w - 0.04, 0.15, d - 0.04, 0.04), M.leather, 0, 0.355, 0, grp);
+  booth.add(grp);
+  return grp;
+}
+
+function makeArcLamp(x, z, end) {
+  mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.04, 40), M.marble, x, FY + 0.02, z);
+  const start = new V3(x, FY + 0.04, z);
+  const mid = new V3(x + 0.1, FY + 2.35, z + 0.25);
+  const curve = new THREE.QuadraticBezierCurve3(start, mid, new V3(end.x, end.y + 0.12, end.z));
+  mesh(new THREE.TubeGeometry(curve, 64, 0.012, 10), M.brass, 0, 0, 0);
+  const shade = mesh(new THREE.SphereGeometry(0.2, 36, 18, 0, Math.PI * 2, 0, Math.PI / 2), M.brass, end.x, end.y, end.z);
+  shade.material = M.brass.clone(); shade.material.side = THREE.DoubleSide;
+  mesh(new THREE.SphereGeometry(0.04, 16, 12), M.bulb, end.x, end.y + 0.03, end.z, booth, false, false);
+  const l = addAccent(new THREE.PointLight(0xffc27a, 1.8, 3.5, 2), 1.8);
+  l.position.set(end.x, end.y - 0.05, end.z);
+  booth.add(l);
+}
+
+function makeSofa(x, z, rotY = 0) {
+  const grp = new THREE.Group();
+  grp.position.set(x, FY, z);
+  grp.rotation.y = rotY;
+  const legGeo = new THREE.CylinderGeometry(0.018, 0.012, 0.14, 12);
+  const ferruleGeo = new THREE.CylinderGeometry(0.020, 0.014, 0.035, 12);
+  [[-0.72, -0.26], [0.72, -0.26], [-0.72, 0.26], [0.72, 0.26]].forEach(([lx, lz]) => {
+    mesh(legGeo, M.walnut, lx, 0.07, lz, grp);
+    mesh(ferruleGeo, M.brass, lx, 0.02, lz, grp);
+  });
+  mesh(B(1.68, 0.05, 0.74, 0.02), M.walnut, 0, 0.165, 0, grp);
+  mesh(B(1.64, 0.25, 0.70, 0.07), M.linen, 0, 0.315, 0.01, grp);
+  const back = mesh(B(1.64, 0.44, 0.22, 0.07), M.linen, 0, 0.58, -0.24, grp);
+  back.rotation.x = -0.06;
+  mesh(B(0.14, 0.28, 0.68, 0.06), M.linen, -0.82, 0.42, 0.01, grp);
+  mesh(B(0.14, 0.28, 0.68, 0.06), M.linen, 0.82, 0.42, 0.01, grp);
+  const p1 = mesh(B(0.34, 0.34, 0.11, 0.04), M.rust, -0.50, 0.48, -0.13, grp);
+  p1.rotation.set(-0.15, 0.25, 0.10);
+  const p2 = mesh(B(0.32, 0.32, 0.11, 0.04), M.olive, 0.50, 0.48, -0.13, grp);
+  p2.rotation.set(-0.15, -0.22, -0.08);
+  booth.add(grp);
+  return grp;
+}
 
 // ---------------------------------------------------------------------------
 // X-Ray / See-Through Wall Registry
@@ -481,6 +702,54 @@ function buildArchitecture() {
   const trackZ = -0.82;
   mesh(B(W - 0.5, 0.03, 0.04), M.blackMetal, 0, FY + H - 0.15, trackZ);
   mesh(B(W - 0.5, 0.01, 0.01), M.led, 0, FY + H - 0.17, trackZ, booth, false, false);
+
+  // 6. Architectural Partition Walls dividing into 3 Curated Rooms (like 5m)
+  // Partition 1 at X = -2.50 (Dividing Room 1 & Room 2): Staggered to back
+  const pw1X = -2.50;
+  // Solid wall extends from Back wall (Z = -1.50 to Z = +0.25, length 1.75m, center Z = -0.625)
+  registerWall(mesh(B(0.10, H, 1.75), M.limewash, pw1X, FY + H / 2, -0.625), 'wall');
+  // Walnut trim jamb at opening edge (Z = +0.25)
+  registerWall(mesh(B(0.14, H, 0.08), M.walnut, pw1X, FY + H / 2, 0.25), 'trim');
+  mesh(B(0.02, H - 0.20, 0.005), M.brassSatin, pw1X, FY + H / 2, 0.285);
+  // Walkway opening header above clearance (Z = +0.25 to +1.50, width 1.25m, clearance 2.40m, header height 0.60m)
+  registerWall(mesh(B(0.10, 0.60, 1.25), M.limewash, pw1X, FY + 2.70, 0.875), 'wall');
+  registerWall(mesh(B(0.14, 0.08, 1.25), M.walnut, pw1X, FY + 2.36, 0.875), 'trim');
+  // Vertical decorative oak slats on Partition 1 West face (facing Room 1)
+  for (let sz = -1.35; sz <= 0.05; sz += 0.25) {
+    const slat = mesh(B(0.025, H - 0.30, 0.045), M.oak, pw1X - 0.055, FY + H / 2, sz, booth, false, true);
+    registerWall(slat, 'slat');
+  }
+
+  // Partition 2 at X = +2.50 (Dividing Room 2 & Room 3): Staggered to front
+  const pw2X = 2.50;
+  // Solid wall extends from Front wall (Z = +1.50 to Z = -0.25, length 1.75m, center Z = +0.625)
+  registerWall(mesh(B(0.10, H, 1.75), M.limewash, pw2X, FY + H / 2, 0.625), 'wall');
+  // Walnut trim jamb at opening edge (Z = -0.25)
+  registerWall(mesh(B(0.14, H, 0.08), M.walnut, pw2X, FY + H / 2, -0.25), 'trim');
+  mesh(B(0.02, H - 0.20, 0.005), M.brassSatin, pw2X, FY + H / 2, -0.285);
+  // Walkway opening header above clearance at the back (Z = -0.25 to -1.50, width 1.25m, clearance 2.40m)
+  registerWall(mesh(B(0.10, 0.60, 1.25), M.limewash, pw2X, FY + 2.70, -0.875), 'wall');
+  registerWall(mesh(B(0.14, 0.08, 1.25), M.walnut, pw2X, FY + 2.36, -0.875), 'trim');
+  // Vertical decorative oak slats on Partition 2 West face (facing Room 2)
+  for (let sz = -0.05; sz <= 1.35; sz += 0.25) {
+    const slat = mesh(B(0.025, H - 0.30, 0.045), M.oak, pw2X - 0.055, FY + H / 2, sz, booth, false, true);
+    registerWall(slat, 'slat');
+  }
+
+  // 7. Architectural Illuminated Wall Niches in Room 3 (Back wall at Z = -1.50)
+  const nicheW = 0.65, nicheH = 0.95, nicheD = 0.30;
+  const nicheY = FY + 1.60;
+  [3.20, 6.80].forEach((nx) => {
+    mesh(B(nicheW, 0.035, nicheD), M.oak, nx, nicheY - nicheH / 2, -D / 2 + nicheD / 2);
+    mesh(B(nicheW, 0.035, nicheD), M.oak, nx, nicheY + nicheH / 2, -D / 2 + nicheD / 2);
+    mesh(B(0.035, nicheH, nicheD), M.oak, nx - nicheW / 2, nicheY, -D / 2 + nicheD / 2);
+    mesh(B(0.035, nicheH, nicheD), M.oak, nx + nicheW / 2, nicheY, -D / 2 + nicheD / 2);
+    mesh(B(nicheW - 0.06, 0.04, nicheD - 0.04), M.travertine, nx, nicheY - nicheH / 2 + 0.04, -D / 2 + nicheD / 2);
+    mesh(B(nicheW - 0.04, 0.012, 0.012), M.led, nx, nicheY + nicheH / 2 - 0.02, -D / 2 + 0.06, booth, false, false);
+    const nl = addAccent(new THREE.PointLight(0xffeed8, 3.2, 2.2, 2), 3.2);
+    nl.position.set(nx, nicheY + nicheH / 2 - 0.08, -D / 2 + 0.20);
+    booth.add(nl);
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -688,56 +957,276 @@ function createProceduralSculpture(idx = 0) {
   return g;
 }
 
-const sculptureRegistry = [];
+// ---------------------------------------------------------------------------
+// 20 Miniature Framed Artworks (25 × 25 cm)
+// ---------------------------------------------------------------------------
+function makeProceduralMiniArt(index) {
+  const c = document.createElement('canvas');
+  c.width = 512;
+  c.height = 512;
+  const ctx = c.getContext('2d');
 
-function build6SculpturesInRow() {
-  const pedestalW = 1.30;
-  const pedestalD = 0.85;
-  const pedestalH = 0.65;
+  const palettes = [
+    { bg: '#f2e8d9', c1: '#c46b38', c2: '#db9e68', c3: '#4a5b43', style: 'geo_circles' },
+    { bg: '#e8edf2', c1: '#2b4c7e', c2: '#688db5', c3: '#d4af37', style: 'abstract_wave' },
+    { bg: '#f7f2e7', c1: '#a65836', c2: '#d89b58', c3: '#3c322b', style: 'terracotta_arch' },
+    { bg: '#1c1b20', c1: '#444b58', c2: '#c9a463', c3: '#e0d8c3', style: 'obsidian_minimal' },
+    { bg: '#eaf0ea', c1: '#2e5a44', c2: '#639376', c3: '#c8a858', style: 'botanical_shapes' },
+    { bg: '#1d2638', c1: '#3e5c94', c2: '#d4af37', c3: '#f0ece1', style: 'cobalt_crest' },
+    { bg: '#f9eee5', c1: '#d35400', c2: '#e67e22', c3: '#f39c12', style: 'sunset_horizon' },
+    { bg: '#eceef0', c1: '#7f8c8d', c2: '#bdc3c7', c3: '#d4af37', style: 'platinum_geo' },
+    { bg: '#fcf3cf', c1: '#d68910', c2: '#b9770e', c3: '#7d6608', style: 'golden_foxy' },
+    { bg: '#f5eef8', c1: '#8e44ad', c2: '#bb8fce', c3: '#f1c40f', style: 'royal_indigo' },
+    { bg: '#e8f8f5', c1: '#16a085', c2: '#48c9b0', c3: '#a3e4d7', style: 'mint_harmony' },
+    { bg: '#fdfefe', c1: '#2c3e50', c2: '#e74c3c', c3: '#f39c12', style: 'bauhaus_primary' },
+    { bg: '#fbeee6', c1: '#ba4a00', c2: '#e59866', c3: '#edbb99', style: 'warm_desert' },
+    { bg: '#eaf2f8', c1: '#2980b9', c2: '#5499c7', c3: '#aed6f1', style: 'azure_minimal' },
+    { bg: '#eaeded', c1: '#515a5a', c2: '#7b7d7d', c3: '#d4af37', style: 'monochrome_gold' },
+    { bg: '#f4ecf7', c1: '#6c3483', c2: '#9b59b6', c3: '#f4d03f', style: 'amethyst_gem' },
+    { bg: '#ebf5fb', c1: '#1b4f72', c2: '#2e86c1', c3: '#85c1e9', style: 'ocean_depth' },
+    { bg: '#fef9e7', c1: '#7d6608', c2: '#b7950b', c3: '#d4ac0d', style: 'solar_flare' },
+    { bg: '#f4f6f7', c1: '#34495e', c2: '#415b76', c3: '#cda658', style: 'calacatta_vein' },
+    { bg: '#17202a', c1: '#1f618d', c2: '#2874a6', c3: '#f39c12', style: 'twilight_nebula' },
+  ];
+
+  const p = palettes[index % palettes.length];
+  ctx.fillStyle = p.bg;
+  ctx.fillRect(0, 0, 512, 512);
+
+  for (let i = 0; i < 1800; i++) {
+    ctx.fillStyle = Math.random() > 0.5 ? 'rgba(0,0,0,0.025)' : 'rgba(255,255,255,0.035)';
+    ctx.fillRect(Math.random() * 512, Math.random() * 512, 2, 2);
+  }
+
+  ctx.save();
+  if (p.style === 'geo_circles') {
+    ctx.fillStyle = p.c1;
+    ctx.beginPath();
+    ctx.arc(256, 280, 150, Math.PI, 0);
+    ctx.lineTo(406, 450);
+    ctx.lineTo(106, 450);
+    ctx.fill();
+    ctx.fillStyle = p.c2;
+    ctx.beginPath();
+    ctx.arc(340, 180, 80, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = p.c3;
+    ctx.beginPath();
+    ctx.arc(180, 350, 70, 0, Math.PI * 2);
+    ctx.fill();
+  } else if (p.style === 'abstract_wave') {
+    ctx.fillStyle = p.c1;
+    ctx.beginPath();
+    ctx.moveTo(60, 100);
+    ctx.bezierCurveTo(450, 120, 100, 380, 450, 420);
+    ctx.bezierCurveTo(250, 480, 40, 280, 60, 100);
+    ctx.fill();
+    ctx.fillStyle = p.c2;
+    ctx.beginPath();
+    ctx.arc(330, 240, 70, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = p.c3;
+    ctx.lineWidth = 8;
+    ctx.beginPath();
+    ctx.arc(256, 256, 180, 0.4, 2.8);
+    ctx.stroke();
+  } else if (p.style === 'terracotta_arch') {
+    ctx.fillStyle = p.c1;
+    ctx.beginPath();
+    ctx.arc(256, 220, 140, Math.PI, 0);
+    ctx.lineTo(396, 460);
+    ctx.lineTo(116, 460);
+    ctx.fill();
+    ctx.fillStyle = p.c2;
+    ctx.beginPath();
+    ctx.arc(256, 220, 90, Math.PI, 0);
+    ctx.lineTo(346, 460);
+    ctx.lineTo(166, 460);
+    ctx.fill();
+    ctx.fillStyle = p.c3;
+    ctx.beginPath();
+    ctx.arc(256, 360, 50, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    ctx.fillStyle = p.c1;
+    ctx.beginPath();
+    ctx.ellipse(256, 220, 130, 110, index * 0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = p.c2;
+    ctx.fillRect(120, 320, 272, 80);
+    ctx.fillStyle = p.c3;
+    ctx.beginPath();
+    ctx.arc(340, 150, 55, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = p.c2;
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.moveTo(80, 256);
+    ctx.lineTo(432, 256);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  ctx.strokeStyle = 'rgba(180,150,110,0.35)';
+  ctx.lineWidth = 12;
+  ctx.strokeRect(16, 16, 480, 480);
+
+  ctx.fillStyle = 'rgba(80,60,40,0.6)';
+  ctx.font = 'italic 16px Outfit, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText('Naiin ' + (index + 1), 470, 480);
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+function makeMiniFramedArt(tex, title = '', spotId = 1) {
+  const g = new THREE.Group();
+  const w = 0.25; // Exact 25 cm width
+  const h = 0.25; // Exact 25 cm height
+  const frameBorder = 0.025; // 2.5 cm walnut border
+  const frameD = 0.028;      // 2.8 cm depth
+
+  // Walnut outer frame (outer size 0.30 x 0.30 m)
+  mesh(B(w + frameBorder * 2, h + frameBorder * 2, frameD), M.walnut, 0, 0, 0, g);
+  // Satin brass inner fillet
+  mesh(B(w + 0.010, h + 0.010, frameD + 0.004), M.brassSatin, 0, 0, 0, g);
+
+  // 25x25 cm Fine Art Canvas
+  const mat = new THREE.MeshStandardMaterial({
+    map: tex,
+    roughness: 0.38,
+    metalness: 0.02,
+  });
+  mesh(new THREE.PlaneGeometry(w, h), mat, 0, 0, frameD / 2 + 0.003, g, false, true);
+
+  // Miniature brass picture light overhead
+  const lightBar = new THREE.Group();
+  lightBar.position.set(0, h / 2 + frameBorder + 0.045, frameD + 0.035);
+  mesh(new THREE.CylinderGeometry(0.003, 0.003, 0.05, 8), M.brass, -w * 0.25, -0.02, -0.015, lightBar).rotation.x = Math.PI / 3;
+  mesh(new THREE.CylinderGeometry(0.003, 0.003, 0.05, 8), M.brass,  w * 0.25, -0.02, -0.015, lightBar).rotation.x = Math.PI / 3;
+  mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.18, 16), M.brass, 0, 0, 0, lightBar).rotation.z = Math.PI / 2;
+  mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.16, 16), M.led, 0, -0.004, 0, lightBar, false, false).rotation.z = Math.PI / 2;
+  g.add(lightBar);
+
+  // Dedicated soft warm accent spotlight on mini picture
+  const pl = addAccent(new THREE.PointLight(0xffeed8, 0.85, 2.0, 2), 0.85);
+  pl.position.set(0, h / 2 + 0.04, frameD + 0.06);
+  g.add(pl);
+
+  // Brass Plaque under frame: 25x25 cm label
+  const plaqueW = 0.16, plaqueH = 0.032;
+  mesh(B(plaqueW, plaqueH, 0.005), M.brassSatin, 0, -h / 2 - frameBorder - 0.026, frameD / 2, g);
+
+  return g;
+}
+
+function buildMiniArtworks() {
+  MINI_ART_SPOTS.forEach((spot, idx) => {
+    const tex = makeProceduralMiniArt(idx);
+    const frame = makeMiniFramedArt(tex, spot.title, spot.id);
+    frame.position.set(spot.x, spot.y, spot.z);
+    frame.rotation.y = spot.rotY || 0;
+    booth.add(frame);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Furniture from 5m Adapted to 3 Curated Rooms
+// ---------------------------------------------------------------------------
+function buildFurniture() {
+  // -------------------------------------------------------------------------
+  // Room 1 (West: X = -7.5 to -2.5) — Welcome Foyer & Refreshments
+  // -------------------------------------------------------------------------
+  const cabW = 1.60, cabX = -5.80, cabZ = -1.25;
+  // Olive wall console cabinet along back wall
+  mesh(B(cabW, 0.82, 0.40), M.olive, cabX, FY + 0.41, cabZ);
+  // Calacatta marble countertop
+  mesh(B(cabW + 0.04, 0.04, 0.44), M.marble, cabX, FY + 0.84, cabZ);
+  // Brass handles
+  [-0.35, 0.35].forEach((hx) => {
+    mesh(B(0.015, 0.12, 0.02), M.brass, cabX + hx, FY + 0.55, cabZ + 0.21);
+  });
+  // Bouquet in ceramic vase and fruit bowl on console
+  place(makeBouquet(), cabX + 0.35, FY + 0.86, cabZ);
+  place(makeFruitBowl(), cabX - 0.35, FY + 0.86, cabZ);
+
+  // Floating oak shelves on left section (x = -6.85, width 1.0)
+  const shelfY = [FY + 1.45, FY + 2.10];
+  shelfY.forEach((y) => {
+    mesh(B(1.0, 0.035, 0.24), M.oak, -6.85, y, -1.28);
+    mesh(B(0.95, 0.008, 0.012), M.led, -6.85, y - 0.022, -1.17, booth, false, false);
+  });
+  place(makePlant({ potR: 0.07, potH: 0.12, tree: false, crown: [0.12, 0.1, 0.12], leaves: 45, leafSize: 0.04 }), -7.10, shelfY[0] + 0.02, -1.28);
+  place(makeBowl(0.09, M.walnut), -6.60, shelfY[0] + 0.02, -1.28);
+  place(makeBooks(3), -7.05, shelfY[1] + 0.02, -1.28);
+  place(makeCandle(0.12), -6.65, shelfY[1] + 0.02, -1.28);
+
+  // Overhead oak beam + brass dome pendants
+  mesh(B(4.6, 0.08, 0.08), M.oak, -5.0, FY + H - 0.14, 0.0);
+  [-5.8, -4.2].forEach((px) => makePendant(px, 0.0, FY + 2.05));
+
+  // Corner potted olive tree
+  place(makePlant({ potR: 0.22, potH: 0.48, potMat: M.ceramic, trunkH: 1.3, crown: [0.46, 0.44, 0.46], leaves: 220 }), -7.10, FY, -0.95);
+
+  // -------------------------------------------------------------------------
+  // Room 2 (Center: X = -2.5 to +2.5) — Art Lounge & Showcase
+  // -------------------------------------------------------------------------
+  // Wall credenza along back wall under S3
+  const credX = 1.10, credZ = -1.25, credH = 0.62, credW = 1.60, credD = 0.42;
+  mesh(B(credW, credH - 0.05, credD), M.walnut, credX, FY + (credH - 0.05) / 2, credZ);
+  mesh(B(credW + 0.04, 0.05, credD + 0.04), M.travertine, credX, FY + credH - 0.025, credZ);
+  mesh(B(credW + 0.02, 0.012, credD + 0.02), M.brassSatin, credX, FY + credH - 0.055, credZ);
+  mesh(B(credW - 0.06, 0.012, credD - 0.06), M.led, credX, FY + 0.012, credZ, booth, false, false);
+  // Props on credenza beside sculpture S3
+  place(makeBooks(3), credX - 0.55, FY + credH, credZ);
+  place(makeBowl(0.09, M.walnut), credX + 0.55, FY + credH, credZ);
+  place(makeCandle(0.12), credX + 0.40, FY + credH, credZ);
+
+  // Museum leather daybed / bench in Room 2 lounge area
+  makeMuseumBench(0.50, 0.35);
+
+  // Arched brass floor lamp near partition 1 transition
+  makeArcLamp(-2.05, 0.75, new V3(-1.40, FY + 1.95, 0.55));
+
+  // Potted ficus plant near partition edge
+  place(makePlant({ potR: 0.18, potH: 0.38, potMat: M.ceramic, trunkH: 1.0, crown: [0.40, 0.38, 0.40], leaves: 160 }), -2.05, FY, -1.05);
+
+  // -------------------------------------------------------------------------
+  // Room 3 (East: X = +2.5 to +7.5) — VIP Photo Lounge & Sanctuary
+  // -------------------------------------------------------------------------
+  // Designer bouclé sofa
+  const sofaX = 5.15, sofaZ = 0.35;
+  makeSofa(sofaX, sofaZ, 0);
+
+  // Round travertine & brass side table next to sofa right arm
+  const tableX = 6.25, tableZ = 0.35;
+  mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.03, 24), M.travertine, tableX, FY + 0.48, tableZ);
+  mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.46, 12), M.brass, tableX, FY + 0.24, tableZ);
+  mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.02, 24), M.travertine, tableX, FY + 0.01, tableZ);
+  place(makeBowl(0.08, M.walnut), tableX, FY + 0.50, tableZ);
+
+  // Flattering studio portrait spotlight aimed at sofa photo spot
+  const portraitSpot = addAccent(new THREE.SpotLight(0xffeedd, 5.5, 6.0, 0.45, 0.5, 2), 5.5);
+  portraitSpot.position.set(4.60, FY + H - 0.15, 1.80);
+  const pTarget = new THREE.Object3D();
+  pTarget.position.set(4.60, FY + 0.65, sofaZ);
+  scene.add(pTarget);
+  portraitSpot.target = pTarget;
+  scene.add(portraitSpot);
+
+  // Corner potted plant in Room 3
+  place(makePlant({ potR: 0.22, potH: 0.48, potMat: M.ceramic, trunkH: 1.35, crown: [0.48, 0.45, 0.48], leaves: 240 }), 7.15, FY, -1.05);
+}
+
+// ---------------------------------------------------------------------------
+// 6 Sculptures Distributed across Room 1, Room 2, and Room 3 (like 5m)
+// ---------------------------------------------------------------------------
+function buildSculptures() {
+  sculptureRegistry.length = 0;
 
   SCULPTURE_POSITIONS.forEach((pos, idx) => {
-    const group = new THREE.Group();
-    group.position.set(pos.x, FY, pos.z);
-
-    // 1. Pedestal Plinth Base
-    // Walnut fluted body
-    mesh(B(pedestalW, pedestalH - 0.08, pedestalD), M.walnut, 0, (pedestalH - 0.08) / 2, 0, group);
-    // Travertine luxurious top slab
-    mesh(B(pedestalW + 0.06, 0.08, pedestalD + 0.06), M.travertine, 0, pedestalH - 0.04, 0, group);
-    // Satin brass reveal inlay strip
-    mesh(B(pedestalW + 0.04, 0.012, pedestalD + 0.04), M.brassSatin, 0, pedestalH - 0.085, 0, group);
-    // Recessed LED halo under the plinth
-    mesh(B(pedestalW - 0.08, 0.015, pedestalD - 0.08), M.led, 0, 0.015, 0, group, false, false);
-
-    // Museum Brass Plaque on front face of the plinth
-    const plaqueCanvas = document.createElement('canvas');
-    plaqueCanvas.width = 512;
-    plaqueCanvas.height = 128;
-    const pctx = plaqueCanvas.getContext('2d');
-    pctx.fillStyle = '#1e1610';
-    pctx.fillRect(0, 0, 512, 128);
-    pctx.strokeStyle = '#cda658';
-    pctx.lineWidth = 6;
-    pctx.strokeRect(6, 6, 500, 116);
-    pctx.fillStyle = '#f5cf92';
-    pctx.font = 'bold 34px Outfit, sans-serif';
-    pctx.textAlign = 'center';
-    pctx.textBaseline = 'middle';
-    pctx.fillText(`SCULPTURE S${idx + 1} · FOXY`, 256, 46);
-    pctx.font = '22px Outfit, sans-serif';
-    pctx.fillStyle = '#d8c4a8';
-    pctx.fillText('Marketing Naiin 50cm Exhibition Edition', 256, 88);
-    const plaqueTex = new THREE.CanvasTexture(plaqueCanvas);
-    mesh(
-      new THREE.PlaneGeometry(0.55, 0.138),
-      new THREE.MeshStandardMaterial({ map: plaqueTex, roughness: 0.35, metalness: 0.5 }),
-      0,
-      pedestalH * 0.52,
-      pedestalD / 2 + 0.005,
-      group
-    );
-
-    // 2. Sculpture on top of pedestal (all 6 pedestals have 1 Foxy sculpture 50 cm)
     let sculptObj = null;
     if (foxyTemplate) {
       sculptObj = cloneSculpture(foxyTemplate);
@@ -745,37 +1234,95 @@ function build6SculpturesInRow() {
       sculptObj = createProceduralSculpture(idx);
     }
 
-    sculptObj.position.set(0, pedestalH, 0);
-    // Face directly forward towards the front walkway and viewers
-    sculptObj.rotation.y = 0;
-    group.add(sculptObj);
+    if (pos.type === 'plinth') {
+      const group = new THREE.Group();
+      group.position.set(pos.x, FY, pos.z);
 
-    // Add pedestal group to booth
-    booth.add(group);
+      const pedestalW = 0.52;
+      const pedestalD = 0.52;
+      const pedestalH = pos.pedestalH;
 
-    // 3. Dedicated Overhead Track Spotlight pointing down directly onto sculpture
-    const spot = new THREE.SpotLight(0xfff1dc, 3.2, 5.5, Math.PI / 5, 0.35, 1.6);
-    spot.position.set(pos.x, FY + H - 0.20, pos.z + 0.35);
+      // Walnut fluted plinth body
+      mesh(B(pedestalW, pedestalH - 0.08, pedestalD), M.walnut, 0, (pedestalH - 0.08) / 2, 0, group);
+      // Travertine luxurious top slab
+      mesh(B(pedestalW + 0.05, 0.08, pedestalD + 0.05), M.travertine, 0, pedestalH - 0.04, 0, group);
+      // Satin brass reveal inlay strip
+      mesh(B(pedestalW + 0.03, 0.012, pedestalD + 0.03), M.brassSatin, 0, pedestalH - 0.085, 0, group);
+      // Recessed LED halo under the plinth
+      mesh(B(pedestalW - 0.06, 0.015, pedestalD - 0.06), M.led, 0, 0.015, 0, group, false, false);
+      // Basalt base plate
+      mesh(B(pedestalW - 0.04, 0.02, pedestalD - 0.04), M.basalt, 0, 0.01, 0, group);
 
-    // Separate spotlight target in scene space so sculptObj is NEVER detached from group
-    const spotTarget = new THREE.Object3D();
-    spotTarget.position.set(pos.x, FY + pedestalH + SCULPT_H / 2, pos.z);
-    scene.add(spotTarget);
-    spot.target = spotTarget;
+      // Sculpture on top of pedestal
+      sculptObj.position.set(0, pedestalH, 0);
+      sculptObj.rotation.y = pos.rotY || 0;
+      group.add(sculptObj);
+      booth.add(group);
 
-    spot.castShadow = true;
-    spot.shadow.mapSize.set(1024, 1024);
-    spot.shadow.bias = -0.0005;
-    scene.add(spot);
-    addAccent(spot, 3.2);
+      // Dedicated overhead track spotlight
+      const spot = new THREE.SpotLight(0xfff1dc, 4.0, 5.5, Math.PI / 5, 0.35, 1.6);
+      spot.position.set(pos.x, FY + H - 0.20, pos.z + 0.35);
+      const spotTarget = new THREE.Object3D();
+      spotTarget.position.set(pos.x, FY + pedestalH + SCULPT_H / 2, pos.z);
+      scene.add(spotTarget);
+      spot.target = spotTarget;
+      spot.castShadow = true;
+      spot.shadow.mapSize.set(1024, 1024);
+      spot.shadow.bias = -0.0005;
+      scene.add(spot);
+      addAccent(spot, 4.0);
 
-    // Track luminaire cylinder head on ceiling
-    mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.08, 16), M.blackMetal, pos.x, FY + H - 0.22, pos.z + 0.35).rotation.x = Math.PI / 6;
+      // Soft fill light
+      const fill = addAccent(new THREE.PointLight(0xffebd2, 1.8, 2.5, 2), 1.8);
+      fill.position.set(pos.x - 0.15, FY + pedestalH + 0.35, pos.z + 0.45);
+      booth.add(fill);
 
-    sculptureRegistry.push({ id: pos.id, group, sculptObj, pos });
+      sculptureRegistry.push({ id: pos.id, group, sculptObj, pos });
+
+    } else if (pos.type === 'credenza') {
+      // Placed directly on the credenza surface built in buildFurniture()
+      const sculptY = FY + pos.pedestalH;
+      sculptObj.position.set(pos.x, sculptY, pos.z);
+      sculptObj.rotation.y = pos.rotY || 0;
+      booth.add(sculptObj);
+
+      // Dedicated spotlight
+      const spot = new THREE.SpotLight(0xfff2df, 4.2, 5.0, Math.PI / 5, 0.35, 1.6);
+      spot.position.set(pos.x, FY + H - 0.20, pos.z + 0.40);
+      const spotTarget = new THREE.Object3D();
+      spotTarget.position.set(pos.x, sculptY + SCULPT_H / 2, pos.z);
+      scene.add(spotTarget);
+      spot.target = spotTarget;
+      spot.castShadow = true;
+      scene.add(spot);
+      addAccent(spot, 4.2);
+
+      const fill = addAccent(new THREE.PointLight(0xffe2bf, 1.6, 2.2, 2), 1.6);
+      fill.position.set(pos.x, sculptY + 0.32, pos.z + 0.35);
+      booth.add(fill);
+
+      sculptureRegistry.push({ id: pos.id, sculptObj, pos });
+
+    } else if (pos.type === 'niche') {
+      // Placed inside architectural wall niche at niche shelf height
+      const shelfY = FY + 1.60 - 0.95 / 2 + 0.04;
+      sculptObj.position.set(pos.x, shelfY, pos.z);
+      sculptObj.rotation.y = pos.rotY || 0;
+      booth.add(sculptObj);
+
+      // Soft spot from the front of the niche illuminating sculpture face
+      const nicheSpot = addAccent(new THREE.SpotLight(0xfff6e6, 3.8, 3.0, 0.45, 0.5, 2), 3.8);
+      nicheSpot.position.set(pos.x, shelfY + 0.55, pos.z + 0.65);
+      const nicheTarget = new THREE.Object3D();
+      nicheTarget.position.set(pos.x, shelfY + SCULPT_H / 2, pos.z);
+      scene.add(nicheTarget);
+      nicheSpot.target = nicheTarget;
+      scene.add(nicheSpot);
+
+      sculptureRegistry.push({ id: pos.id, sculptObj, pos });
+    }
   });
 }
-
 
 // ---------------------------------------------------------------------------
 // Camera Quick Views
@@ -793,29 +1340,37 @@ const VIEWS = {
     pos: [-4.8, 1.7, 5.2],
     target: [-4.8, 1.6, 0],
   },
-  sculptures: {
-    pos: [-6.2, 1.8, -0.82],
-    target: [5.0, 1.2, -0.82],
+  room1: {
+    pos: [-4.8, 1.8, 2.2],
+    target: [-5.2, 1.3, -0.6],
   },
-  promenade: {
-    pos: [-3.8, 1.6, 0.45],
-    target: [6.0, 1.5, 0.45],
+  room2: {
+    pos: [0.0, 1.8, 2.2],
+    target: [0.0, 1.3, -0.5],
+  },
+  room3: {
+    pos: [4.6, 1.8, 2.2],
+    target: [5.2, 1.3, -0.5],
   },
   inside_art: {
     pos: [2.1, 1.6, -0.3],
     target: [2.1, 1.55, D / 2],
   },
-  s1_entry: {
-    pos: [-3.8, 1.7, 0.6],
-    target: [-3.8, 1.3, -0.82],
-  },
-  s3_center: {
-    pos: [0.20, 1.7, 0.6],
-    target: [0.20, 1.3, -0.82],
+  mini_art: {
+    pos: [-2.0, 1.7, -0.1],
+    target: [-2.5, 1.7, -0.6],
   },
   top: {
     pos: [0, 14.5, 0.001],
     target: [0, 0, 0],
+  },
+  s1_entry: {
+    pos: [-4.2, 1.7, 0.8],
+    target: [-4.2, 1.2, -0.25],
+  },
+  sculptures: {
+    pos: [-6.2, 1.8, -0.82],
+    target: [5.0, 1.2, -0.82],
   },
 };
 
@@ -1025,11 +1580,13 @@ function initUI() {
 async function init() {
   setupLighting();
   buildArchitecture();
+  buildFurniture();
 
   // Load 3D model template and textures
   await loadFoxyModel();
-  build6SculpturesInRow();
+  buildSculptures();
   await buildArtworks();
+  buildMiniArtworks();
 
   // Hide loader
   const loader = document.getElementById('loader');
