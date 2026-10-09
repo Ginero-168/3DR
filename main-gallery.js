@@ -81,8 +81,13 @@ const MINI_ART_SPOTS = [
   { id: 20, x: +7.42, y: FY + 1.70, z: +0.25, rotY: -Math.PI / 2, title: 'Mini 20 · Apex Twilight' },
 ];
 
-// 5 Pairs of Artworks on Front Wall (Outside & Inside)
-const ART_PAIR_X = [-1.85, 0.20, 2.25, 4.27, 6.31];
+// 5 Outside Paintings on Exterior Facade (Cleanly distributed across 10.8m solid front wall)
+const ART_OUT_X = [-1.90, 0.20, 2.30, 4.40, 6.30];
+
+// 5 Inside Paintings on Interior Front Wall (Divided into Room 2 and Room 3, avoiding Partition 2 at X = +2.50)
+// Room 2 (X = -2.50 to +2.50): in1 at -0.95, in2 at +1.18 (centered with 62cm gallery spacing)
+// Room 3 (X = +2.50 to +7.50): in3 at +3.43, in4 at +4.95, in5 at +6.52 (uniform 25.5cm gallery spacing)
+const ART_IN_X = [-0.95, 1.18, 3.43, 4.95, 6.52];
 
 const ART_SOURCES = {
   out1: { src: 'pic/01.jpeg', title: 'P1 · Gold Foxy Master', w: 1.05, h: 1.35 },
@@ -622,10 +627,10 @@ function buildArchitecture() {
     registerWall(slat, 'slat');
   }
 
-  // Backlit Gallery Signage on Back Wall
-  const signBacking = mesh(B(4.8, 0.45, 0.03), M.walnut, 0, FY + 2.45, -D / 2 + 0.03);
+  // Backlit Gallery Signage on Back Wall (Centered in Room 2, cleanly bounded)
+  const signBacking = mesh(B(3.80, 0.45, 0.03), M.walnut, 0, FY + 2.45, -D / 2 + 0.03);
   registerWall(signBacking, 'sign');
-  mesh(B(4.84, 0.47, 0.01), M.brassSatin, 0, FY + 2.45, -D / 2 + 0.015);
+  mesh(B(3.84, 0.47, 0.01), M.brassSatin, 0, FY + 2.45, -D / 2 + 0.015);
   // Canvas text for sign
   const sc = document.createElement('canvas');
   sc.width = 1024; sc.height = 128;
@@ -633,13 +638,13 @@ function buildArchitecture() {
   sctx.fillStyle = '#1c140d';
   sctx.fillRect(0, 0, 1024, 128);
   sctx.fillStyle = '#f5cf92';
-  sctx.font = '600 38px Outfit, sans-serif';
+  sctx.font = '600 34px Outfit, sans-serif';
   sctx.textAlign = 'center';
   sctx.textBaseline = 'middle';
-  sctx.letterSpacing = '5px';
+  sctx.letterSpacing = '4px';
   sctx.fillText('MARKETING NAIIN · SCULPTURE & ART PAVILION', 512, 64);
   const stex = new THREE.CanvasTexture(sc);
-  mesh(new THREE.PlaneGeometry(4.7, 0.40), new THREE.MeshBasicMaterial({ map: stex }), 0, FY + 2.45, -D / 2 + 0.048, booth, false, false);
+  mesh(new THREE.PlaneGeometry(3.70, 0.40), new THREE.MeshBasicMaterial({ map: stex }), 0, FY + 2.45, -D / 2 + 0.048, booth, false, false);
 
   // 3. Left Wall (X = -7.5) & Right Wall (X = +7.5)
   registerWall(mesh(B(0.12, wallCoreH, D), M.limewash, -W / 2 - 0.06, FY + wallCoreH / 2, 0), 'wall');
@@ -710,10 +715,18 @@ function buildArchitecture() {
     registerWall(mesh(B(0.08, 0.10, D - 0.28), M.walnut, rx, FY + H - 0.09, 0), 'trim');
   });
 
-  // Longitudinal track lighting rail over sculptures at Z = -0.82
+  // Dedicated track lighting rails segmented per room (stops cleanly before partition walls)
   const trackZ = -0.82;
-  mesh(B(W - 0.5, 0.03, 0.04), M.blackMetal, 0, FY + H - 0.15, trackZ);
-  mesh(B(W - 0.5, 0.01, 0.01), M.led, 0, FY + H - 0.17, trackZ, booth, false, false);
+  const trackY = FY + H - 0.15;
+  // Room 1 Track Rail (X = -7.15 to -2.75, length 4.40, center -4.95)
+  mesh(B(4.40, 0.03, 0.04), M.blackMetal, -4.95, trackY, trackZ);
+  mesh(B(4.40, 0.01, 0.01), M.led, -4.95, trackY - 0.02, trackZ, booth, false, false);
+  // Room 2 Track Rail (X = -2.25 to +2.25, length 4.50, center 0.00)
+  mesh(B(4.50, 0.03, 0.04), M.blackMetal, 0.00, trackY, trackZ);
+  mesh(B(4.50, 0.01, 0.01), M.led, 0.00, trackY - 0.02, trackZ, booth, false, false);
+  // Room 3 Track Rail (X = +2.75 to +7.15, length 4.40, center +4.95)
+  mesh(B(4.40, 0.03, 0.04), M.blackMetal, 4.95, trackY, trackZ);
+  mesh(B(4.40, 0.01, 0.01), M.led, 4.95, trackY - 0.02, trackZ, booth, false, false);
 
   // 6. Architectural Partition Walls dividing into 3 Curated Rooms (like 5m)
   // Partition 1 at X = -2.50 (Dividing Room 1 & Room 2): Staggered to back
@@ -856,7 +869,7 @@ async function buildArtworks() {
   const wallFrontZ = D / 2; // +1.5m
 
   // 1. Five Outside Paintings (Facing exterior +Z)
-  ART_PAIR_X.forEach((x, idx) => {
+  ART_OUT_X.forEach((x, idx) => {
     const key = `out${idx + 1}`;
     const info = ART_SOURCES[key];
     const frame = makeFramedArt(info.w, info.h, textures[key], info.title, key, true);
@@ -865,7 +878,7 @@ async function buildArtworks() {
   });
 
   // 2. Five Inside Paintings (Facing interior -Z, rotated Math.PI)
-  ART_PAIR_X.forEach((x, idx) => {
+  ART_IN_X.forEach((x, idx) => {
     const key = `in${idx + 1}`;
     const info = ART_SOURCES[key];
     const frame = makeFramedArt(info.w, info.h, textures[key], info.title, key, false);
