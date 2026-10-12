@@ -40,20 +40,15 @@ const SCULPT_H = 0.5; // Sculpture height: 50 cm
 const DOOR_CENTER_X = -4.80; // Door portal center
 const DOOR_WIDTH = 3.0;     // Door portal width (-6.3 to -3.3)
 
-// 6 Curated Sculptures distributed across Room 1 (Foyer), Room 2 (Living Lounge & Photo Spot), and Room 3 (VIP Salon)
+// 6 Curated Sculptures concentrated in Room 3 (VIP Sculpture Sanctuary & Salon)
+// "ประติมากรรมห้ามออกมาจากส่วนของตัวเอง" — ทั้ง 6 ชิ้นจัดแสดงเฉพาะในห้องประติมากรรมของตัวเอง
 const SCULPTURE_POSITIONS = [
-  // Room 1 (Foyer): Welcome sculpture framed by 20 mini artworks
-  { id: 's1', name: 'S1 · Golden Amber Foxy',   x: -3.80, z: -0.50, rotY: -0.35, pedestalH: 0.70, type: 'plinth', finish: 'bronze' },
-  // Room 2 (Living Lounge): Gallery showcase sculpture
-  { id: 's2', name: 'S2 · Carrara Marble Foxy',  x: -1.60, z: -0.82, rotY:  0.20, pedestalH: 0.70, type: 'plinth', finish: 'marble' },
-  // Room 2 (Living Lounge): Photo-spot sculpture beside designer sofa
-  { id: 's3', name: 'S3 · Royal Obsidian Foxy',  x:  0.95, z: -0.65, rotY:  0.15, pedestalH: 0.70, type: 'plinth', finish: 'obsidian' },
-  // Room 3 (VIP Sculpture Salon): West pedestal
-  { id: 's4', name: 'S4 · Ochre Amber Foxy',     x:  2.80, z: -0.82, rotY:  0.00, pedestalH: 0.70, type: 'plinth', finish: 'terracotta' },
-  // Room 3 (VIP Sculpture Salon): Center pedestal
-  { id: 's5', name: 'S5 · Patina Bronze Foxy',   x:  4.60, z: -0.82, rotY:  0.00, pedestalH: 0.70, type: 'plinth', finish: 'verdite' },
-  // Room 3 (VIP Sculpture Salon): East pedestal
-  { id: 's6', name: 'S6 · Platinum Chrome Foxy', x:  6.40, z: -0.82, rotY:  0.00, pedestalH: 0.70, type: 'plinth', finish: 'platinum' },
+  { id: 's1', name: 'S1 · Golden Amber Foxy',   x: 2.50, z: -0.75, rotY: 0.0, pedestalH: 0.70, type: 'plinth', finish: 'bronze' },
+  { id: 's2', name: 'S2 · Carrara Marble Foxy',  x: 3.35, z: -0.75, rotY: 0.0, pedestalH: 0.70, type: 'plinth', finish: 'marble' },
+  { id: 's3', name: 'S3 · Royal Obsidian Foxy',  x: 4.20, z: -0.75, rotY: 0.0, pedestalH: 0.70, type: 'plinth', finish: 'obsidian' },
+  { id: 's4', name: 'S4 · Ochre Amber Foxy',     x: 5.05, z: -0.75, rotY: 0.0, pedestalH: 0.70, type: 'plinth', finish: 'terracotta' },
+  { id: 's5', name: 'S5 · Patina Bronze Foxy',   x: 5.90, z: -0.75, rotY: 0.0, pedestalH: 0.70, type: 'plinth', finish: 'verdite' },
+  { id: 's6', name: 'S6 · Platinum Chrome Foxy', x: 6.75, z: -0.75, rotY: 0.0, pedestalH: 0.70, type: 'plinth', finish: 'platinum' },
 ];
 
 // 20 Curated Mini Artworks (25 × 25 cm) surrounding Room 1 (ทางเข้า 5m)
@@ -268,6 +263,8 @@ const M = {
   soil: std(0x2a1e16, 0.95),
   bark: std(0x3e281b, 0.85),
   leaf: std(0x3d5a38, 0.72),
+  jute: std(0xbfad8c, 0.92, 0.0),
+  wool: std(0xe2dcce, 0.95, 0.0),
 };
 
 const B = (w, h, d) => new RoundedBoxGeometry(w, h, d, 2, 0.008);
@@ -449,6 +446,74 @@ function makeSofa(x, z, rotY = 0) {
   p1.rotation.set(-0.15, 0.25, 0.10);
   const p2 = mesh(B(0.32, 0.32, 0.11, 0.04), M.olive, 0.50, 0.48, -0.13, grp);
   p2.rotation.set(-0.15, -0.22, -0.08);
+  booth.add(grp);
+  return grp;
+}
+
+function makeOakArmchair(x, z, rotY = 0) {
+  const grp = new THREE.Group();
+  grp.position.set(x, FY, z);
+  grp.rotation.y = rotY;
+
+  // Oak armrests and legs
+  mesh(B(0.04, 0.55, 0.68), M.oak, -0.32, 0.27, 0, grp);
+  mesh(B(0.04, 0.55, 0.68), M.oak, 0.32, 0.27, 0, grp);
+  mesh(B(0.64, 0.03, 0.05), M.oak, 0, 0.54, -0.32, grp);
+
+  // Upholstered linen seat cushion and back
+  mesh(B(0.58, 0.16, 0.60), M.linen, 0, 0.22, 0.02, grp);
+  const back = mesh(B(0.58, 0.42, 0.14), M.linen, 0, 0.44, -0.22, grp);
+  back.rotation.x = -0.10;
+
+  // Accent pillow
+  const pill = mesh(B(0.28, 0.28, 0.09), M.rust, 0, 0.38, -0.16, grp);
+  pill.rotation.set(-0.15, 0.10, 0);
+
+  booth.add(grp);
+  return grp;
+}
+
+function makeBookcase(x, z) {
+  const g = new THREE.Group();
+  g.position.set(x, FY, z);
+
+  const bcW = 0.30, bcH = 2.10, bcD = 0.90;
+  // Oak outer casing
+  mesh(B(bcW, bcH, 0.03), M.oak, 0, bcH / 2, -bcD / 2, g);
+  mesh(B(bcW, bcH, 0.03), M.oak, 0, bcH / 2, bcD / 2, g);
+  mesh(B(bcW, 0.03, bcD), M.oak, 0, bcH, 0, g);
+  mesh(B(bcW, 0.03, bcD), M.oak, 0, 0.02, 0, g);
+
+  // 4 Shelves with warm LED accents
+  const shelfHeights = [0.45, 0.90, 1.35, 1.75];
+  shelfHeights.forEach((sy) => {
+    mesh(B(bcW - 0.02, 0.025, bcD - 0.02), M.oak, 0, sy, 0, g);
+    mesh(B(0.006, 0.006, bcD - 0.04), M.led, bcW / 2 - 0.02, sy - 0.015, 0, g, false, false);
+  });
+
+  // Shelf Styling Items (Books, Ceramics, Plant)
+  place(makeBooks(3), x, FY + 0.48, z - 0.20, booth);
+  place(makeBowl(0.07, M.ceramic), x, FY + 0.48, z + 0.22, booth);
+  place(makePlant({ potR: 0.05, potH: 0.09, tree: false, crown: [0.08, 0.07, 0.08], leaves: 28, leafSize: 0.035 }), x, FY + 0.93, z - 0.20, booth);
+  place(makeBooks(4), x, FY + 1.38, z + 0.15, booth);
+  place(makeBowl(0.06, M.brassSatin), x, FY + 1.78, z, booth);
+
+  booth.add(g);
+  return g;
+}
+
+function makeStool(x, z, mat = M.linen) {
+  const grp = new THREE.Group();
+  grp.position.set(x, FY, z);
+
+  const seatR = 0.22, seatH = 0.38;
+  // Brass toe-kick base ring
+  mesh(new THREE.CylinderGeometry(seatR * 0.92, seatR * 0.92, 0.04, 24), M.brassSatin, 0, 0.02, 0, grp);
+  // Walnut reveal trim
+  mesh(new THREE.CylinderGeometry(seatR * 0.95, seatR * 0.95, 0.02, 24), M.walnut, 0, 0.05, 0, grp);
+  // Upholstered cylinder body
+  mesh(new THREE.CylinderGeometry(seatR, seatR, seatH - 0.06, 24), mat, 0, (seatH + 0.06) / 2, 0, grp);
+
   booth.add(grp);
   return grp;
 }
@@ -741,9 +806,9 @@ function buildArchitecture() {
   // Room 2 Track Rail (Lounge: X = -2.20 to +1.35, length 3.55, center -0.42)
   mesh(B(3.55, 0.03, 0.04), M.blackMetal, -0.42, trackY, trackZ);
   mesh(B(3.55, 0.01, 0.01), M.led, -0.42, trackY - 0.02, trackZ, booth, false, false);
-  // Room 3 Track Rail (VIP Salon: X = +1.95 to +7.15, length 5.20, center +4.55)
-  mesh(B(5.20, 0.03, 0.04), M.blackMetal, 4.55, trackY, trackZ);
-  mesh(B(5.20, 0.01, 0.01), M.led, 4.55, trackY - 0.02, trackZ, booth, false, false);
+  // Room 3 Track Rail (VIP Sculpture Sanctuary: X = +1.95 to +7.15, length 5.20, center +4.55, aligned over 6 sculptures at Z = -0.75)
+  mesh(B(5.20, 0.03, 0.04), M.blackMetal, 4.55, trackY, -0.75);
+  mesh(B(5.20, 0.01, 0.01), M.led, 4.55, trackY - 0.02, -0.75, booth, false, false);
 
   // 6. Architectural Dividing Partition Wall 1 (at X = -2.50 dividing Room 1 [Foyer] & Room 2 [Lounge])
   const pw1X = -2.50;
@@ -756,7 +821,7 @@ function buildArchitecture() {
   registerWall(mesh(B(0.14, H, 0.10), M.walnut, pw1X, FY + H / 2, 0.20), 'trim');
   mesh(B(0.02, H - 0.20, 0.005), M.brassSatin, pw1X, FY + H / 2, 0.255);
 
-  // Doorway lintel header spanning Z = +0.20 to +1.50 (width 1.30m, height 0.60m)
+  // Doorway lintel header spanning Z = +0.20 to +1.50 at FRONT (width 1.30m, height 0.60m)
   registerWall(mesh(B(0.10, 0.54, 1.30), M.limewash, pw1X, FY + 2.65, 0.85), 'wall');
   registerWall(mesh(B(0.14, 0.08, 1.30), M.walnut, pw1X, FY + 2.34, 0.85), 'trim');
   registerWall(mesh(B(0.14, trimCapH, 1.30), M.walnut, pw1X, trimCapY, 0.85), 'trim');
@@ -776,32 +841,34 @@ function buildArchitecture() {
   }
 
   // 7. Architectural Dividing Partition Wall 2 (at X = +1.65 dividing Room 2 [Lounge] & Room 3 [VIP Salon])
-  // Added into the larger 10m section per user request
+  // STAGGERED TO FRONT / BACK OPENING ("สลับทางช่องทางเดิม" เหมือนแบบ 5m)
+  // Partition 1 มีช่องทางเดินเปิดด้านหน้า (Z: +0.20 ถึง +1.50)
+  // Partition 2 สลับช่องทางเดินเปิดด้านหลัง (Z: -1.50 ถึง -0.20) เพื่อให้เดินแบบ S-Curve ชมงานต่อเนื่อง
   const pw2X = 1.65;
-  // Solid wall section from Z = -1.50 to +0.20 (length 1.70m, center Z = -0.65)
-  registerWall(mesh(B(0.10, wallCoreH, 1.70), M.limewash, pw2X, FY + wallCoreH / 2, -0.65), 'wall');
-  registerWall(mesh(B(0.14, trimCapH, 1.70), M.walnut, pw2X, trimCapY, -0.65), 'trim');
-  registerWall(mesh(B(0.14, baseboardH, 1.70), M.walnut, pw2X, baseboardY, -0.65), 'trim');
+  // Solid wall section from Z = -0.20 to +1.50 at FRONT (length 1.70m, center Z = +0.65)
+  registerWall(mesh(B(0.10, wallCoreH, 1.70), M.limewash, pw2X, FY + wallCoreH / 2, 0.65), 'wall');
+  registerWall(mesh(B(0.14, trimCapH, 1.70), M.walnut, pw2X, trimCapY, 0.65), 'trim');
+  registerWall(mesh(B(0.14, baseboardH, 1.70), M.walnut, pw2X, baseboardY, 0.65), 'trim');
 
-  // Doorway portal jamb pillar at Z = +0.20
-  registerWall(mesh(B(0.14, H, 0.10), M.walnut, pw2X, FY + H / 2, 0.20), 'trim');
-  mesh(B(0.02, H - 0.20, 0.005), M.brassSatin, pw2X, FY + H / 2, 0.255);
+  // Doorway portal jamb pillar at Z = -0.20
+  registerWall(mesh(B(0.14, H, 0.10), M.walnut, pw2X, FY + H / 2, -0.20), 'trim');
+  mesh(B(0.02, H - 0.20, 0.005), M.brassSatin, pw2X, FY + H / 2, -0.255);
 
-  // Doorway lintel header spanning Z = +0.20 to +1.50 (width 1.30m, height 0.60m)
-  registerWall(mesh(B(0.10, 0.54, 1.30), M.limewash, pw2X, FY + 2.65, 0.85), 'wall');
-  registerWall(mesh(B(0.14, 0.08, 1.30), M.walnut, pw2X, FY + 2.34, 0.85), 'trim');
-  registerWall(mesh(B(0.14, trimCapH, 1.30), M.walnut, pw2X, trimCapY, 0.85), 'trim');
+  // Doorway lintel header spanning Z = -1.50 to -0.20 at BACK (width 1.30m, height 0.60m, center Z = -0.85)
+  registerWall(mesh(B(0.10, 0.54, 1.30), M.limewash, pw2X, FY + 2.65, -0.85), 'wall');
+  registerWall(mesh(B(0.14, 0.08, 1.30), M.walnut, pw2X, FY + 2.34, -0.85), 'trim');
+  registerWall(mesh(B(0.14, trimCapH, 1.30), M.walnut, pw2X, trimCapY, -0.85), 'trim');
 
-  // Brass transition threshold on floor across doorway
-  mesh(B(0.16, 0.008, 1.30), M.brassSatin, pw2X, FY + 0.004, 0.85);
+  // Brass transition threshold on floor across doorway 2
+  mesh(B(0.16, 0.008, 1.30), M.brassSatin, pw2X, FY + 0.004, -0.85);
 
-  // Warm welcome downlight in doorway portal 2
+  // Warm welcome downlight in doorway portal 2 at the back
   const doorwayPl2 = addAccent(new THREE.PointLight(0xffe6c8, 1.4, 2.8, 2), 1.4);
-  doorwayPl2.position.set(pw2X, FY + 2.25, 0.85);
+  doorwayPl2.position.set(pw2X, FY + 2.25, -0.85);
   booth.add(doorwayPl2);
 
-  // Vertical acoustic oak slats on Partition 2 (both west and east faces)
-  for (let sz = -1.35; sz <= 0.05; sz += 0.25) {
+  // Vertical acoustic oak slats on Partition 2 (both west and east faces along solid section Z: -0.05 to 1.35)
+  for (let sz = -0.05; sz <= 1.35; sz += 0.25) {
     const slatW = mesh(B(0.025, H - 0.30, 0.045), M.oak, pw2X - 0.055, FY + H / 2, sz, booth, false, true);
     registerWall(slatW, 'slat');
     const slatE = mesh(B(0.025, H - 0.30, 0.045), M.oak, pw2X + 0.055, FY + H / 2, sz, booth, false, true);
@@ -1233,24 +1300,53 @@ function buildFurniture() {
   mesh(B(4.6, 0.08, 0.08), M.oak, -5.0, FY + H - 0.14, 0.0);
   [-5.8, -4.2].forEach((px) => makePendant(px, 0.0, FY + 2.05));
 
+  // Circular Jute Entry Rug (diameter 1.60m)
+  mesh(new THREE.CircleGeometry(0.80, 32).rotateX(-Math.PI / 2), M.jute, -5.0, FY + 0.003, 0.0);
+
+  // Minimalist camel leather stool for comfortable foyer rest
+  makeStool(-3.65, 0.25, M.leather);
+
+  // Walnut & brass umbrella stand / entry vessel near door
+  mesh(new THREE.CylinderGeometry(0.12, 0.10, 0.45, 24), M.walnut, -6.40, FY + 0.225, 0.85);
+  mesh(new THREE.CylinderGeometry(0.125, 0.105, 0.04, 24), M.brassSatin, -6.40, FY + 0.43, 0.85);
+
   // Corner potted olive tree
   place(makePlant({ potR: 0.22, potH: 0.48, potMat: M.ceramic, trunkH: 1.3, crown: [0.46, 0.44, 0.46], leaves: 220 }), -7.10, FY, -0.95);
 
   // -------------------------------------------------------------------------
-  // Room 2 (Center: X = -2.50 to +1.65) — Living Salon & Photo Spot Lounge
+  // Room 2 (Center: X = -2.50 to +1.65) — Living Salon & Reception (Rich 5m Style)
   // -------------------------------------------------------------------------
+  // Large textured wool area rug grounding the entire salon
+  mesh(new THREE.PlaneGeometry(2.60, 1.80).rotateX(-Math.PI / 2), M.wool, -0.45, FY + 0.003, -0.10);
+
   // Designer Bouclé curved sofa with walnut base, tapered brass legs, rust & olive cushions
-  makeSofa(-0.45, -0.35, 0);
+  makeSofa(-0.45, 0.35, 0);
 
-  // Designer round travertine & brass side/coffee table next to sofa
-  const tableX = 0.55, tableZ = -0.35;
-  mesh(new THREE.CylinderGeometry(0.20, 0.20, 0.03, 24), M.travertine, tableX, FY + 0.48, tableZ);
-  mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.46, 12), M.brass, tableX, FY + 0.24, tableZ);
-  mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.02, 24), M.travertine, tableX, FY + 0.01, tableZ);
-  place(makeBowl(0.08, M.walnut), tableX, FY + 0.50, tableZ);
+  // Scandinavian Oak & Linen reading armchair angled towards sofa
+  makeOakArmchair(0.65, -0.45, -2.3);
 
-  // Arched brass floor lamp curving gracefully over seating area
-  makeArcLamp(-2.15, -0.75, new V3(-1.50, FY + 1.95, -0.40));
+  // Designer round travertine & brass side/coffee table
+  const tableX = -0.45, tableZ = -0.35;
+  mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.035, 24), M.travertine, tableX, FY + 0.48, tableZ);
+  mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.46, 12), M.brass, tableX, FY + 0.24, tableZ);
+  mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.02, 24), M.travertine, tableX, FY + 0.01, tableZ);
+  place(makeBowl(0.09, M.walnut), tableX, FY + 0.50, tableZ);
+  place(makeCandle(0.10), tableX + 0.08, FY + 0.50, tableZ - 0.06);
+
+  // Drinks side table beside armchair
+  mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.025, 24), M.travertine, 1.05, FY + 0.42, -0.20);
+  mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.40, 12), M.brass, 1.05, FY + 0.21, -0.20);
+  mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.018, 24), M.travertine, 1.05, FY + 0.01, -0.20);
+  place(makeCandle(0.08), 1.05, FY + 0.44, -0.20);
+
+  // Round upholstered bouclé pouf/ottoman for flexible seating
+  makeStool(-1.40, -0.35, M.linen);
+
+  // Tall Architectural Oak Bookcase Tower against Partition 1
+  makeBookcase(-2.25, -0.65);
+
+  // Arched brass floor lamp curving gracefully over the sofa
+  makeArcLamp(-1.80, 0.75, new V3(-1.10, FY + 1.95, 0.35));
 
   // Decorative walnut console along back wall behind sofa
   const r2CredW = 1.40, r2CredX = -0.45, r2CredZ = -1.28;
@@ -1259,40 +1355,54 @@ function buildFurniture() {
   place(makeCandle(0.14), r2CredX - 0.40, FY + 0.68, r2CredZ);
   place(makeBooks(4), r2CredX + 0.35, FY + 0.68, r2CredZ);
 
+  // Overhead oak beam + brass dome pendants over living lounge
+  mesh(B(3.4, 0.08, 0.08), M.oak, -0.45, FY + H - 0.14, 0.0);
+  [-0.90, 0.0].forEach((px) => makePendant(px, 0.0, FY + 2.05));
+
+  // Lush terracotta potted plant near front partition return
+  place(makePlant({ potR: 0.18, potH: 0.40, potMat: M.ceramic, trunkH: 1.1, crown: [0.40, 0.38, 0.40], leaves: 160 }), 1.25, FY, 1.05);
+
   // -------------------------------------------------------------------------
-  // Room 3 (East: X = +1.65 to +7.50) — VIP Sculpture Salon & Gallery Bar
+  // Room 3 (East: X = +1.65 to +7.50) — VIP Sculpture Sanctuary & Salon
+  // "ประติมากรรมห้ามออกมาจากส่วนของตัวเอง" — ประติมากรรมทั้ง 6 ชิ้นรวมอยู่ที่นี่ทั้งหมด
   // -------------------------------------------------------------------------
+  // Large woven jute area rug under viewing bench and poufs
+  mesh(new THREE.PlaneGeometry(3.80, 1.40).rotateX(-Math.PI / 2), M.jute, 4.65, FY + 0.003, 0.45);
+
   // Museum leather daybed / bench for viewing sculptures & art
-  makeMuseumBench(4.50, 0.35);
+  makeMuseumBench(4.65, 0.45);
 
-  // Executive wall credenza along back wall
-  const r3CredW = 2.00, r3CredX = 4.60, r3CredZ = -1.25;
-  mesh(B(r3CredW, 0.72, 0.36), M.walnut, r3CredX, FY + 0.36, r3CredZ);
-  mesh(B(r3CredW + 0.04, 0.035, 0.40), M.travertine, r3CredX, FY + 0.737, r3CredZ);
-  [-0.45, 0.45].forEach((hx) => {
-    mesh(B(0.015, 0.12, 0.02), M.brass, r3CredX + hx, FY + 0.48, r3CredZ + 0.19);
-  });
-  place(makeBouquet(), r3CredX + 0.45, FY + 0.76, r3CredZ);
-  place(makeFruitBowl(), r3CredX - 0.45, FY + 0.76, r3CredZ);
-  place(makeCandle(0.12), r3CredX, FY + 0.76, r3CredZ);
+  // Pair of designer minimalist upholstered leather poufs flanking the daybed
+  makeStool(3.10, 0.45, M.leather);
+  makeStool(6.20, 0.45, M.leather);
 
-  // Overhead oak beam + brass dome pendants over VIP salon
+  // Low round travertine drinks side table next to daybed
+  mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.025, 24), M.travertine, 4.65, FY + 0.40, 0.95);
+  mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.38, 12), M.brass, 4.65, FY + 0.20, 0.95);
+  mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.018, 24), M.travertine, 4.65, FY + 0.01, 0.95);
+  place(makeBooks(3), 4.65, FY + 0.42, 0.95);
+  place(makeCandle(0.10), 4.65, FY + 0.52, 0.95);
+
+  // Overhead oak beam + brass dome pendants over VIP viewing salon
   mesh(B(5.2, 0.08, 0.08), M.oak, 4.60, FY + H - 0.14, 0.0);
   [3.60, 5.60].forEach((px) => makePendant(px, 0.0, FY + 2.05));
 
   // Potted ficus tree in the right corner
   place(makePlant({ potR: 0.22, potH: 0.48, potMat: M.ceramic, trunkH: 1.35, crown: [0.48, 0.45, 0.48], leaves: 240 }), 7.15, FY, -1.05);
+
+  // Second potted plant in the front right corner
+  place(makePlant({ potR: 0.18, potH: 0.42, potMat: M.ceramic, trunkH: 1.15, crown: [0.42, 0.40, 0.42], leaves: 180 }), 7.15, FY, 1.05);
 }
 
 // ---------------------------------------------------------------------------
-// 6 Curated Sculptures Integrated into the 3 Rooms
+// 6 Curated Sculptures Integrated into Room 3 (VIP Sculpture Sanctuary)
 // ---------------------------------------------------------------------------
 const sculptureRegistry = [];
 
 function buildSculptures() {
   sculptureRegistry.length = 0;
-  const pedestalW = 0.82;
-  const pedestalD = 0.58;
+  const pedestalW = 0.70;
+  const pedestalD = 0.50;
 
   SCULPTURE_POSITIONS.forEach((pos, idx) => {
     const pedestalH = pos.pedestalH || 0.70;
@@ -1337,7 +1447,7 @@ function buildSculptures() {
     pctx.fillText('Marketing Naiin 50cm Exhibition Edition', 256, 88);
     const plaqueTex = new THREE.CanvasTexture(plaqueCanvas);
     mesh(
-      new THREE.PlaneGeometry(0.40, 0.10),
+      new THREE.PlaneGeometry(0.36, 0.09),
       new THREE.MeshStandardMaterial({ map: plaqueTex, roughness: 0.35, metalness: 0.5 }),
       0,
       pedestalH * 0.50,
@@ -1388,11 +1498,11 @@ const VIEWS = {
   },
   room2: {
     pos: [-0.45, 1.8, 1.9],
-    target: [-0.45, 1.3, -0.4],
+    target: [-0.45, 1.3, -0.2],
   },
   room3: {
-    pos: [4.6, 1.8, 1.9],
-    target: [4.6, 1.3, -0.5],
+    pos: [4.65, 1.8, 2.0],
+    target: [4.65, 1.3, -0.7],
   },
   inside_art: {
     pos: [2.5, 1.6, -0.3],
